@@ -22,3 +22,4 @@ and as such require global or roomauth of some degree.
 
 - broadcast : Show the current required rank to broadcast command returns.
 - setbroadcast : Set the level required to broadcast. This is a global setting and not tied to single rooms.
+- allowgames [room], True/False : Enable or disable the chatgames in [room]
