@@ -96,6 +96,8 @@ def Command(self, cmd, msg, user):
                 continue
             if [p for p in team if '-Mega' in p] and '-Mega' in poke:
                 continue
+            if [p for p in team if 'Arceus' in p] and 'Arceus' in poke:
+                continue
             team |= {poke}
             if not acceptableWeakness(team):
                 team -= {poke}
