@@ -1,3 +1,7 @@
+# Each PS room joined creates an object here.
+# Objects control settings on a room-per-room basis, meaning every room can
+# be treated differently.
+
 class Room:
     def __init__(self, room, data):
         if not data:

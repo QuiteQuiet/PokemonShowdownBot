@@ -1,3 +1,16 @@
+# The command file for every external command not specifically for running
+# the bot. Even more relevant commands like broadcast options and whitelists
+# are treated as such.
+#
+# Every command in here should follow the basic structure of:
+# elif cmd == 'commandHere':
+#     doYourThings(lots, of, variables)
+#     return 'Your Response', True/False
+#
+# True: Allows that the command in question can, if gotten from a room,
+#       can be returned to the same room rather than a PM.
+# False: This will ALWAYS return the reply as a PM, no matter where it came from
+
 from random import randint, sample
 import re
 import yaml

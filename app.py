@@ -1,3 +1,10 @@
+# Derived from the base class PokemonShowdownBot, and as such hide a lot of
+# it's core functions by simply calling functions from the base class.
+# For any function called here not defined in this file, look in robot.py.
+#
+# Changes to this file should be made with caution, as much of the extended functions
+# depend on this being structured in a specific way.
+
 import re
 
 from robot import PokemonShowdownBot

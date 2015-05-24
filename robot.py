@@ -1,3 +1,10 @@
+# This is the master class for the Python PS bot.
+# Every general-purpose command is included in this file, with the sole exception
+# being onMessage(), as derived applications may need to acces this function.
+#
+# As such, unless a valid onMessage() function is supplied when creating an
+# instance, this will not run.
+
 import websocket
 import requests
 import json
@@ -11,7 +18,7 @@ class PokemonShowdownBot:
     ''' Controls the most basic aspects of connecting to Pokemon Showdown as well as commands '''
 
     def __init__(self, url, onMessage):
-        with open("D:/Programming/Git/psbot/details.yaml", 'r') as yaml_file:
+        with open("details.yaml", 'r') as yaml_file:
             self.details = yaml.load(yaml_file)
             self.Groups = {' ':0,'+':1,'%':2,'@':3,'&':4,'#':5,'~':6}
             self.splitMessage = onMessage
