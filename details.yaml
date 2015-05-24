@@ -1,0 +1,12 @@
+user: BB-8-NU
+password: nextgenwar
+master: quitequiet
+command: '~'
+broadcastrank: '+'
+avatar: 208
+joinRooms:
+  - neverused: { moderate: False, allow games: False }
+  - thestable: { moderate: False, allow games: True }
+rooms: {}
+whitelist: {}
+gamerunning: ''
