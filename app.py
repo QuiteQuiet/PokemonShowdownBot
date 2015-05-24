@@ -1,4 +1,7 @@
-# Derived from the base class PokemonShowdownBot, and as such hide a lot of
+# This is the entry point for the Pokemon Showdown Bot, and contain most of the
+# permission checks for chat returns.
+#
+# It's derived from the base class PokemonShowdownBot, and as such hide a lot of
 # it's core functions by simply calling functions from the base class.
 # For any function called here not defined in this file, look in robot.py.
 #

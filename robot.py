@@ -4,6 +4,12 @@
 #
 # As such, unless a valid onMessage() function is supplied when creating an
 # instance, this will not run.
+#
+# To run this, the following modules are required:
+# PyYAML == 3.11
+# requests == 2.5.1
+# simplejson == 3.6.5
+# websockets == 2.4
 
 import websocket
 import requests
