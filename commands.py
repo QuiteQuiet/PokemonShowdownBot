@@ -21,11 +21,6 @@ from data.pokedex import Pokedex
 from data.types import Types
 from data.games import Hangman
 
-commands = ['commands: This command',
-            'pick a,b,c,d...: Select one item at random',
-            '[tier]poke: Give you a random pokemon from [tier]',
-            '[tier]team: Generates a random team usable in [tier]']
-
 GameCommands = ['hangman', 'hg']
 
 def Command(self, cmd, msg, user):
@@ -33,10 +28,8 @@ def Command(self, cmd, msg, user):
     # Debug commands and program info
     if cmd == 'echo':
         return msg, True
-    elif cmd == 'commands':
-        return ', '.join(commands), False
-    elif cmd == 'help':
-        return 'Ask Quite Quiet for help', False
+    elif cmd in ['commands', 'help']:
+        return 'Read about commands here: https://github.com/QuiteQuiet/PokemonShowdownBot/blob/master/COMMANDS.md', False
     elif cmd == 'leave':
         msg = msg.replace(' ','')
         if self.leaveRoom(msg):
