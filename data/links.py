@@ -34,5 +34,14 @@ Links = {
     'nu':'http://www.smogon.com/forums/threads/3536422/',
     'pu':'http://www.smogon.com/forums/threads/3537437/',
     'lc':'LC doesnt have speed tier thread.'
+    },
+'cores':{
+	'uber':'http://www.smogon.com/forums/threads/3523753/',
+   'ou':'http://www.smogon.com/forums/threads/3524713/',
+   'uu':'http://www.smogon.com/forums/threads/3532349/',
+   'ru':'http://www.smogon.com/forums/threads/3523954/',
+   'nu':'http://www.smogon.com/forums/threads/3523695/',
+   'pu':'http://www.smogon.com/forums/threads/3537423/',
+   'lc':'http://www.smogon.com/forums/threads/3526527/'
     }
 }
