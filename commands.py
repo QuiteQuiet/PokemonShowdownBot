@@ -72,10 +72,12 @@ def Command(self, cmd, msg, user):
             return 'You are not allowed to see the whitelist :l', False
     elif cmd in ['whitelistuser', 'wluser']:
         if canAddUser(self, user):
-            self.details['whitelist'].append(user['name'])
+            self.details['whitelist'].append(msg)
+            return 'User {usr} added to whitelist.'.format(usr = msg), True
     elif cmd == 'removewl':
         if canAddUser(self, user):
-            self.details['whitelist'].remove(user['name'])
+            self.details['whitelist'].remove(msg)
+            return 'User {usr} removed from the whitelist.'.format(usr =msg), True
 
     elif cmd == 'allowgames':
         msg = msg.replace(' ','')
@@ -189,7 +191,7 @@ def canSee(self, user):
 def canChange(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
 def canAddUser(self, user):
-    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['~']
+    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
 def canStartGame(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['@']
 def acceptableWeakness(team):
