@@ -114,6 +114,8 @@ def Command(self, cmd, msg, user):
             # Test if share dex number with anything in the team
             if [p for p in team if Pokedex[poke]['dex'] == Pokedex[p]['dex']]:
                 continue
+            if [p for p in team if '-Mega' in p] and '-Mega' in poke:
+                continue
             team |= {poke}
             if not acceptableWeakness(team):
                 team -= {poke}
