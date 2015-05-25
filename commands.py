@@ -16,7 +16,7 @@ import re
 import yaml
 import json
 
-from data.tiers import tiers
+from data.tiers import tiers, formats
 from data.pokedex import Pokedex
 from data.types import Types
 from data.games import Hangman
@@ -94,10 +94,14 @@ def Command(self, cmd, msg, user):
         attempts = 0
         while len(team) < 6 or not acceptableWeakness(team):
             poke = list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]
-            if re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', poke) in team:
+            base = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', poke)
+            # Test if the base form of the Pokemon is already in the team
+            if [p for p in team if base in p]:
                 continue
+            # Ignore if a mega already exists in the team
             if [p for p in team if '-Mega' in p] and '-Mega' in poke:
                 continue
+            # Extra catch for some situations when Arceus slips through
             if [p for p in team if 'Arceus' in p] and 'Arceus' in poke:
                 continue
             team |= {poke}
@@ -144,6 +148,9 @@ def Command(self, cmd, msg, user):
         else:
             return 'There is no game in progress right now', True
 
+    # Commands with awful conditions last
+    elif cmd in formats:
+        return 'Format: http://www.smogon.com/dex/xy/formats/{tier}/'.format(tier = cmd), True
     # This command is here because it's an awful condition, so try it last :/
     elif [p for p in Pokedex if re.sub('-(?:mega(?:-(x|y))?|primal|xl|l)','', cmd, flags=re.I) in p.lower()]:
         cmd = re.sub('-(?:mega(?:-(x|y))?|primal)','', cmd)
@@ -198,4 +205,5 @@ def acceptableWeakness(team):
 def getURL():
     return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def getJoke():
-    return 'iplaytennislol'
+    people = ['canehdian', 'disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'montsegur', 'punchshroom', 'queenofluvdiscs', 'quitequiet', 'scorpdestroyer', 'teddeh', 'boltsandbombers', 'deejdy', 'realisticwaters', 'sirkay', 'solarisfox', 'soulgazer', 'thegoomy', 'xzern']
+    return people[randint(0, len(people)-1)]
