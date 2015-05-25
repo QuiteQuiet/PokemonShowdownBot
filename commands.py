@@ -20,6 +20,7 @@ from data.tiers import tiers, formats
 from data.links import Links
 from data.pokedex import Pokedex
 from data.types import Types
+from data.replies import Lines
 
 from plugins.games import Hangman
 from plugins import tournaments
@@ -32,7 +33,9 @@ def Command(self, cmd, msg, user):
     if cmd == 'echo':
         return msg, True
     elif cmd == 'source':
-        return 'Source code can be found at: {url}'.format(url = getURL()), False
+        return 'Source code can be found at: {url}blob/master/README.md'.format(url = getURL()), False
+    elif cmd == 'credits':
+        return 'Credits can be found: {url}'.format(url = getURL()), True
     elif cmd in ['commands', 'help']:
         return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = getURL()), False
     elif cmd == 'leave':
@@ -84,8 +87,19 @@ def Command(self, cmd, msg, user):
         things = msg.split(',')
         if len(things) == 2:
             if things[0] in self.details['rooms']:
-                self.details['rooms'][things[0]].allowGames = True if things[1] in ['true','yes','y','True'] else False
-                return 'Chatgames are now {state} in {room}'.format(state = 'allowed' if self.details['rooms'][things[0]].allowGames else 'not allowed', room = things[0]), True
+                if things[1] in ['true','yes','y','True']:
+                    if self.details['rooms'][things[0]].allowGames:
+                        self.details['rooms'][things[0]].allowGames = True
+                        return 'Chatgames are now allowed in {room}'.format(room = things[0]), True
+                    else:
+                        return 'Chatgames are already allowed in {room}'.format(room = things[0]), True
+                elif things[1] in ['false', 'no', 'n',' False']:
+                    self.details['rooms'][things[0]].allowGames = False
+                    return 'Chatgames are now not allowed in {room}'.format(room = things[0]), True
+                else:
+                    return '{param} is not a supported parameter'.format(param = things[1]), True
+            else:
+                return 'Cannot allow chatgames without being in the room', True
         else:
             return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
 
@@ -99,6 +113,8 @@ def Command(self, cmd, msg, user):
     elif cmd == 'pick':
         options = msg.split(',')
         return options[randint(0,(len(options)-1))], True
+    elif cmd == 'ask':
+        return Lines[randint(0, len(Lines)-1)], True
     elif cmd == 'joke':
         if randint(0, 1) and self.Groups[user['group']] >= self.Groups['%']:
             return user['unform'], True
