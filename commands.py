@@ -41,7 +41,7 @@ def Command(self, cmd, msg, user):
             return 'Leaving room {r} succeeded'.format(r = msg), False
         else:
             return 'Could not leave room: {r}'.format(r = msg), False
-    elif get == 'get':
+    elif cmd == 'get':
         if isMaster(self, user):
             return eval(msg), False
         else:

@@ -91,7 +91,7 @@ class PSBot(PokemonShowdownBot):
             if message[4].startswith(self.details['command']):            
                 command = message[4][1:].split()[0].lower()
                 self.log(message[4], user['name'])
-                response, samePlace = self.do(self, command, message[4][len(command) + 1:], user)
+                response, samePlace = self.do(self, command, message[4][len(command) + 1:].lstrip(), user)
 
                 if not room.allowGames and command in self.gameCommands:
                     response = 'This room does not support chatgames'
