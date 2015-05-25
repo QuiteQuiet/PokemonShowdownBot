@@ -28,8 +28,10 @@ def Command(self, cmd, msg, user):
     # Debug commands and program info
     if cmd == 'echo':
         return msg, True
+    elif cmd == 'source':
+        return 'Source code can be found at: {url}'.format(url = getURL()), False
     elif cmd in ['commands', 'help']:
-        return 'Read about commands here: https://github.com/QuiteQuiet/PokemonShowdownBot/blob/master/COMMANDS.md', False
+        return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = getURL()), False
     elif cmd == 'leave':
         msg = msg.replace(' ','')
         if self.leaveRoom(msg):
@@ -193,5 +195,7 @@ def acceptableWeakness(team):
         if comp[t]['weak'] >= 2 and comp[t]['res'] <= 1:
             return False
     return True
+def getURL():
+    return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def getJoke():
     return 'iplaytennislol'

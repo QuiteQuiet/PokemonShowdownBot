@@ -10,6 +10,7 @@ Standard commands
 - pick a,b,c,d... : Randomly selects one of the entered options.
 - [tier]poke : Randomly selects one Pokémon from the viable tier list from [tier]. Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 - [tier]team : Randomly generate a team that is usable in [tier]. Same restrictions as [tier]poke apply.
+- [pokemon] : Entering any existing pokemon (for example ~kyogre) gives a link to their respective Smogon analysis page.
 - commands : Gives a link to this page.
 - hangman new, [room], [phrase] : Use hangman new, [room], [phrase] to create a hangman game in [room], with the solution being [phrase]. Forcefully end an ongoing hangman game with hangman end.
 - hg : Only usable with the above command, hg [letter/phrase] is used to play games of hangman and accepts either a single letter or phrases as guesses.
