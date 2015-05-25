@@ -41,6 +41,11 @@ def Command(self, cmd, msg, user):
             return 'Leaving room {r} succeeded'.format(r = msg), False
         else:
             return 'Could not leave room: {r}'.format(r = msg), False
+    elif get == 'get':
+        if isMaster(self, user):
+            return eval(msg), False
+        else:
+            return 'You do not have permisson to use this command', False
     # Permissions
     elif cmd == 'broadcast':
         return 'Rank required to broadcast: {rank}'.format(rank = self.details['broadcastrank']), True
@@ -96,7 +101,7 @@ def Command(self, cmd, msg, user):
         if randint(0, 1) and self.Groups[user['group']] >= self.Groups['%']:
             return user['unform'], True
         else:
-            return getJoke(user), True
+            return getJoke(), True
     elif cmd in tiers:
         pick = list(tiers[cmd])[randint(0,len(tiers[cmd])-1)]
         pNoForm = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', pick).lower()
@@ -167,13 +172,16 @@ def Command(self, cmd, msg, user):
                        'giratina-o':'giratina-origin'} 
         if cmd in substitutes:
             cmd = substitutes[cmd]
+        if cmd.lower() not in (p.lower() for p in Pokemon):
+            return '{cmd} is not a valid command'.format(cmd = cmd),True
         return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
     
     else:
         return False, False
 
 
-
+def isMaster(self, user):
+    return user['name'] == self.details['master']
 def canSee(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
 def canChange(self, user):

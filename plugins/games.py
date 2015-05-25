@@ -5,4 +5,4 @@
 # New games should be created as a complete class per game, to be imported as
 # from data.games import [your game], with the entry in this file following that of the
 # hangman example.
-from data.hangman import Hangman
+from plugins.hangman import Hangman
