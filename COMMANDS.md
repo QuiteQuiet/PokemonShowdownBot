@@ -11,15 +11,12 @@ Standard commands
 - source : Prints a link to this github repository.
 - pick a,b,c,d... : Randomly selects one of the entered options.
 
-- [tier]poke : Randomly selects one Pokémon from the viable tier list from [tier]. Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
+- [tier]poke : Randomly selects one Pokémon from the viable tier list from [tier]. Supported tiers are Uber, OU, UU, RU, NU, PU, and LC. 
 - [tier]team : Randomly generate a team that is usable in [tier]. Same restrictions as [tier]poke apply.
 - [pokemon] : Entering any existing pokemon (for example ~kyogre) gives a link to their respective Smogon analysis page.
 - [tier] : Similar to the above, entering any official Smogon tier (such as ~ou) brings up a link to the Smogon hub for that tier.
 
-- viability [tier]
-- speedtiers [tier]
-- np [tier]
-- sample [tier]
+- ~viability [tier], ~speedtiers [tier], ~np [tier], ~sample [tier] :
 - The above four commands bring up their respective forums resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 
 - hangman new, [room], [phrase] : Use hangman new, [room], [phrase] to create a hangman game in [room], with the solution being [phrase]. Forcefully end an ongoing hangman game with hangman end.
