@@ -7,7 +7,7 @@ class Room:
         if not data:
             # This is a hack to support both strings and dicts as input to the class
             data = {'moderate':False, 'allow games':False}
-        self.users = set()
+        self.users = []
         self.loading = True
         self.title = room
         self.moderate = data['moderate']
@@ -16,11 +16,13 @@ class Room:
         self.loading = False
 
     def addUserlist(self, users):
-        self.users = {u for u in users.split(',') if users.index(u) > 0}
+        self.users = [u for u in users.split(',') if users.index(u) > 0]
     def addUser(self, user):
-        self.users |= {user}
+        if user not in self.users:
+            self.users.append(user)
     def removeUser(self, user):
-        self.users -= {user}
+        if user in self.users:
+            self.users.remove(user)
     def renamedUser(self, old, new):
         self.removeUser(old)
         self.addUser(new)
