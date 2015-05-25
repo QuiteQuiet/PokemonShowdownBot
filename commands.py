@@ -141,6 +141,20 @@ def Command(self, cmd, msg, user):
                     return '{test} is wrong!'.format(test = msg.lstrip()), True
         else:
             return 'There is no game in progress right now', True
+
+    # This command is here because it's an awful condition, so try it last :/
+    elif [p for p in Pokedex if re.sub('-(?:mega(?:-(x|y))?|primal|xl|l)','', cmd, flags=re.I) in p.lower()]:
+        cmd = re.sub('-(?:mega(?:-(x|y))?|primal)','', cmd)
+        substitutes = {'gourgeist-s':'gourgeist-small',  # This doesn't break Arceus-Steel like adding |S to the regex would
+                       'gourgeist-l':'gourgeist-large',  # and gourgeist-s /pumpkaboo-s still get found, because it matches the
+                       'gourgeist-xl':'gourgeist-super', # entry for gougeist/pumpkaboo-super
+                       'pumpkaboo-s':'pumpkaboo-small',
+                       'pumpkaboo-l':'pumpkaboo-large',
+                       'pumpkaboo-xl':'pumpkaboo-super',
+                       'giratina-o':'giratina-origin'} 
+        if cmd in substitutes:
+            cmd = substitutes[cmd]
+        return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
     
     else:
         return False, False
