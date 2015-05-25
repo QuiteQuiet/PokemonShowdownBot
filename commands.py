@@ -17,9 +17,12 @@ import yaml
 import json
 
 from data.tiers import tiers, formats
+from data.links import Links
 from data.pokedex import Pokedex
 from data.types import Types
-from data.games import Hangman
+
+from plugins.games import Hangman
+from plugins import tournaments
 
 GameCommands = ['hangman', 'hg']
 
@@ -79,6 +82,12 @@ def Command(self, cmd, msg, user):
         else:
             return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
 
+    # Informational commands
+    elif cmd in Links:
+        if msg in Links[cmd]:
+            return Links[cmd][msg], True
+        else:
+            return '{tier} is not a supported format for {command}'.format(tier = msg, command = cmd), True
     # Fun stuff
     elif cmd == 'pick':
         options = msg.split(',')
