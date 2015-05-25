@@ -94,20 +94,12 @@ def Command(self, cmd, msg, user):
         attempts = 0
         while len(team) < 6 or not acceptableWeakness(team):
             poke = list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]
-            base = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', poke)
-            # Test if the base form of the Pokemon is already in the team
-            if [p for p in team if base in p]:
-                continue
-            # Ignore if a mega already exists in the team
-            if [p for p in team if '-Mega' in p] and '-Mega' in poke:
-                continue
-            # Extra catch for some situations when Arceus slips through
-            if [p for p in team if 'Arceus' in p] and 'Arceus' in poke:
+            # Test if share dex number with anything in the team
+            if [p for p in team if Pokedex[poke]['dex'] == Pokedex[p]['dex']]:
                 continue
             team |= {poke}
             if not acceptableWeakness(team):
                 team -= {poke}
-
             if len(team) >= 6:
                 break
             attempts += 1
