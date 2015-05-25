@@ -84,7 +84,10 @@ def Command(self, cmd, msg, user):
         options = msg.split(',')
         return options[randint(0,(len(options)-1))], True
     elif cmd == 'joke':
-        return getJoke(), True
+        if randint(0, 1) and self.Groups[user['group']] >= self.Groups['%']:
+            return user['unform'], True
+        else:
+            return getJoke(user), True
     elif cmd in tiers:
         pick = list(tiers[cmd])[randint(0,len(tiers[cmd])-1)]
         pNoForm = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', pick).lower()
@@ -197,5 +200,5 @@ def acceptableWeakness(team):
 def getURL():
     return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def getJoke():
-    people = ['canehdian', 'disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'montsegur', 'punchshroom', 'queenofluvdiscs', 'quitequiet', 'scorpdestroyer', 'teddeh', 'boltsandbombers', 'deejdy', 'realisticwaters', 'sirkay', 'solarisfox', 'soulgazer', 'thegoomy', 'xzern']
+    people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern']
     return people[randint(0, len(people)-1)]
