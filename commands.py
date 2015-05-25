@@ -174,7 +174,7 @@ def Command(self, cmd, msg, user):
                        'giratina-o':'giratina-origin'} 
         if cmd in substitutes:
             cmd = substitutes[cmd]
-        if cmd.lower() not in (p.lower() for p in Pokemon):
+        if cmd.lower() not in (p.lower() for p in Pokedex):
             return '{cmd} is not a valid command'.format(cmd = cmd),True
         return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
     

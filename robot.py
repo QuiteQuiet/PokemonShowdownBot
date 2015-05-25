@@ -99,7 +99,7 @@ class PokemonShowdownBot:
             self.sendPm(user['name'], response)
 
     def evalPermission(self, user):
-        return self.Groups[user['group']] >= self.Groups[self.details['broadcastrank']] or self.details['master'] == user['name']
+        return self.Groups[user['group']] >= self.Groups[self.details['broadcastrank']] or self.details['master'] == user['name'] or user[name] in self.details['whitelist']
     def takeAction(self, room, user, action, reason):
         self.ws.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user, reason = reason))
         

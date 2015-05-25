@@ -22,7 +22,7 @@ avatar: 0
 joinRooms:
   - room: { moderate: False, allow games: False }
 # Whitelist for people other than MASTER to bypass allowance checks
-  whitelist: {}
+  whitelist: []
 
 # Do nothing with the two below, they should be empty
 rooms: {}
