@@ -87,7 +87,7 @@ def Command(self, cmd, msg, user):
         if randint(0, 1) and self.Groups[user['group']] >= self.Groups['%']:
             return user['unform'], True
         else:
-            return getJoke(user), True
+            return getJoke(), True
     elif cmd in tiers:
         pick = list(tiers[cmd])[randint(0,len(tiers[cmd])-1)]
         pNoForm = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', pick).lower()
@@ -99,6 +99,8 @@ def Command(self, cmd, msg, user):
             poke = list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]
             # Test if share dex number with anything in the team
             if [p for p in team if Pokedex[poke]['dex'] == Pokedex[p]['dex']]:
+                continue
+            if [p for p in team if '-Mega' in p] and '-Mega' in poke:
                 continue
             team |= {poke}
             if not acceptableWeakness(team):
