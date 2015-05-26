@@ -45,7 +45,7 @@ def Command(self, cmd, msg, user):
             return 'Could not leave room: {r}'.format(r = msg), False
     elif cmd == 'get':
         if isMaster(self, user):
-            return eval(msg), True
+            return str(eval(msg)), True
         else:
             return 'You do not have permisson to use this command', False
     # Permissions
