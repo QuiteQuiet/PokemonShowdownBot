@@ -24,6 +24,9 @@ joinRooms:
 # Whitelist for people other than MASTER to bypass allowance checks
   whitelist: []
 
+# Set if the bot will attempt to join any tornament that is started in the room, if the tiers it got accepts it. Default is False
+joinTours: False
+
 # Do nothing with the two below, they should be empty
 rooms: {}
 gamerunning: ''
