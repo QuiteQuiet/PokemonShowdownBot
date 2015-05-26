@@ -12,6 +12,7 @@ import re
 
 from robot import PokemonShowdownBot
 from commands import Command, GameCommands
+from plugins.tournaments import supportedFormats
 
 class PSBot(PokemonShowdownBot):
     def __init__(self):
@@ -132,8 +133,26 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(user['name'], '{cmd} is not a valid command.'.format(cmd = command))
 
         elif 'tournament' in message[1].lower():
-            pass
-            # Tour was created, join it if in supported formats
+            if 'create' in message[2]:
+                # Tour was created, join it if in supported formats
+                room = self.getRoom(room)
+                if not room.tourActive and message[3] in supportedFormats:
+                    room.createTour(self.ws)
+                    room.tourActive.joinTour()
+                else:
+                    self.say(room.name, "Can't join tour, unsupported format or previous tour not deleted from room.")
+            elif 'end' == message[2]:
+                winner, tier = self.getRoom(room).getWinner(message[3])
+                if self.details['name'] in winner:
+                    self.say(room, 'I won the {form} tournament :o'.format(form = tier))
+                else:
+                    self.say(room, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))
+                self.getRoom(room).endTour()
+            elif 'forceend' in message[2] or 'error' in message[2]:
+                self.getRoom(room).endTour()
+                self.say(room, "Aww, now I can't win :(")
+            else:
+                self.getRoom(room).onUpdate(message[3])
             
 
 psb = PSBot()

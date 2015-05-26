@@ -43,5 +43,14 @@ Links = {
    'nu':'http://www.smogon.com/forums/threads/3523695/',
    'pu':'http://www.smogon.com/forums/threads/3537423/',
    'lc':'http://www.smogon.com/forums/threads/3526527/'
+    },
+'suspect':{
+    'uber':'No suspect test going on in Ubers right now.',
+    'ou':'OU is suspecting: Landorus-I',
+    'uu':'UU is suspecting: Victini',
+    'ru':'RU is suspecting: Noivern',
+    'nu':'NU is suspecting: Magneton',
+    'pu':'No suspect test going on in PU right now.',
+    'lc':'No suspect test going on in LC right now.'
     }
 }

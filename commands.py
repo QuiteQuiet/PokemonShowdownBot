@@ -23,7 +23,6 @@ from data.types import Types
 from data.replies import Lines
 
 from plugins.games import Hangman
-from plugins import tournaments
 
 GameCommands = ['hangman', 'hg']
 

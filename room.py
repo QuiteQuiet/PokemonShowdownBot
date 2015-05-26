@@ -1,6 +1,7 @@
 # Each PS room joined creates an object here.
 # Objects control settings on a room-per-room basis, meaning every room can
 # be treated differently.
+from plugins import tournaments
 
 class Room:
     def __init__(self, room, data):
@@ -12,6 +13,7 @@ class Room:
         self.title = room
         self.moderate = data['moderate']
         self.allowGames = data['allow games']
+        self.tour = None
     def doneLoading(self):
         self.loading = False
 
@@ -29,3 +31,7 @@ class Room:
 
     def allowGames(self, yesNo):
     	self.allowGames = yesNo
+    def createTour(self, ws):
+        self.tour = Tournament(ws)
+    def endTour(self):
+        self.tour = None
