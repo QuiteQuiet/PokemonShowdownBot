@@ -15,6 +15,7 @@ from random import randint, sample
 import re
 import yaml
 import json
+import math # For funsies
 
 from data.tiers import tiers, formats
 from data.links import Links

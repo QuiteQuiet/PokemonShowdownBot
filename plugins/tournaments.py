@@ -26,14 +26,12 @@ class Tournament:
     def acceptChallenge(self, opponent):
         self.sendTourCmd('accept {opp}'.format(opp = opponent))
     def onUpdate(self, msg):
-        if msg == 'updateEnd': return
-        if msg == 'update':
-            info = json.loads(msg)
-            if 'challenges' in info:
-                self.sendChallenge(info['challenges'][randint(0,len(info['challenges'])-1)])
-            elif 'challengeBys' in info:
-                self.acceptChallenge(info['challengeBys'][randint(0,len(info['challengeBys'])-1)])
+        if 'updateEnd' in msg : return
+        if 'update' in msg:
+            info = json.loads(msg[1])
+            if 'challenges' in info and info['challenges']:
+                self.sendChallenge(info['challenges'][0])
+            elif 'challengeBys' in info and info['challengeBys']:
+                self.acceptChallenge(info['challengeBys'][0])
             elif 'isStarted' in info:
                 self.hasStarted = info['isStarted']
-        pass
-    

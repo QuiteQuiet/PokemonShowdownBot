@@ -17,8 +17,9 @@ import json
 import yaml
 import datetime
 
-from room import Room
 import prettyText
+from room import Room
+from plugins.battling.battleHandler import BattleHandler
 
 class PokemonShowdownBot:
     ''' Controls the most basic aspects of connecting to Pokemon Showdown as well as commands '''
@@ -34,6 +35,7 @@ class PokemonShowdownBot:
                                              on_error = self.onError,
                                              on_close = self.onClose)
             self.ws.on_open = self.onOpen
+            self.bh = BattleHandler(self.ws, self.details['user'])
             self.ws.run_forever()
 
     def onError(self, code, error):

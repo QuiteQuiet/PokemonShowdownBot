@@ -9,6 +9,7 @@
 # depend on this being structured in a specific way.
 
 import re
+import json
 
 from robot import PokemonShowdownBot
 from commands import Command, GameCommands
@@ -31,6 +32,16 @@ class PSBot(PokemonShowdownBot):
         if msg[0].startswith('>'):
             room = msg[0][1:]
         msg.pop(0)
+
+        if room.startswith('battle-'):
+            if room not in self.details['rooms']:
+                # Battle rooms don't need the same interface as chatrooms
+                self.details['rooms'][room] = True
+            # Go to battle handler instead of regular rooms
+            # (we don't allow commands in battle rooms anyway)
+            for m in msg:
+                self.bh.parse(room, m)
+            return
 
         for m in msg:
             self.parseMessage(m, room)
@@ -58,7 +69,13 @@ class PSBot(PokemonShowdownBot):
             for room in self.details['joinRooms']:
                 name = [n for n in room][0] # joinRoom entry is a list of dicts
                 self.joinRoom(name, room[name])
-                
+
+        # Challenges
+        #elif 'updatechallenges' in message[1]:
+        #    challs = json.loads(message[2])
+        #    if challs['challengesFrom']:
+        #        self.send('|/accept {name}'.format(name = [name for name, form in challs['challengesFrom'].items()][0]))
+
 
         # Joined new room
         elif 'users' in message[1]:
@@ -88,6 +105,9 @@ class PSBot(PokemonShowdownBot):
 
             if room.moderate:
                 pass
+
+            if re.search(r'(whats?|who).+(suspe[ck]+t|test(ed|ing))', message[4], flags=re.I):
+                self.say(room.title, "{user}, Magneton".format(user = user['unform']))
 
             if message[4].startswith(self.details['command']):            
                 command = message[4][1:].split()[0].lower()
@@ -132,27 +152,31 @@ class PSBot(PokemonShowdownBot):
                 else:
                     self.sendPm(user['name'], '{cmd} is not a valid command.'.format(cmd = command))
 
-        elif self.details['joinTours'] and 'tournament' in message[1].lower():
+        # Tournaments
+        elif self.details['joinTours'] and 'tournament' in message[1]:
+            if self.getRoom(room).loading: return
             if 'create' in message[2]:
                 # Tour was created, join it if in supported formats
                 room = self.getRoom(room)
-                if not room.tourActive and message[3] in supportedFormats:
+                if not room.tour and message[3] in supportedFormats:
                     room.createTour(self.ws)
-                    room.tourActive.joinTour()
+                    room.tour.joinTour()
                 else:
                     self.say(room.name, "Can't join tour, unsupported format or previous tour not deleted from room.")
             elif 'end' == message[2]:
-                winner, tier = self.getRoom(room).getWinner(message[3])
+                winner, tier = self.getRoom(room).tour.getWinner(message[3])
+                print(winner)
                 if self.details['name'] in winner:
                     self.say(room, 'I won the {form} tournament :o'.format(form = tier))
                 else:
                     self.say(room, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))
                 self.getRoom(room).endTour()
-            elif 'forceend' in message[2] or 'error' in message[2]:
+            elif 'forceend' in message[2]:
                 self.getRoom(room).endTour()
                 self.say(room, "Aww, now I can't win :(")
             else:
-                self.getRoom(room).onUpdate(message[3])
+                if self.getRoom(room).tour:
+                    self.getRoom(room).tour.onUpdate(message[2:])
             
 
 psb = PSBot()
