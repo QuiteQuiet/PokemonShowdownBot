@@ -28,6 +28,8 @@ def getMove(moves, pokemon, opponent):
             eff = Types[ Pokedex[opponent.species]['types'][0] ][Moves[m]['type']]
             if eff > 1:
                 options.remove(m)
+    if len(options) == 0:
+        return moves[randint(0, len(moves)-1)]
     return options[randint(0, len(options)-1)]
         
 def getLead(self, team, opposing):
