@@ -37,6 +37,8 @@ class PSBot(PokemonShowdownBot):
             if room not in self.details['rooms']:
                 # Battle rooms don't need the same interface as chatrooms
                 self.details['rooms'][room] = True
+            if 'leave|{me}'.format(me = self.details['user']) == msg[0]:
+                self.details['rooms'].pop(room)
             # Go to battle handler instead of regular rooms
             # (we don't allow commands in battle rooms anyway)
             for m in msg:
@@ -143,9 +145,9 @@ class PSBot(PokemonShowdownBot):
                 params = message[4][len(command) + 1:].lstrip()
                 response, where = self.do(self, command, params, user)
                 if command in self.gameCommands:
-                    if params.startswith('new,'):
+                    if params.startswith('new,') and where:
                         room = params[len('new,'):].split(',')[0].replace(' ','')
-                        self.reply(room, user, response, where)
+                        self.say(room, response)
                     
                 if response:
                     self.sendPm(user['name'], response)

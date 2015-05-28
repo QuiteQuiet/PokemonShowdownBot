@@ -10,12 +10,14 @@ def getMove(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
     options = []
     for m in moves:
+        if 'hiddenpower' in m:
+            m = m[:-2]
         if m in blacklist:
             continue
         if (Moves[m]['basePower'] > 50 or m in ['grass knot', 'low kick']):
-            options.append(move)
+            options.append(m)
         if Moves[m]['type'] in Pokedex[pokemon.species]['types']:
-            options.append(move)
+            options.append(m)
         if m not in options:
             continue
         # Resisted moves get 0 or 1 entry (1 only if STAB and over 50 base power)

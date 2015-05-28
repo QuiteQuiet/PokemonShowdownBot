@@ -88,7 +88,7 @@ def Command(self, cmd, msg, user):
         if len(things) == 2:
             if things[0] in self.details['rooms']:
                 if things[1] in ['true','yes','y','True']:
-                    if self.details['rooms'][things[0]].allowGames:
+                    if not self.details['rooms'][things[0]].allowGames:
                         self.details['rooms'][things[0]].allowGames = True
                         return 'Chatgames are now allowed in {room}'.format(room = things[0]), True
                     else:
@@ -159,7 +159,10 @@ def Command(self, cmd, msg, user):
             if self.details['gamerunning']:
                 return 'A hangman game is already running somewhere', False
             else:
-                self.details['gamerunning'] = Hangman(msg[2].lstrip())
+                phrase = re.sub(r'[^a-zA-z0-9 ]', '', msg[2].lstrip())
+                if not phrase.strip():
+                    return 'You can only have letters, numbers or spaces in the phrase', False
+                self.details['gamerunning'] = Hangman(phrase)
                 return 'A new game of hangman has begun:\n' + self.details['gamerunning'].printCurGame(), True
         else:
         	   return 'To start a new hangman game: ~hangman new,[room],[phrase]', True
@@ -168,6 +171,8 @@ def Command(self, cmd, msg, user):
             if len(msg.replace(' ','')) == 1:
                 return self.details['gamerunning'].guessLetter(msg.replace(' ','').lower()), True
             else:
+                if not msg.lstrip():
+                    return "You can't guess nothing", True
                 if self.details['gamerunning'].guessPhrase(msg.lstrip()):
                     solved = self.details['gamerunning'].getFormatedPhrase()
                     self.details['gamerunning'] = None
