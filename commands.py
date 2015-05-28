@@ -151,15 +151,15 @@ def Command(self, cmd, msg, user):
     # Hangman
     elif cmd == 'hangman':
         msg = msg.lstrip().split(',')
-        if 'end' in msg[0] and canStartGame(self, user):
+        if 'end' in msg[0] and canStartGame(self, user) and self.details['gamerunning']:
             phrase = self.details['gamerunning'].getSolution()
             self.details['gamerunning'] = None
             return 'The hangman game was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = phrase), True
         elif 'new' in msg[0]: # ~hangman new,room,[phrase]
             if self.details['gamerunning']:
                 return 'A hangman game is already running somewhere', False
-            else:
-                phrase = re.sub(r'[^a-zA-z0-9 ]', '', msg[2].lstrip())
+            else:              
+                phrase = re.sub(r'[^a-zA-z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
                 if not phrase.strip():
                     return 'You can only have letters, numbers or spaces in the phrase', False
                 self.details['gamerunning'] = Hangman(phrase)
