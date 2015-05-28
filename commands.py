@@ -156,16 +156,19 @@ def Command(self, cmd, msg, user):
             self.details['gamerunning'] = None
             return 'The hangman game was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = phrase), True
         elif 'new' in msg[0]: # ~hangman new,room,[phrase]
-            if self.details['gamerunning']:
-                return 'A hangman game is already running somewhere', False
-            else:              
-                phrase = re.sub(r'[^a-zA-z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
-                if not phrase.strip():
-                    return 'You can only have letters, numbers or spaces in the phrase', False
-                self.details['gamerunning'] = Hangman(phrase)
-                return 'A new game of hangman has begun:\n' + self.details['gamerunning'].printCurGame(), True
+            if canStartGame(self, user):
+                if self.details['gamerunning']:
+                    return 'A hangman game is already running somewhere', False
+                else:              
+                    phrase = re.sub(r'[^a-zA-z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
+                    if not phrase.strip():
+                        return 'You can only have letters, numbers or spaces in the phrase', False
+                    self.details['gamerunning'] = Hangman(phrase)
+                    return 'A new game of hangman has begun:\n' + self.details['gamerunning'].printCurGame(), True
+            else:
+                return 'You do not have permission to start a game in this room', False
         else:
-        	   return 'To start a new hangman game: ~hangman new,[room],[phrase]', True
+            return 'To start a new hangman game: ~hangman new,[room],[phrase]', True
     elif cmd == 'hg':
         if self.details['gamerunning']:
             if len(msg.replace(' ','')) == 1:

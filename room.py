@@ -18,16 +18,16 @@ class Room:
         self.loading = False
 
     def addUserlist(self, users):
-        self.users = [u for u in users.split(',') if users.index(u) > 0]
-    def addUser(self, user):
+        self.users = {u[1:]:u[0] for u in users.split(',')}
+    def addUser(self, user, auth):
         if user not in self.users:
-            self.users.append(user)
+            self.users[user] = auth
     def removeUser(self, user):
         if user in self.users:
-            self.users.remove(user)
+            self.users.pop(user)
     def renamedUser(self, old, new):
         self.removeUser(old)
-        self.addUser(new)
+        self.addUser(new[1:], new[0])
 
     def allowGames(self, yesNo):
     	self.allowGames = yesNo

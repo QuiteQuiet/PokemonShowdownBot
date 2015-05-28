@@ -81,17 +81,18 @@ class PSBot(PokemonShowdownBot):
 
         # Joined new room
         elif 'users' in message[1]:
-            self.getRoom(room).addUserlist(re.sub(r'[^a-zA-z0-9,]', '', message[2]).lower())
+            users = ','.join([u[0]+re.sub(r'[^a-zA-z0-9,]', '',u[1:]).lower() for u in message[2].split(',') if message[2].split(',').index(u) > 0])
+            self.getRoom(room).addUserlist(users)
 
         elif 'j' in message[1].lower():
             if message[2][1:] == self.details['user']: self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
-            self.details['rooms'][room].addUser(user)
+            self.details['rooms'][room].addUser(user, message[2][0])
         elif 'l' in message[1].lower():
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].removeUser(user)
         elif 'n' in message[1].lower() and len(message[1]) < 3:
-            newName = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
+            newName = message[2][0] + re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             oldName = re.sub(r'[^a-zA-z0-9]', '', message[3]).lower()
             self.details['rooms'][room].renamedUser(oldName, newName)
 
@@ -116,8 +117,14 @@ class PSBot(PokemonShowdownBot):
                 self.log(message[4], user['name'])
                 response, samePlace = self.do(self, command, message[4][len(command) + 1:].lstrip(), user)
 
-                if not room.allowGames and command in self.gameCommands:
-                    response = 'This room does not support chatgames'
+                # If the command was a chat game and permissions aren't met, kill the game (even if it just started)
+                if command in self.gameCommands:
+                    if not room.allowGames:
+                        response = 'This room does not support chatgames.'
+                        self.details['gameplaying'] = None
+                    if room.title not in message[4]:
+                        response = "You can't start a game in a different room here."
+                        self.details['gameplaying'] = None
 
                 if self.evalPermission(user) or command in self.gameCommands:
                     if response:
@@ -125,7 +132,7 @@ class PSBot(PokemonShowdownBot):
                     else:
                         self.reply(room.title, user, '{cmd} is not a valid command.'.format(cmd = command), samePlace)
                 else:
-                    self.sendPm(user['name'], 'Please pm the commands for a response')
+                    self.sendPm(user['name'], 'Please pm the commands for a response.')
 
         elif 'pm' in message[1].lower():
             user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[2]).lower(),'group':message[2][0], 'unform': message[3][1:]}
@@ -143,11 +150,19 @@ class PSBot(PokemonShowdownBot):
                 command = message[4][1:].split(' ')[0].lower()
                 self.log(message[4], user['name'])
                 params = message[4][len(command) + 1:].lstrip()
-                response, where = self.do(self, command, params, user)
+
                 if command in self.gameCommands:
-                    if params.startswith('new,') and where:
+                    if params.startswith('new,'):
                         room = params[len('new,'):].split(',')[0].replace(' ','')
-                        self.say(room, response)
+                        if not self.getRoom(room).allowGames:
+                            response = 'This room does not support chat games'
+                        else:
+                            user['group'] = self.getRoom(room).users[user['name']]
+                            response, where = self.do(self, command, params, user)
+                            self.reply(room.title, user, response, samePlace)
+                            return
+                else:
+                    response, where = self.do(self, command, params, user)
                     
                 if response:
                     self.sendPm(user['name'], response)
