@@ -30,6 +30,7 @@ class PokemonShowdownBot:
             self.Groups = {' ':0,'+':1,'%':2,'@':3,'&':4,'#':5,'~':6}
             self.splitMessage = onMessage
             self.intro()
+            websocket.enableTrace(True)
             self.ws = websocket.WebSocketApp(url,
                                              on_message = onMessage,
                                              on_error = self.onError,

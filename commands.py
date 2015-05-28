@@ -8,7 +8,7 @@
 #     return 'Your Response', True/False
 #
 # True: Allows that the command in question can, if gotten from a room,
-#       can be returned to the same room rather than a PM.
+#       be returned to the same room rather than a PM.
 # False: This will ALWAYS return the reply as a PM, no matter where it came from
 
 from random import randint, sample
@@ -49,6 +49,11 @@ def Command(self, cmd, msg, user):
             return str(eval(msg)), True
         else:
             return 'You do not have permisson to use this command', False
+    # Save current self.details to details.yaml (moves rooms to joinRooms)
+    elif cmd == 'savedetails':
+        saveDetails(self)
+        return 'Details saved.', False
+
     # Permissions
     elif cmd == 'broadcast':
         return 'Rank required to broadcast: {rank}'.format(rank = self.details['broadcastrank']), True
@@ -243,6 +248,8 @@ def acceptableWeakness(team):
         if comp[t]['weak'] >= 2 and comp[t]['res'] <= 1:
             return False
     return True
+def saveDetails(self):
+    pass
 def getURL():
     return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def getJoke():
