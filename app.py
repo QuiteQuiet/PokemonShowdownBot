@@ -71,10 +71,10 @@ class PSBot(PokemonShowdownBot):
                 self.joinRoom(name, room[name])
 
         # Challenges
-        #elif 'updatechallenges' in message[1]:
-        #    challs = json.loads(message[2])
-        #    if challs['challengesFrom']:
-        #        self.send('|/accept {name}'.format(name = [name for name, form in challs['challengesFrom'].items()][0]))
+        elif 'updatechallenges' in message[1]:
+            challs = json.loads(message[2])
+            if challs['challengesFrom']:
+                self.send('|/accept {name}'.format(name = [name for name, form in challs['challengesFrom'].items()][0]))
 
 
         # Joined new room
@@ -106,8 +106,8 @@ class PSBot(PokemonShowdownBot):
             if room.moderate:
                 pass
 
-            if re.search(r'(whats?|who).+(suspe[ck]+t|test(ed|ing))', message[4], flags=re.I):
-                self.say(room.title, "{user}, Magneton".format(user = user['unform']))
+            #if re.search(r'(whats?|who).+(suspe[ck]+t|test(ed|ing))', message[4], flags=re.I):
+            #    self.say(room.title, "{user}, Magneton".format(user = user['unform']))
 
             if message[4].startswith(self.details['command']):            
                 command = message[4][1:].split()[0].lower()
@@ -165,8 +165,7 @@ class PSBot(PokemonShowdownBot):
                     self.say(room.name, "Can't join tour, unsupported format or previous tour not deleted from room.")
             elif 'end' == message[2]:
                 winner, tier = self.getRoom(room).tour.getWinner(message[3])
-                print(winner)
-                if self.details['name'] in winner:
+                if self.details['user'] in winner:
                     self.say(room, 'I won the {form} tournament :o'.format(form = tier))
                 else:
                     self.say(room, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))

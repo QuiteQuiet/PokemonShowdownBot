@@ -3,6 +3,7 @@ import json
 from random import randint
 
 from plugins.battling.battle import Battle, Pokemon
+from plugins.battling.battleLogic import getMove, getLead
 
 class BattleHandler:
     def __init__(self, ws, name):
@@ -35,7 +36,9 @@ class BattleHandler:
                             poke['stats'],poke['moves'],poke['baseAbility'],poke['item'],poke['canMegaEvo']))
         elif 'poke' == msg[1]:
             if not self.activeBattles[battle].me.id == msg[2]:
-                pass        
+                self.activeBattles[battle].other.updateTeam(
+                    Pokemon(self.getSpecies(msg[3]), msg[3], '100/100', False,
+                            {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False))
         elif 'player' == msg[1]:
             if msg[3] == self.botName:
                 self.activeBattles[battle].setMe(msg[3], msg[2])
@@ -44,7 +47,8 @@ class BattleHandler:
         elif 'teampreview' == msg[1]:
             self.respond(battle, '/team {nr}|{rqid}'.format(nr = randint(0,6), rqid = self.activeBattles[battle].rqid))
         elif 'turn' == msg[1]:
-            move = self.activeBattles[battle].me.active.moves[randint(0,3)]
+            active = self.activeBattles[battle].me.active
+            move = getMove(active.moves, active, self.activeBattles[battle].other.active)
             self.respond(battle, '/choose move {name}|{rqid}'.format(name = move, rqid = self.activeBattles[battle].rqid))
         elif 'switch' == msg[1]:
             btl = self.activeBattles[battle]
