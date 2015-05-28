@@ -54,8 +54,9 @@ def Command(self, cmd, msg, user):
         return 'Rank required to broadcast: {rank}'.format(rank = self.details['broadcastrank']), True
     elif cmd == 'setbroadcast':
         msg = msg.replace(' ','')
-        if msg in self.Groups:
+        if msg in self.Groups or msg in ['off', 'no', 'false']:
             if canChange(self, user):
+                if msg in ['off', 'no', 'false']: msg = ' '
                 if self.details['broadcastrank'] == msg:
                     return 'Broadcast rank is already {rank}'.format(rank = msg), True
                 else:
