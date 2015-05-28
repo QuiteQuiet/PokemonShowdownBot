@@ -20,6 +20,7 @@ class BattleHandler:
     def parse(self, battle, msg):
         if not msg: return
         if battle in self.activeBattles and 'init' in msg: return
+        print(msg)
         msg = msg.split('|')
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
@@ -34,21 +35,27 @@ class BattleHandler:
                 self.activeBattles[battle].me.updateTeam(
                     Pokemon(self.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
                             poke['stats'],poke['moves'],poke['baseAbility'],poke['item'],poke['canMegaEvo']))
+            if 'active' in request:
+                self.activeBattles[battle].myActiveData = request['active']
+                
         elif 'poke' == msg[1]:
             if not self.activeBattles[battle].me.id == msg[2]:
                 self.activeBattles[battle].other.updateTeam(
                     Pokemon(self.getSpecies(msg[3]), msg[3], '100/100', False,
                             {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False))
         elif 'player' == msg[1]:
+            if len(msg) < 4: return
             if msg[3] == self.botName:
                 self.activeBattles[battle].setMe(msg[3], msg[2])
             else:
                 self.activeBattles[battle].setOther(msg[3], msg[2])
         elif 'teampreview' == msg[1]:
-            self.respond(battle, '/team {nr}|{rqid}'.format(nr = randint(0,6), rqid = self.activeBattles[battle].rqid))
+            poke = randint(1,6)
+            self.respond(battle, '/team {nr}|{rqid}'.format(nr = poke, rqid = self.activeBattles[battle].rqid))
         elif 'turn' == msg[1]:
             active = self.activeBattles[battle].me.active
-            move = getMove(active.moves, active, self.activeBattles[battle].other.active)
+            moves = [m['id'] for m in self.activeBattles[battle].myActiveData[0]['moves'] if not m['disabled']]
+            move = getMove(moves, active, self.activeBattles[battle].other.active)
             self.respond(battle, '/choose move {name}|{rqid}'.format(name = move, rqid = self.activeBattles[battle].rqid))
         elif 'switch' == msg[1]:
             btl = self.activeBattles[battle]

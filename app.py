@@ -76,7 +76,11 @@ class PSBot(PokemonShowdownBot):
         elif 'updatechallenges' in message[1]:
             challs = json.loads(message[2])
             if challs['challengesFrom']:
-                self.send('|/accept {name}'.format(name = [name for name, form in challs['challengesFrom'].items()][0]))
+                opp = [name for name, form in challs['challengesFrom'].items()][0]
+                if challs['challengesFrom'][opp] == 'battlecup1v1':
+                    self.send('|/accept {name}'.format(name = opp))
+                else:
+                    self.sendPm(opp, 'Sorry, I only accept challenges in Battle Cup 1v1 :(')
 
 
         # Joined new room
@@ -159,7 +163,7 @@ class PSBot(PokemonShowdownBot):
                         else:
                             user['group'] = self.getRoom(room).users[user['name']]
                             response, where = self.do(self, command, params, user)
-                            self.reply(room.title, user, response, samePlace)
+                            self.reply(room.title, user, response, where)
                             return
                 else:
                     response, where = self.do(self, command, params, user)
