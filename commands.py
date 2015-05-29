@@ -48,7 +48,7 @@ def Command(self, cmd, msg, user):
         if isMaster(self, user):
             return str(eval(msg)), True
         else:
-            return 'You do not have permisson to use this command', False
+            return 'You do not have permisson to use this command. (Only for owner)', False
     # Save current self.details to details.yaml (moves rooms to joinRooms)
     elif cmd == 'savedetails':
         saveDetails(self)
@@ -68,7 +68,7 @@ def Command(self, cmd, msg, user):
                     self.details['broadcastrank'] = msg
                     return 'Broadcast rank set to {rank}. (This is not saved on reboot)'.format(rank = msg), True
             else:
-                return 'You are not allowed to set broadcast rank.', False
+                return 'You are not allowed to set broadcast rank. (Requires #)', False
         else:
             return '{rank} is not a valid rank'.format(rank = msg), False
     elif cmd == 'whitelist':
@@ -78,7 +78,7 @@ def Command(self, cmd, msg, user):
             else:
                 return 'Whitelist is empty :(', False
         else:
-            return 'You are not allowed to see the whitelist :l', False
+            return 'You are not allowed to see the whitelist :l (Requires %)', False
     elif cmd in ['whitelistuser', 'wluser']:
         if canAddUser(self, user):
             self.details['whitelist'].append(msg)
@@ -89,25 +89,28 @@ def Command(self, cmd, msg, user):
             return 'User {usr} removed from the whitelist.'.format(usr =msg), True
 
     elif cmd == 'allowgames':
-        msg = msg.replace(' ','')
-        things = msg.split(',')
-        if len(things) == 2:
-            if things[0] in self.details['rooms']:
-                if things[1] in ['true','yes','y','True']:
-                    if not self.details['rooms'][things[0]].allowGames:
-                        self.details['rooms'][things[0]].allowGames = True
-                        return 'Chatgames are now allowed in {room}'.format(room = things[0]), True
+        if canChange(self, user):
+            msg = msg.replace(' ','')
+            things = msg.split(',')
+            if len(things) == 2:
+                if things[0] in self.details['rooms']:
+                    if things[1] in ['true','yes','y','True']:
+                        if not self.details['rooms'][things[0]].allowGames:
+                            self.details['rooms'][things[0]].allowGames = True
+                            return 'Chatgames are now allowed in {room}'.format(room = things[0]), True
+                        else:
+                            return 'Chatgames are already allowed in {room}'.format(room = things[0]), True
+                    elif things[1] in ['false', 'no', 'n',' False']:
+                        self.details['rooms'][things[0]].allowGames = False
+                        return 'Chatgames are now not allowed in {room}'.format(room = things[0]), True
                     else:
-                        return 'Chatgames are already allowed in {room}'.format(room = things[0]), True
-                elif things[1] in ['false', 'no', 'n',' False']:
-                    self.details['rooms'][things[0]].allowGames = False
-                    return 'Chatgames are now not allowed in {room}'.format(room = things[0]), True
+                        return '{param} is not a supported parameter'.format(param = things[1]), True
                 else:
-                    return '{param} is not a supported parameter'.format(param = things[1]), True
+                    return 'Cannot allow chatgames without being in the room', True
             else:
-                return 'Cannot allow chatgames without being in the room', True
+                return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
         else:
-            return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
+            return 'You do not have permission to change this. (Requires #)', False
 
     # Informational commands
     elif cmd in Links:
@@ -172,7 +175,7 @@ def Command(self, cmd, msg, user):
                     self.details['gamerunning'] = Hangman(phrase)
                     return 'A new game of hangman has begun:\n' + self.details['gamerunning'].printCurGame(), True
             else:
-                return 'You do not have permission to start a game in this room', False
+                return 'You do not have permission to start a game in this room. (Requires %)', False
         else:
             return 'To start a new hangman game: ~hangman new,[room],[phrase]', True
     elif cmd == 'hg':
@@ -223,7 +226,7 @@ def canChange(self, user):
 def canAddUser(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
 def canStartGame(self, user):
-    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['@']
+    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
 def acceptableWeakness(team):
     if not team: return False
     comp = {t:{'weak':0,'res':0} for t in Types}
