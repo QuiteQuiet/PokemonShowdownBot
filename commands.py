@@ -32,7 +32,7 @@ def Command(self, cmd, msg, user):
     # Debug commands and program info
     if cmd == 'echo':
         return msg, True
-    elif cmd == 'source':
+    elif cmd in ['source', 'git']:
         return 'Source code can be found at: {url}blob/master/README.md'.format(url = getURL()), False
     elif cmd == 'credits':
         return 'Credits can be found: {url}'.format(url = getURL()), True
@@ -156,7 +156,7 @@ def Command(self, cmd, msg, user):
 
     # Hangman
     elif cmd == 'hangman':
-        msg = msg.lstrip().split(',')
+        msg = msg.strip().split(',')
         if 'end' in msg[0] and canStartGame(self, user) and self.details['gamerunning']:
             phrase = self.details['gamerunning'].getSolution()
             self.details['gamerunning'] = None

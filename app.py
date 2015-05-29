@@ -119,16 +119,17 @@ class PSBot(PokemonShowdownBot):
             if message[4].startswith(self.details['command']):            
                 command = message[4][1:].split()[0].lower()
                 self.log(message[4], user['name'])
-                response, samePlace = self.do(self, command, message[4][len(command) + 1:].lstrip(), user)
 
+                response, samePlace = '', True
                 # If the command was a chat game and permissions aren't met, kill the game (even if it just started)
                 if command in self.gameCommands:
                     if not room.allowGames:
                         response = 'This room does not support chatgames.'
-                        self.details['gameplaying'] = None
-                    if room.title not in message[4]:
+                    if room.title not in message[4] and 'new' in message[4]:
                         response = "You can't start a game in a different room here."
-                        self.details['gameplaying'] = None
+                        
+                if not response:
+                    response, samePlace = self.do(self, command, message[4][len(command) + 1:].lstrip(), user)
 
                 if self.evalPermission(user) or command in self.gameCommands:
                     if response:
@@ -155,6 +156,7 @@ class PSBot(PokemonShowdownBot):
                 self.log(message[4], user['name'])
                 params = message[4][len(command) + 1:].lstrip()
 
+                response, where = '', False
                 if command in self.gameCommands:
                     if params.startswith('new,'):
                         room = params[len('new,'):].split(',')[0].replace(' ','')
@@ -163,9 +165,9 @@ class PSBot(PokemonShowdownBot):
                         else:
                             user['group'] = self.getRoom(room).users[user['name']]
                             response, where = self.do(self, command, params, user)
-                            self.reply(room.title, user, response, where)
+                            self.reply(room, user, response, where)
                             return
-                else:
+                if not response:
                     response, where = self.do(self, command, params, user)
                     
                 if response:
