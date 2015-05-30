@@ -19,8 +19,19 @@ Standard commands
 - ~viability [tier], ~speedtiers [tier], ~np [tier], ~sample [tier] :
 - The above four commands bring up their respective forums resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 
+Chat Games
+----------
+These commands are only allowed after relevant part enbling them through the allowgames command, and then it's only enabled for a single room. Only one of these can be played at any point, which is shared across all rooms it's currently in.
+
+Hangman
 - hangman new, [room], [phrase] : Use hangman new, [room], [phrase] to create a hangman game in [room], with the solution being [phrase]. Forcefully end an ongoing hangman game with hangman end.
 - hg : Only usable with the above command, hg [letter/phrase] is used to play games of hangman and accepts either a single letter or phrases as guesses.
+
+Anagram
+- anagram new : Generates a new anagram from a Pokémon or a move.
+- anagram hint : Display the hint for the current anagram
+- anagram end : Forcefully ends the current game, revealing the solution
+Every other anagram command is treated as a guess.
 
 Extended commands
 -----------------
