@@ -181,8 +181,8 @@ class PSBot(PokemonShowdownBot):
             if 'create' in message[2]:
                 # Tour was created, join it if in supported formats
                 room = self.getRoom(room)
+                room.createTour(self.ws)
                 if not room.tour and message[3] in supportedFormats:
-                    room.createTour(self.ws)
                     room.tour.joinTour()
                 else:
                     self.say(room.name, "Can't join tour, unsupported format or previous tour not deleted from room.")
@@ -195,7 +195,7 @@ class PSBot(PokemonShowdownBot):
                 self.getRoom(room).endTour()
             elif 'forceend' in message[2]:
                 self.getRoom(room).endTour()
-                self.say(room, "Aww, now I can't win :(")
+                self.say(room, "Aww, now nobody will win :(")
             else:
                 if self.getRoom(room).tour:
                     self.getRoom(room).tour.onUpdate(message[2:])
