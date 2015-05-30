@@ -261,8 +261,8 @@ def canAddUser(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
 def canStartGame(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
-def isGameType(self, gameType):
-    return type(self.details['gamerunning']) == gameType  
+def isGameType(running, gameType):
+    return type(running) == gameType  
 def acceptableWeakness(team):
     if not team: return False
     comp = {t:{'weak':0,'res':0} for t in Types}
