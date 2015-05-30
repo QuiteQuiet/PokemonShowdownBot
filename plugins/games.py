@@ -6,3 +6,4 @@
 # from data.games import [your game], with the entry in this file following that of the
 # hangman example.
 from plugins.hangman import Hangman
+from plugins.anagram import Anagram

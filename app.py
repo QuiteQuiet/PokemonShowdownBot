@@ -125,8 +125,8 @@ class PSBot(PokemonShowdownBot):
                 if command in self.gameCommands:
                     if not room.allowGames:
                         response = 'This room does not support chatgames.'
-                    if room.title not in message[4] and 'new' in message[4]:
-                        response = "You can't start a game in a different room here."
+                    if 'new' in message[4] and command in ['hangman']:
+                        response = "Please use Pm to start a hangman game."
                         
                 if not response:
                     response, samePlace = self.do(self, command, message[4][len(command) + 1:].lstrip(), user)

@@ -23,9 +23,9 @@ from data.pokedex import Pokedex
 from data.types import Types
 from data.replies import Lines
 
-from plugins.games import Hangman
+from plugins.games import Hangman, Anagram
 
-GameCommands = ['hangman', 'hg']
+GameCommands = ['hangman', 'hg', 'anagram']
 
 def Command(self, cmd, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
@@ -157,6 +157,7 @@ def Command(self, cmd, msg, user):
                 break
         return ' / '.join(list(team)), True
 
+    # Chat games go here
     # Hangman
     elif cmd == 'hangman':
         msg = msg.strip().split(',')
@@ -167,9 +168,9 @@ def Command(self, cmd, msg, user):
         elif 'new' in msg[0]: # ~hangman new,room,[phrase]
             if canStartGame(self, user):
                 if self.details['gamerunning']:
-                    return 'A hangman game is already running somewhere', False
+                    return 'A game is already running somewhere', False
                 else:              
-                    phrase = re.sub(r'[^a-zA-z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
+                    phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
                     if not phrase.strip():
                         return 'You can only have letters, numbers or spaces in the phrase', False
                     self.details['gamerunning'] = Hangman(phrase)
@@ -192,7 +193,40 @@ def Command(self, cmd, msg, user):
                 else:
                     return '{test} is wrong!'.format(test = msg.lstrip()), True
         else:
-            return 'There is no game in progress right now', True
+            return 'There is no hangman game in progress right now', True
+    # Anagrams of Pokemon names
+    elif cmd == 'anagram':
+        if msg == 'new':
+            if canStartGame(self, user):    
+                if self.details['gamerunning']:
+                    return 'A game is already running somewhere', False
+                else:
+                    self.details['gamerunning'] = Anagram()
+                    return 'A new anagram has been created:\n' + self.details['gamerunning'].getWord(), True
+            else:
+                return 'You do not have permission to starta game in this room. (Requires %)', False
+        elif msg == 'hint':
+            if self.details['gamerunning']:
+                return 'The hint is: ' + self.details['gamerunning'].getHint(), True
+            else:
+                return 'There is no active anagram right now', False
+        elif msg == 'end':
+            if canStartGame(self, user):
+                solved = self.details['gamerunning'].getSolvedWord()
+                self.details['gamerunning'] = None
+                return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = solved), True
+        # Everything else is guesses
+        else:
+            if self.details['gamerunning']:
+                if self.details['gamerunning'].isCorrect(msg.lower()):
+                    solved = self.details['gamerunning'].getSolvedWord()
+                    self.details['gamerunning'] = None
+                    return 'Congratulations {name}. You won!\nThe solution was: {solution}'.format(name = user['unform'], solution = solved), True
+                else:
+                    return '{test} is wrong!'.format(test = msg.lstrip()), True
+            else:
+                return 'There is no anagram active right now', True 
+        
 
     # Commands with awful conditions last
     elif cmd in formats:
