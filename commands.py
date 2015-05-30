@@ -161,7 +161,7 @@ def Command(self, cmd, msg, user):
     # Hangman
     elif cmd == 'hangman':
         msg = msg.strip().split(',')
-        if 'end' in msg[0] and canStartGame(self, user) and self.details['gamerunning']:
+        if 'end' in msg[0] and canStartGame(self, user) and isGameType(self.details['gamerunning'], Hangman):
             phrase = self.details['gamerunning'].getSolution()
             self.details['gamerunning'] = None
             return 'The hangman game was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = phrase), True
@@ -211,7 +211,7 @@ def Command(self, cmd, msg, user):
             else:
                 return 'There is no active anagram right now', False
         elif msg == 'end':
-            if canStartGame(self, user):
+            if canStartGame(self, user) and isGameType(self.details['gamerunning'], Anagram):
                 solved = self.details['gamerunning'].getSolvedWord()
                 self.details['gamerunning'] = None
                 return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = solved), True
@@ -261,6 +261,8 @@ def canAddUser(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
 def canStartGame(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
+def isGameType(self, gameType):
+    return type(self.details['gamerunning']) == gameType  
 def acceptableWeakness(team):
     if not team: return False
     comp = {t:{'weak':0,'res':0} for t in Types}
