@@ -10,8 +10,6 @@ def getMove(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
     options = []
     for m in moves:
-        if 'hiddenpower' in m:
-            m = m[:-2]
         if m in blacklist or m in chargemoves:
             continue
         # Anything under 40 base power is probably useless (priority is 40)

@@ -15,7 +15,7 @@ class BattleHandler:
         self.ws.send('{room}|{msg}'.format(room = battle, msg = msg))
 
     def getSpecies(self, details):
-        return details.split(',')[0]
+        return details.split(',')[0].replace('-*', '')
 
     def parse(self, battle, msg):
         if not msg: return
@@ -56,7 +56,7 @@ class BattleHandler:
             self.respond(battle, '/team {nr}|{rqid}'.format(nr = poke, rqid = self.activeBattles[battle].rqid))
         elif 'turn' == msg[1]:
             active = self.activeBattles[battle].me.active
-            moves = [m['id'] for m in self.activeBattles[battle].myActiveData[0]['moves'] if not m['disabled']]
+            moves = [m['move'].replace(' ','').lower() for m in self.activeBattles[battle].myActiveData[0]['moves'] if not m['disabled']]
             move = getMove(moves, active, self.activeBattles[battle].other.active)
             self.respond(battle, '/choose move {name}|{rqid}'.format(name = move, rqid = self.activeBattles[battle].rqid))
         elif 'switch' == msg[1]:
