@@ -36,4 +36,4 @@ def getMove(moves, pokemon, opponent):
     return options[randint(0, len(options)-1)]
         
 def getLead(team, opposing):
-    pass
+    return randint(1,6)

@@ -1,5 +1,5 @@
 class Pokemon:
-    def __init__(self, ident, details, condition, active, stats, moves, baseAbility, item, canMegaEvo):
+    def __init__(self, ident, details, condition, active, stats, moves, baseAbility, item, canMegaEvo, slot):
         self.species = ident
         self.details = details
         self.condition = condition
@@ -9,6 +9,7 @@ class Pokemon:
         self.baseAbility = baseAbility
         self.item = item
         self.canMega = canMegaEvo
+        self.teamSlot = slot
 
 class Player:
     def __init__(self):

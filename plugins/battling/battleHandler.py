@@ -31,10 +31,12 @@ class BattleHandler:
             if 'rqid' in request:
                 self.activeBattles[battle].rqid = request['rqid']
             sidedata = request['side']
+            teamSlot = 1
             for poke in sidedata['pokemon']:
                 self.activeBattles[battle].me.updateTeam(
                     Pokemon(self.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
-                            poke['stats'],poke['moves'],poke['baseAbility'],poke['item'],poke['canMegaEvo']))
+                            poke['stats'],poke['moves'],poke['baseAbility'],poke['item'],poke['canMegaEvo'], teamSlot))
+                teamSlot += 1
             if 'active' in request:
                 self.activeBattles[battle].myActiveData = request['active']
                 
@@ -42,7 +44,7 @@ class BattleHandler:
             if not self.activeBattles[battle].me.id == msg[2]:
                 self.activeBattles[battle].other.updateTeam(
                     Pokemon(self.getSpecies(msg[3]), msg[3], '100/100', False,
-                            {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False))
+                            {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(self.activeBattles[battle].other.team)+1))
         elif 'player' == msg[1]:
             if len(msg) < 4: return
             if msg[3] == self.botName:
@@ -50,7 +52,7 @@ class BattleHandler:
             else:
                 self.activeBattles[battle].setOther(msg[3], msg[2])
         elif 'teampreview' == msg[1]:
-            poke = randint(1,6)
+            poke = getLead(self.activeBattles[battle].me.team, self.activeBattles[battle].other.team)
             self.respond(battle, '/team {nr}|{rqid}'.format(nr = poke, rqid = self.activeBattles[battle].rqid))
         elif 'turn' == msg[1]:
             active = self.activeBattles[battle].me.active
