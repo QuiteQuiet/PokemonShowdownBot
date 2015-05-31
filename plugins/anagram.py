@@ -27,4 +27,3 @@ class Anagram:
         return self.solution
     def isCorrect(self, guess):
         return guess == self.solution
-        

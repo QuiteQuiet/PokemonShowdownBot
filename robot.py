@@ -83,6 +83,9 @@ class PokemonShowdownBot:
         self.details['rooms'].pop(room, None)
         return True
     def getRoom(self, roomName):
+        alias = {'nu':'neverused', 'tsb':'thestable'}
+        if roomName in alias:
+            roomName = alias[roomName]
         return self.details['rooms'][roomName]
 
     def say(self, room, msg):
@@ -96,7 +99,7 @@ class PokemonShowdownBot:
         self.ws.send('|/pm {usr}, {text}'.format(usr = user, text = msg))
 
     def reply(self, room, user, response, samePlace):
-        if self.evalPermission(user) and samePlace:
+        if samePlace:
             self.say(room, response)
         else:
             self.sendPm(user['name'], response)

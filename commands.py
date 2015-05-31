@@ -218,7 +218,7 @@ def Command(self, cmd, msg, user):
         # Everything else is guesses
         else:
             if self.details['gamerunning']:
-                if self.details['gamerunning'].isCorrect(msg.lower()):
+                if self.details['gamerunning'].isCorrect(msg.replace(' ','').lower()):
                     solved = self.details['gamerunning'].getSolvedWord()
                     self.details['gamerunning'] = None
                     return 'Congratulations {name}. You won!\nThe solution was: {solution}'.format(name = user['unform'], solution = solved), True
