@@ -33,7 +33,7 @@ def Command(self, cmd, msg, user):
     if cmd == 'echo':
         return msg, True
     elif cmd in ['source', 'git']:
-        return 'Source code can be found at: {url}/'.format(url = getURL()), False
+        return 'Source code can be found at: {url}'.format(url = getURL()), False
     elif cmd == 'credits':
         return 'Credits can be found: {url}'.format(url = getURL()), True
     elif cmd in ['commands', 'help']:
