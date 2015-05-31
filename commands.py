@@ -232,7 +232,7 @@ def Command(self, cmd, msg, user):
     elif cmd in formats:
         return 'Format: http://www.smogon.com/dex/xy/formats/{tier}/'.format(tier = cmd), True
     # This command is here because it's an awful condition, so try it last :/
-    elif [p for p in Pokedex if re.sub('-(?:mega(?:-(x|y))?|primal|xl|l)','', cmd, flags=re.I) in p.lower()]:
+    elif [p for p in Pokedex if re.sub('-(?:mega(?:-(x|y))?|primal|xl|l)','', cmd, flags=re.I) in p.replace(' ','').lower()]:
         cmd = re.sub('-(?:mega(?:-(x|y))?|primal)','', cmd)
         substitutes = {'gourgeist-s':'gourgeist-small',  # This doesn't break Arceus-Steel like adding |S to the regex would
                        'gourgeist-l':'gourgeist-large',  # and gourgeist-s /pumpkaboo-s still get found, because it matches the
@@ -240,11 +240,11 @@ def Command(self, cmd, msg, user):
                        'pumpkaboo-s':'pumpkaboo-small',
                        'pumpkaboo-l':'pumpkaboo-large',
                        'pumpkaboo-xl':'pumpkaboo-super',
-                       'giratina-o':'giratina-origin'} 
+                       'giratina-o':'giratina-origin',
+                       'mr.mime':'mr_mime',
+                       'mimejr.':'mime_jr'} 
         if cmd in substitutes:
             cmd = substitutes[cmd]
-        if cmd.lower() not in (p.lower() for p in Pokedex):
-            return '{cmd} is not a valid command'.format(cmd = cmd),True
         return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
     
     else:
