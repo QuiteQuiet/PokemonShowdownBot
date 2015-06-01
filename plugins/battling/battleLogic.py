@@ -49,10 +49,12 @@ def getLead(team, opposing):
         for opp in opposing:
             for move in moves:
                 scores[mon] += calcScore(move, team[mon], opp)
-    m = max(scores.values())
-    options = [poke for poke,score in scores.items() if score == m]
-    print(options)
-    return team[options[randint(0,len(options)-1)]].teamSlot
+    try:
+        m = max(scores.values())
+        options = [poke for poke,score in scores.items() if score == m]
+        return team[options[randint(0,len(options)-1)]].teamSlot
+    except ValueError:
+        return randint(1.6)
 
 
 def calcScore(move, mon, opponents):
@@ -84,7 +86,7 @@ def calcScore(move, mon, opponents):
         score *= 1.2
     if mon.ability == 'strongjaw' and 'bite' in move['flags']:
         score *= 1.5
-    if mon.ability in ['hugepower','purepower']:
+    if mon.ability in ['hugepower','purepower', 'adaptability']:
         score *= 2
     # Ignore items
     return score
