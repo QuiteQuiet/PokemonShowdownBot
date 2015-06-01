@@ -141,7 +141,7 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(user['name'], 'Please pm the commands for a response.')
 
         elif 'pm' in message[1].lower():
-            user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[2]).lower(),'group':message[2][0], 'unform': message[3][1:]}
+            user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[2]).lower(),'group':message[2][0], 'unform': message[2][1:]}
             if self.userIsSelf(user['unform']): return
 
             if message[4].startswith('/invite'):
