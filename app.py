@@ -89,10 +89,11 @@ class PSBot(PokemonShowdownBot):
             self.getRoom(room).addUserlist(users)
 
         elif 'j' in message[1].lower():
-            if message[2][1:] == self.details['user']: self.getRoom(room).doneLoading()
+            if self.userIsSelf(message[2][1:]): self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].addUser(user, message[2][0])
         elif 'l' in message[1].lower():
+            if self.userIsSelf(message[2][1:]): return
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].removeUser(user)
         elif 'n' in message[1].lower() and len(message[1]) < 3:
@@ -107,7 +108,7 @@ class PSBot(PokemonShowdownBot):
             room = self.getRoom(room)
             if room.loading: return
             if user['name'] not in room.users: return
-            if user['name'] == self.details['user']: return
+            if self.userIsSelf(user['unform']): return
             if message[4].startswith(self.details['command'] * 2): return
 
             if room.moderate:
@@ -141,7 +142,7 @@ class PSBot(PokemonShowdownBot):
 
         elif 'pm' in message[1].lower():
             user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[2]).lower(),'group':message[2][0], 'unform': message[3][1:]}
-            if user['name'] == self.details['user']: return
+            if self.userIsSelf(user['unform']): return
 
             if message[4].startswith('/invite'):
                 if not message[4][8:] == 'lobby':

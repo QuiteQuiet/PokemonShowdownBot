@@ -50,6 +50,8 @@ class PokemonShowdownBot:
         print(prettyText.intro)
     def log(self, msg, user):
         print('Command: {cmd} (from user: {user})'.format(cmd = msg, user = user))
+    def userIsSelf(self, user):
+        return self.details['user'] == user
         
     def send(self, msg):
         self.ws.send(msg)
