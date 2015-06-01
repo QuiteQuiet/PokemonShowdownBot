@@ -6,7 +6,7 @@ class Pokemon:
         self.active = active
         self.stats = stats
         self.moves = moves
-        self.baseAbility = baseAbility
+        self.ability = baseAbility
         self.item = item
         self.canMega = canMegaEvo
         self.teamSlot = slot
