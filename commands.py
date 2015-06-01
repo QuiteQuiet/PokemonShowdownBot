@@ -211,10 +211,15 @@ def Command(self, cmd, msg, user):
             else:
                 return 'There is no active anagram right now', False
         elif msg == 'end':
-            if canStartGame(self, user) and isGameType(self.details['gamerunning'], Anagram):
-                solved = self.details['gamerunning'].getSolvedWord()
-                self.details['gamerunning'] = None
-                return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = solved), True
+            if canStartGame(self, user):
+                if isGameType(self.details['gamerunning'], Anagram):
+                    solved = self.details['gamerunning'].getSolvedWord()
+                    self.details['gamerunning'] = None
+                    return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = solved), True
+                else:
+                    return 'There is no active anagram or a different game is active.', False
+            else:
+            	return 'You do not have permission to end the anagram. (Requires %)', True
         # Everything else is guesses
         else:
             if self.details['gamerunning']:
