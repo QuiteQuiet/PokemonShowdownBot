@@ -220,17 +220,18 @@ def Command(self, cmd, msg, user):
                     return 'There is no active anagram or a different game is active.', False
             else:
             	return 'You do not have permission to end the anagram. (Requires %)', True
-        # Everything else is guesses
         else:
-            if self.details['gamerunning']:
-                if self.details['gamerunning'].isCorrect(msg.replace(' ','').lower()):
-                    solved = self.details['gamerunning'].getSolvedWord()
-                    self.details['gamerunning'] = None
-                    return 'Congratulations {name}. You won!\nThe solution was: {solution}'.format(name = user['unform'], solution = solved), True
-                else:
-                    return '{test} is wrong!'.format(test = msg.lstrip()), True
+            return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
+    elif cmd == 'a':
+        if self.details['gamerunning']:
+            if self.details['gamerunning'].isCorrect(msg.replace(' ','').lower()):
+                solved = self.details['gamerunning'].getSolvedWord()
+                self.details['gamerunning'] = None
+                return 'Congratulations {name}. You won!\nThe solution was: {solution}'.format(name = user['unform'], solution = solved), True
             else:
-                return 'There is no anagram active right now', True 
+                return '{test} is wrong!'.format(test = msg.lstrip()), True
+        else:
+            return 'There is no anagram active right now', True 
         
 
     # Commands with awful conditions last
@@ -247,7 +248,9 @@ def Command(self, cmd, msg, user):
                        'pumpkaboo-xl':'pumpkaboo-super',
                        'giratina-o':'giratina-origin',
                        'mr.mime':'mr_mime',
-                       'mimejr.':'mime_jr'} 
+                       'mimejr.':'mime_jr'}
+        if cmd.lower() not in (p.replace(' ','').lower() for p in Pokedex):
+            return '{cmd} is not a valid command'.format(cmd = cmd),True
         if cmd in substitutes:
             cmd = substitutes[cmd]
         return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
