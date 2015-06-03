@@ -37,7 +37,7 @@ def Command(self, cmd, msg, user):
     elif cmd == 'credits':
         return 'Credits can be found: {url}'.format(url = getURL()), True
     elif cmd in ['commands', 'help']:
-        return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = getURL()), False
+        return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = getURL()), True
     elif cmd == 'leave':
         msg = msg.replace(' ','')
         if self.leaveRoom(msg):
