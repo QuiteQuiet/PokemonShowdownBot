@@ -123,8 +123,6 @@ class PSBot(PokemonShowdownBot):
                         self.log(action, user['name'])
                         self.takeAction(room.title, user['name'], action, reason)
 
-            #if re.search(r'(whats?|who).+(suspe[ck]+t|test(ed|ing))', message[4], flags=re.I):
-            #    self.say(room.title, "{user}, Magneton".format(user = user['unform']))
 
             if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():            
                 command = message[4][1:].split()[0].lower()
