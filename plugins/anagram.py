@@ -3,11 +3,13 @@ from data.moves import Moves
 from data.abilities import Abilities
 import re
 import random
+import datetime
 
 class Anagram:
     def __init__(self):
         self.hint = ''
         self.word, self.solution = self.newWord()
+        self.startTime = datetime.datetime.now()
     def newWord(self):
         pokemon = list(Pokedex)
         moves = list(Moves)
@@ -31,3 +33,12 @@ class Anagram:
         return self.solution
     def isCorrect(self, guess):
         return guess == self.solution
+    def getSolveTimeStr(self): 
+        totalTime = datetime.datetime.now() - self.startTime
+        if totalTime.seconds < 60: # Less than 1 minute to solve
+            return ' in {time} seconds!'.format(time = totalTime.seconds)
+        elif totalTime.seconds < 60*60: # Under 1 hour
+            minutes = totalTime.seconds//60
+            return ' in {mins} minutes and {sec} seconds!'.format(mins = minutes, sec = totalTime.seconds-(minutes*60))
+        else:
+            return '!'

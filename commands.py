@@ -245,8 +245,9 @@ def Command(self, cmd, msg, user):
         if self.details['gamerunning']:
             if self.details['gamerunning'].isCorrect(msg.replace(' ','').lower()):
                 solved = self.details['gamerunning'].getSolvedWord()
+                timeTaken = self.details['gamerunning'].getSolveTimeStr()
                 self.details['gamerunning'] = None
-                return 'Congratulations {name}. You won!\nThe solution was: {solution}'.format(name = user['unform'], solution = solved), True
+                return 'Congratulations, {name} got it{time}\nThe solution was: {solution}'.format(name = user['unform'], time = timeTaken, solution = solved), True
             else:
                 return '{test} is wrong!'.format(test = msg.lstrip()), True
         else:
