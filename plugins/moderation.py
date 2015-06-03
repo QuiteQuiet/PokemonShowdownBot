@@ -8,7 +8,7 @@ whitelistedUrls = [
     'puu.sh','i.imgur.com','prntscr.com','gyazo.com',
     'bulbapedia.bulbagarden.net','serebii.net'
     ]
-URL_REGEX = re.compile(r'^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:/[^\s]*)?$')
+URL_REGEX = re.compile(r'\b(?:(?:(?:https?://|www[.])[a-z0-9\-]+(?:[.][a-z0-9\-]+)*|[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:/(?:(?:[^\s()<>]|[(][^\s()<>]*[)])*(?:[^\s`()<>\[\]{}\'".,!?;:]|[(][^\s()<>]*[)]))?)?|[a-z0-9.]+\b@[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.][a-z]{2,3})', flags = re.I)
 def getUrl(text):
     match = re.search(URL_REGEX, text)
     if match:
