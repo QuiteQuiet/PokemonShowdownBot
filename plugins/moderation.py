@@ -4,7 +4,8 @@ urlShorteners = ["0rz.tw","1link.in","1url.com","2.gp","2big.at","2tu.us","3.ly"
 whitelistedUrls = [
     'smogon.com','pokemonshowdown.com','.psim.us',
     'youtube.com','lmgtfy.com',
-    'pastebin.com','hastebin.com','puu.sh','i.imgur.com'
+    'pastebin.com','hastebin.com','puu.sh','i.imgur.com',
+    'bulbapedia.bulbagarden.net','serebii.net'
     ]
 URL_REGEX = re.compile(r'^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:/[^\s]*)?$')
 def getUrl(text):

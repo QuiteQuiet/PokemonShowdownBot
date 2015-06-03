@@ -31,7 +31,7 @@ Anagram
 - anagram new : Generates a new anagram from a Pokémon or a move.
 - anagram hint : Display the hint for the current anagram
 - anagram end : Forcefully ends the current game, revealing the solution
-Every other anagram command is treated as a guess.
+- a : Guess the solution. Everything after a is treated as the guess.
 
 Extended commands
 -----------------

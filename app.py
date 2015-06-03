@@ -115,6 +115,7 @@ class PSBot(PokemonShowdownBot):
                 if moderation.containUrl(message[4]):
                     url = moderation.getUrl(message[4])
                     if moderation.badLink(url):
+                        if self.Groups[user['group']] >= self.Groups['%']: return
                         action, reason = moderation.getAction(user, 'badlink')
                         self.takeAction(room.title, user['name'], action, reason)
 
