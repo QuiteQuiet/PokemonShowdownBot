@@ -14,6 +14,7 @@ import json
 from robot import PokemonShowdownBot
 from commands import Command, GameCommands
 from plugins.tournaments import supportedFormats
+from plugins import moderation
 
 class PSBot(PokemonShowdownBot):
     def __init__(self):
@@ -111,7 +112,11 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(user['unform']): return
 
             if room.moderate:
-                pass
+                if moderation.containUrl(message[4]):
+                    url = moderation.getUrl(message[4])
+                    if moderation.badLink(url):
+                        action, reason = moderation.getAction(user, 'badlink')
+                        self.takeAction(room.title, user['name'], action, reason)
 
             #if re.search(r'(whats?|who).+(suspe[ck]+t|test(ed|ing))', message[4], flags=re.I):
             #    self.say(room.title, "{user}, Magneton".format(user = user['unform']))

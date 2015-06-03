@@ -87,6 +87,25 @@ def Command(self, cmd, msg, user):
         if canAddUser(self, user):
             self.details['whitelist'].remove(msg)
             return 'User {usr} removed from the whitelist.'.format(usr =msg), True
+    elif cmd == 'moderate':
+        if not msg:
+            return 'No parameters given. Command is ~moderate [room],True/False', False
+        else:
+            if canChange(self, user):
+                things = msg.replace(' ','').split(',')
+                if not len(things) == 2:
+                    return 'Too few/mant parameters given. Command is ~moderate [room],True/False', False
+                if things[0] in self.details['rooms']:
+                    if things[1] in ['True', 'true']:
+                        self.details['rooms'][things[0]].moderate = True
+                        return '{room} will now be moderated'.format(room = things[0]), False
+                    elif things[1] in ['False', 'false']:
+                        self.details['rooms'][things[0]].moderate = False
+                        return '{room} will not be moderated anymore'.format(room = things[0]), False
+                else:
+                    return 'You cannot set moderation in a room without me in it.', False
+            else:
+                return 'You do not have permission to set this. (Requires #)', False
 
     elif cmd == 'allowgames':
         if canChange(self, user):
