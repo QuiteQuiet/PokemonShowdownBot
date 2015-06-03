@@ -28,16 +28,16 @@ def getMove(moves, pokemon, opponent):
                 options.remove(m)
         else:
             eff = Types[ Pokedex[opponent.species]['types'][0] ][Moves[m]['type']]
-            if eff > 1:
+            if eff < 1:
                 options.remove(m)
     if len(options) == 0:
         return moves[randint(0, len(moves)-1)]
     # This will pick moves that have a much higher possible damage output than guessing
     # since it will always use the better attacking stat (hopefully with a good base power move)
     for o in options:
-        if pokemon.stats['atk'] > (40 + pokemon.stats['spa']) and Moves[m]['category'] == 'Physical':
+        if pokemon.stats['atk'] > (50 + pokemon.stats['spa']) and Moves[m]['category'] == 'Physical':
             return o
-        if (pokemon.stats['atk'] + 40) < pokemon.stats['spa'] and Moves[m]['category'] == 'Special':
+        if (pokemon.stats['atk'] + 50) < pokemon.stats['spa'] and Moves[m]['category'] == 'Special':
             return o
     return options[randint(0, len(options)-1)]
         
