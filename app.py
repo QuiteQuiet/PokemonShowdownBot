@@ -83,6 +83,9 @@ class PSBot(PokemonShowdownBot):
                 else:
                     self.sendPm(opp, 'Sorry, I only accept challenges in Battle Cup 1v1 :(')
 
+        # This is a safeguard for l and n in case that a moderation action happen
+        elif 'unlink' == message[1]:
+            return
 
         # Joined new room
         elif 'users' in message[1]:
@@ -117,6 +120,7 @@ class PSBot(PokemonShowdownBot):
                     if moderation.badLink(url):
                         if self.Groups[user['group']] >= self.Groups['%']: return
                         action, reason = moderation.getAction(user, 'badlink')
+                        self.log(action, user['name'])
                         self.takeAction(room.title, user['name'], action, reason)
 
             #if re.search(r'(whats?|who).+(suspe[ck]+t|test(ed|ing))', message[4], flags=re.I):
