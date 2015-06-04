@@ -6,6 +6,10 @@ from data.types import Types
 
 blacklist = {'focuspunch','fakeout','snore','dreameater','lastresort','explosion','selfdestruct','synchronoise','belch','trumphcard','wringout'}
 chargemoves = {'hyperbeam','gigaimpact','frenzyplant','blastburn','hydrocannon','rockwrecker','roaroftime','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash','skyattack','skydrop','solarbeam'}
+waterImmune = ['dryskin','waterabsorb','stormdrain','desolateland']
+grassImmune = ['sapsipper']
+fireImmune = ['flashfire','primordialsea']
+groundImmune = ['levitate']
 def getMove(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
     options = []
@@ -30,14 +34,36 @@ def getMove(moves, pokemon, opponent):
             eff = Types[ Pokedex[opponent.species]['types'][0] ][Moves[m]['type']]
             if eff < 1:
                 options.remove(m)
+        # Abilities that give immunities
+        if Moves[m]['type'] == 'Water' and Pokedex[opponent.species]['abilities'][0] in waterImmune:
+            while m in options:
+                options.remove(m)
+        if Moves[m]['type'] == 'Fire' and Pokedex[opponent.species]['abilities'][0] in fireImmune:
+            while m in options:
+                options.remove(m)
+        if Moves[m]['type'] == 'Grass' and Pokedex[opponent.species]['abilities'][0] in grassImmune:
+            while m in options:
+                options.remove(m)
+        if Moves[m]['type'] == 'Ground' and (Pokedex[opponent.species]['abilities'][0] in groundImmune or opponent.item == 'airballon'):
+            while m in options:
+                options.remove(m)
     if len(options) == 0:
         return moves[randint(0, len(moves)-1)]
     # This will pick moves that have a much higher possible damage output than guessing
     # since it will always use the better attacking stat (hopefully with a good base power move)
     for o in options:
-        if pokemon.stats['atk'] > (50 + pokemon.stats['spa']) and Moves[m]['category'] == 'Physical':
+        if pokemon.stats['atk'] > (50 + pokemon.stats['spa']) and Moves[o]['category'] == 'Physical':
             return o
-        if (pokemon.stats['atk'] + 50) < pokemon.stats['spa'] and Moves[m]['category'] == 'Special':
+        if (pokemon.stats['atk'] + 50) < pokemon.stats['spa'] and Moves[o]['category'] == 'Special':
+            return o
+        eff = 1
+        if len(Pokedex[opponent.species]['types']) > 1:
+            types = Pokedex[opponent.species]['types']
+            eff = Types[types[0]][Moves[o]['type']] * Types[types[1]][Moves[o]['type']]
+        if len(Pokedex[opponent.species]['types']) == 1:
+            eff =  Types[ Pokedex[opponent.species]['types'][0] ][Moves[o]['type']]
+        # A good SE move will probably always be best, STAB or not
+        if eff > 1 and Moves[o]['basePower'] > 70:
             return o
     return options[randint(0, len(options)-1)]
         
