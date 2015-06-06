@@ -187,19 +187,20 @@ def Command(self, cmd, msg, user):
         elif 'new' in msg[0]: # ~hangman new,room,[phrase]
             if canStartGame(self, user):
                 if self.details['gamerunning']:
-                    return 'A game is already running somewhere', False
-                else:              
-                    phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
-                    if not phrase.strip():
-                        return 'You can only have letters, numbers or spaces in the phrase', False
-                    self.details['gamerunning'] = Hangman(phrase)
-                    return 'A new game of hangman has begun:\n' + self.details['gamerunning'].printCurGame(), True
+                    return 'A game is already running somewhere', False            
+                phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
+                if not phrase.strip():
+                    return 'You can only have letters, numbers or spaces in the phrase', False
+                if len(phrase.replace(' ','')) <= 1:
+                	  return 'The phrase must be at least two characters long', False
+                self.details['gamerunning'] = Hangman(phrase)
+                return 'A new game of hangman has begun:\n' + self.details['gamerunning'].printCurGame(), True
             else:
                 return 'You do not have permission to start a game in this room. (Requires %)', False
         else:
             return 'To start a new hangman game: ~hangman new,[room],[phrase]', True
     elif cmd == 'hg':
-        if self.details['gamerunning']:
+        if isGameType(self.details['gamerunning'], Hangman):
             if len(msg.replace(' ','')) == 1:
                 return self.details['gamerunning'].guessLetter(msg.replace(' ','').lower()), True
             else:
@@ -242,7 +243,7 @@ def Command(self, cmd, msg, user):
         else:
             return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
     elif cmd == 'a':
-        if self.details['gamerunning']:
+        if isGameType(self.details['gamerunning'], Anagram):
             if self.details['gamerunning'].isCorrect(msg.replace(' ','').lower()):
                 solved = self.details['gamerunning'].getSolvedWord()
                 timeTaken = self.details['gamerunning'].getSolveTimeStr()
