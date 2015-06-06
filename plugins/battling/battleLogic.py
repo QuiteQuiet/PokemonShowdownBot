@@ -25,15 +25,20 @@ def getMove(moves, pokemon, opponent):
         if m not in options:
             continue
         # Resisted moves get 0 or 1 entry (1 only if STAB and over 40 base power)
+        # SE moves can get more than 1 entry, and moves with type immunities are removed entirely
+        eff = 1
         if len(Pokedex[opponent.species]['types']) > 1:
             types = Pokedex[opponent.species]['types']
             eff = Types[types[0]][Moves[m]['type']] * Types[types[1]][Moves[m]['type']]
-            if eff < 1:
-                options.remove(m)
         else:
             eff = Types[ Pokedex[opponent.species]['types'][0] ][Moves[m]['type']]
-            if eff < 1:
+        if eff < 1:
+            options.remove(m)
+        if eff == 0:
+            while m in options:
                 options.remove(m)
+        if eff > 1:
+            options.append(m)
         # Abilities that give immunities
         if Moves[m]['type'] == 'Water' and Pokedex[opponent.species]['abilities'][0] in waterImmune:
             while m in options:
