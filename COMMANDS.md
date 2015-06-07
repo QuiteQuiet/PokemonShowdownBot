@@ -16,8 +16,8 @@ Standard commands
 - [pokemon] : Entering any existing pokemon (for example ~kyogre) gives a link to their respective Smogon analysis page.
 - [tier] : Similar to the above, entering any official Smogon tier (such as ~ou) brings up a link to the Smogon hub for that tier.
 
-- ~viability [tier], ~speedtiers [tier], ~np [tier], ~sample [tier] :
-- The above four commands bring up their respective forums resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
+- ~viability [tier], ~speedtiers [tier], ~np [tier], ~sample [tier], ~roles [tier] :
+- The above five commands bring up their respective forum resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 
 Chat Games
 ----------
