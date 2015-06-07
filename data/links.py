@@ -43,5 +43,14 @@ Links = {
    'nu':'http://www.smogon.com/forums/threads/3523695/',
    'pu':'http://www.smogon.com/forums/threads/3537423/',
    'lc':'http://www.smogon.com/forums/threads/3526527/'
-    }
+    },
+'roles':{
+	'uber':'http://www.smogon.com/forums/threads/3527312/',
+	'ou':'http://www.smogon.com/forums/threads/3523054/',
+	'uu':'http://www.smogon.com/forums/threads/3532022/',
+	'ru':'http://www.smogon.com/forums/threads/3524849/',
+	'nu':'http://www.smogon.com/forums/threads/3524139/',
+	'pu':'http://www.smogon.com/forums/threads/3526592/',
+	'lc':'http://www.smogon.com/forums/threads/3524037/'
+	}
 }
