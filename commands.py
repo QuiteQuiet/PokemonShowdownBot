@@ -44,6 +44,7 @@ def Command(self, cmd, msg, user):
             return 'Leaving room {r} succeeded'.format(r = msg), False
         else:
             return 'Could not leave room: {r}'.format(r = msg), False
+    # THIS COMMAND SHOULDN'T BE DOCUMENTED!
     elif cmd == 'get':
         if isMaster(self, user):
             return str(eval(msg)), True
@@ -144,7 +145,7 @@ def Command(self, cmd, msg, user):
     elif cmd == 'ask':
         return Lines[randint(0, len(Lines)-1)], True
     elif cmd == 'joke':
-        if randint(0, 1) and self.Groups[user['group']] >= self.Groups['%']:
+        if randint(0, 1) and self.Groups[user['group']] >= self.Groups['+']:
             return user['unform'], True
         else:
             return getJoke(), True
@@ -224,7 +225,7 @@ def Command(self, cmd, msg, user):
                     self.details['gamerunning'] = Anagram()
                     return 'A new anagram has been created:\n' + self.details['gamerunning'].getWord(), True
             else:
-                return 'You do not have permission to starta game in this room. (Requires %)', False
+                return 'You do not have permission to start a game in this room. (Requires %)', False
         elif msg == 'hint':
             if self.details['gamerunning']:
                 return 'The hint is: ' + self.details['gamerunning'].getHint(), True
@@ -321,5 +322,5 @@ def saveDetails(self):
 def getURL():
     return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def getJoke():
-    people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern']
+    people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'Chef Rice', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern', 'Aladyyn', 'Blast Chance', 'Blastral', 'blaziken1337', 'Dentricos', 'Draeden', 'Finchinator', 'flcl', 'Hjad', 'kiyo', 'oshony', 'Pokedots', "winter's howl"]
     return people[randint(0, len(people)-1)]
