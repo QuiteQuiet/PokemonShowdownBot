@@ -184,7 +184,7 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(user['name'], '{cmd} is not a valid command.'.format(cmd = command))
 
         # Tournaments
-        elif self.details['joinTours'] and 'tournament' in message[1]:
+        elif self.details['joinTours'] and message[1] == 'tournament':
             if self.getRoom(room).loading: return
             if 'create' in message[2]:
                 # Tour was created, join it if in supported formats
