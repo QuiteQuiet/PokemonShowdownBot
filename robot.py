@@ -9,7 +9,7 @@
 # PyYAML == 3.11
 # requests == 2.5.1
 # simplejson == 3.6.5
-# websockets == 2.4
+# websocket-client == 0.32.0
 
 import websocket
 import requests
