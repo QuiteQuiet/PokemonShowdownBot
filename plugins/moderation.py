@@ -23,12 +23,14 @@ def containUrl(msg):
 
 def badLink(link):
     if any(u in link for u in urlShorteners):
+        if not link.startswith('http://'): link = 'http://' + link
         resp = urlopen(link)
         if 200 <= resp.getcode() > 400:
             link = resp.url()
         else:
             return False
     if not any(u in link for u in whitelistedUrls):
+    	if not link.startswith('http://'): link = 'http://' + link
         if 'youtube.com' in link:
             # check youtube links better than the others
             pass
