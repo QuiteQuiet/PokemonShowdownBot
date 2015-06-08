@@ -184,7 +184,7 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(user['name'], '{cmd} is not a valid command.'.format(cmd = command))
 
         # Tournaments
-        elif self.details['joinTours'] and message[1] == 'tournament':
+        elif self.details['joinTours'] and 'tournament' == message[1]:
             if self.getRoom(room).loading: return
             if 'create' in message[2]:
                 # Tour was created, join it if in supported formats
@@ -193,9 +193,8 @@ class PSBot(PokemonShowdownBot):
                     room.createTour(self.ws)
                 if room.tour and message[3] in supportedFormats:
                     room.tour.joinTour()
-                else:
-                    self.say(room.name, "Can't join tour, unsupported format or previous tour not deleted from room.")
             elif 'end' == message[2]:
+                if not self.getRoom(room).tour: return
                 winner, tier = self.getRoom(room).tour.getWinner(message[3])
                 if self.details['user'] in winner:
                     self.say(room, 'I won the {form} tournament :o'.format(form = tier))
