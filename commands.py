@@ -51,9 +51,13 @@ def Command(self, cmd, msg, user):
         else:
             return 'You do not have permisson to use this command. (Only for owner)', False
     # Save current self.details to details.yaml (moves rooms to joinRooms)
+    # Please note that this command will remove every comment from details.yaml, if those exist.
     elif cmd == 'savedetails':
-        saveDetails(self)
-        return 'Details saved.', False
+        if canChange(self, user):
+            saveDetails(self)
+            return 'Details saved.', False
+        else:
+            return "You don't have permission to save settings. (Requires #)", False
 
     # Permissions
     elif cmd == 'broadcast':
@@ -254,7 +258,7 @@ def Command(self, cmd, msg, user):
                 return '{test} is wrong!'.format(test = msg.lstrip()), True
         else:
             return 'There is no anagram active right now', True 
-        
+
 
     # Commands with awful conditions last
     elif cmd in formats:
@@ -318,7 +322,15 @@ def acceptableWeakness(team):
             return False
     return True
 def saveDetails(self):
-    pass
+    details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
+    details['joinRooms'] = []
+    for e in self.details['rooms']:
+        details['joinRooms'].append({e:{'moderate':self.details['rooms'][e].moderate,
+                                       'allow games':self.details['rooms'][e].allowGames}})
+    details['rooms'] = {}
+    with open('details.yaml', 'w') as yf:
+        yaml.dump(details, yf, default_flow_style = False)
+
 def getJoke():
     people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'Chef Rice', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern', 'Aladyyn', 'Blast Chance', 'Blastral', 'blaziken1337', 'Dentricos', 'Draeden', 'Finchinator', 'flcl', 'Hjad', 'kiyo', 'oshony', 'Pokedots', "winter's howl"]
     return people[randint(0, len(people)-1)]
