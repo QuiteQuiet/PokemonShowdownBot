@@ -9,6 +9,9 @@ whitelistedUrls = [
     'bulbapedia.bulbagarden.net','serebii.net'
     ]
 URL_REGEX = re.compile(r'\b(?:(?:(?:https?://|www[.])[a-z0-9\-]+(?:[.][a-z0-9\-]+)*|[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:/(?:(?:[^\s()<>]|[(][^\s()<>]*[)])*(?:[^\s`()<>\[\]{}\'".,!?;:]|[(][^\s()<>]*[)]))?)?|[a-z0-9.]+\b@[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.][a-z]{2,3})', flags = re.I)
+bannedPhrases = [
+    'sd*skarmory'
+    ]
 def getUrl(text):
     match = re.search(URL_REGEX, text.replace(' ',''))
     if match:
@@ -30,15 +33,31 @@ def badLink(link):
         else:
             return False
     if not any(u in link for u in whitelistedUrls):
-    	if not link.startswith('http://'): link = 'http://' + link
+        if not link.startswith('http://'): link = 'http://' + link
         if 'youtube.com' in link:
             # check youtube links better than the others
             pass
         return True
     return False
 
+def isBanword(msg):
+    for ban in bannedPhrases:
+        if ban in msg.lower():
+            return True
+    return False
 def getAction(user, wrong):
     if wrong == 'badlink':
-        return 'warn', 'Automated response: Type of link not allowed'
+        return 'warn', 'The link has nothing to do with NU :/'
+    elif wrong == 'banword':
+        return 'mute', 'Can you stop spamming that please'
         
+def shouldAct(msg, user):
+    if containUrl(msg):
+        url = moderation.getUrl(message[4])
+        if moderation.badLink(url):
+            if self.Groups[user['group']] >= self.Groups['%']: return False
+            return 'badlink'
+    if isBanword(msg):
+        return 'banword'
+    return False
     

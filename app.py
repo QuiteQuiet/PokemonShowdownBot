@@ -7,6 +7,13 @@
 #
 # Changes to this file should be made with caution, as much of the extended functions
 # depend on this being structured in a specific way.
+#
+# Extended notes:
+# user:
+#     user objects are dicts containing some information about the user who said anything.
+#     This information consists of user['name'], user['group'], and user['unform']. user['name'] is
+#     a format-removed id of the speaker with only a-z lowercase and 0-9 present.
+#     user['group'] contain
 
 import re
 import json
@@ -115,13 +122,11 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(user['unform']): return
 
             if room.moderate:
-                if moderation.containUrl(message[4]):
-                    url = moderation.getUrl(message[4])
-                    if moderation.badLink(url):
-                        if self.Groups[user['group']] >= self.Groups['%']: return
-                        action, reason = moderation.getAction(user, 'badlink')
-                        self.log(action, user['name'])
-                        self.takeAction(room.title, user['name'], action, reason)
+                anything = moderation.shouldAct(message[4], user):
+                if anything:
+                    action, reason = moderation.getAction(user, anything)
+                    self.log(action, user['name'])
+                    self.takeAction(room.title, user['name'], action, reason)
 
 
             if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():            
