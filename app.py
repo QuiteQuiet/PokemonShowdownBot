@@ -128,7 +128,7 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(user['unform']): return
 
             if room.moderate:
-                anything = moderation.shouldAct(message[4], user):
+                anything = moderation.shouldAct(message[4], user)
                 if anything:
                     action, reason = moderation.getAction(user, anything)
                     self.log(action, user['name'])
