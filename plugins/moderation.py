@@ -53,7 +53,7 @@ def getAction(user, wrong):
         
 def shouldAct(msg, user):
     if containUrl(msg):
-        return False
+        return False # Ignore urls for now
         url = moderation.getUrl(message[4])
         if moderation.badLink(url):
             if self.Groups[user['group']] >= self.Groups['%']: return False

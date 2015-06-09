@@ -33,11 +33,11 @@ def Command(self, cmd, msg, user):
     if cmd == 'echo':
         return msg, True
     elif cmd in ['source', 'git']:
-        return 'Source code can be found at: {url}'.format(url = getURL()), False
+        return 'Source code can be found at: {url}'.format(url = URL()), False
     elif cmd == 'credits':
-        return 'Credits can be found: {url}'.format(url = getURL()), True
+        return 'Credits can be found: {url}'.format(url = URL()), True
     elif cmd in ['commands', 'help']:
-        return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = getURL()), True
+        return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True
     elif cmd == 'leave':
         msg = msg.replace(' ','')
         if self.leaveRoom(msg):
@@ -280,7 +280,7 @@ def Command(self, cmd, msg, user):
     else:
         return False, False
 
-
+def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def isMaster(self, user):
     return user['name'] == self.details['master']
 def canSee(self, user):
@@ -319,8 +319,6 @@ def acceptableWeakness(team):
     return True
 def saveDetails(self):
     pass
-def getURL():
-    return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def getJoke():
     people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'Chef Rice', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern', 'Aladyyn', 'Blast Chance', 'Blastral', 'blaziken1337', 'Dentricos', 'Draeden', 'Finchinator', 'flcl', 'Hjad', 'kiyo', 'oshony', 'Pokedots', "winter's howl"]
     return people[randint(0, len(people)-1)]
