@@ -24,11 +24,11 @@ from plugins.battling.battleHandler import BattleHandler
 class PokemonShowdownBot:
     ''' Controls the most basic aspects of connecting to Pokemon Showdown as well as commands '''
 
-    def __init__(self, url, onMessage):
+    def __init__(self, url, onMessage = None):
         with open("details.yaml", 'r') as yaml_file:
             self.details = yaml.load(yaml_file)
             self.Groups = {' ':0,'+':1,'%':2,'@':3,'&':4,'#':5,'~':6}
-            self.splitMessage = onMessage
+            self.splitMessage = onMessage if onMessage else self.onMessage
             self.intro()
             websocket.enableTrace(True)
             self.ws = websocket.WebSocketApp(url,
@@ -110,4 +110,17 @@ class PokemonShowdownBot:
         return self.Groups[user['group']] >= self.Groups[self.details['broadcastrank']] or self.details['master'] == user['name'] or user['name'] in self.details['whitelist']
     def takeAction(self, room, user, action, reason):
         self.ws.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user, reason = reason))
+
+    # Default onMessage if none is given (This only support logging in, nothing else)
+    # To get any actual use from the bot, create a custom onMessage function.
+    def onMessage(self, ws, message):
+        if not message: return
+        parts = message.split('|')
+        if parts[1] == 'challstr':
+            print('Attempting to log in...')
+            self.login(message[3], message[2])
+        elif parts[1] == 'updateuser':
+            if self.details['user'] not in parts[2]: return
+            if parts[3] == '1':
+                print('Loged in...')
         
