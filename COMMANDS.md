@@ -13,10 +13,10 @@ Standard commands
 
 - [tier]poke : Randomly selects one Pokémon from the viable tier list from [tier]. Supported tiers are Uber, OU, UU, RU, NU, PU, and LC. 
 - [tier]team : Randomly generate a team that is usable in [tier]. Same restrictions as [tier]poke apply.
-- [pokemon] : Entering any existing pokemon (for example ~kyogre) gives a link to their respective Smogon analysis page.
-- [tier] : Similar to the above, entering any official Smogon tier (such as ~ou) brings up a link to the Smogon hub for that tier.
+- pokemon : Entering any existing pokemon (for example ~kyogre) gives a link to their respective Smogon analysis page.
+- tier : Similar to the above, entering any official Smogon tier (such as ~ou) brings up a link to the Smogon hub for that tier.
 
-- ~viability [tier], ~speedtiers [tier], ~np [tier], ~sample [tier], ~roles [tier] :
+- ~viability tier, ~speedtiers tier, ~np tier, ~sample tier, ~roles tier :
 - The above five commands bring up their respective forum resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 
 Chat Games
