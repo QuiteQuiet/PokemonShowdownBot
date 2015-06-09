@@ -45,3 +45,5 @@ and as such require global or roomauth of some degree.
 - whitelist : Print the current whitelist that allow regular users the ability to broadcast commands.
 - whitelistadd [user]: Add a user to the whitelist.
 - removewl [user]: Remove a user from the whitelist.
+
+None of the above commands save the current settings, and will be cleared on a restart. To save settings, use `savedetails`, which save everything currently in details.
