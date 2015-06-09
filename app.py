@@ -13,7 +13,13 @@
 #     user objects are dicts containing some information about the user who said anything.
 #     This information consists of user['name'], user['group'], and user['unform']. user['name'] is
 #     a format-removed id of the speaker with only a-z lowercase and 0-9 present.
-#     user['group'] contain
+#
+#     user['group'] contain the auth level of the user, as a single character string of
+#     either ' ', +, %, @, &, #, or ~. To compare groups against each other self.Groups have
+#     the information reuiqred when used like: self.Groups[user['group']] for a numeric value.
+#
+#     Lastly, user['unform'] is the unaltered name as seen in the chatrooms, and can be used
+#     for things like replying, but shouldn't be used for comparisions.
 
 import re
 import json
