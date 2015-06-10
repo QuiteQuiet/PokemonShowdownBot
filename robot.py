@@ -94,11 +94,11 @@ class PokemonShowdownBot:
         if '\n' in msg:
             # DO NOT ABUSE THIS
             for m in msg.split('\n'):
-                self.ws.send('{room}|{text}'.format(room = room, text = m))
+                self.send('{room}|{text}'.format(room = room, text = m))
         else:
-            self.ws.send('{room}|{text}'.format(room = room, text = msg))
+            self.send('{room}|{text}'.format(room = room, text = msg))
     def sendPm(self, user, msg):
-        self.ws.send('|/pm {usr}, {text}'.format(usr = user, text = msg))
+        self.send('|/pm {usr}, {text}'.format(usr = user, text = msg))
 
     def reply(self, room, user, response, samePlace):
         if samePlace:
@@ -109,7 +109,7 @@ class PokemonShowdownBot:
     def evalPermission(self, user):
         return self.Groups[user['group']] >= self.Groups[self.details['broadcastrank']] or self.details['master'] == user['name'] or user['name'] in self.details['whitelist']
     def takeAction(self, room, user, action, reason):
-        self.ws.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user, reason = reason))
+        self.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user, reason = reason))
 
     # Default onMessage if none is given (This only support logging in, nothing else)
     # To get any actual use from the bot, create a custom onMessage function.
