@@ -49,7 +49,7 @@ def getAction(user, wrong):
     if wrong == 'badlink':
         return 'warn', 'The link has nothing to do with NU :/'
     elif wrong == 'banword':
-        return 'mute', 'Can you stop spamming that please'
+        return 'mute', 'Stop posting that please'
         
 def shouldAct(msg, user):
     if containUrl(msg):
