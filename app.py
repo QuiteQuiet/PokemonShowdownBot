@@ -91,7 +91,7 @@ class PSBot(PokemonShowdownBot):
             challs = json.loads(message[2])
             if challs['challengesFrom']:
                 opp = [name for name, form in challs['challengesFrom'].items()][0]
-                if challs['challengesFrom'][opp] == 'battlecup1v1':
+                if challs['challengesFrom'][opp] == 'challengecup1v1':
                     self.send('|/accept {name}'.format(name = opp))
                 else:
                     self.sendPm(opp, 'Sorry, I only accept challenges in Battle Cup 1v1 :(')
