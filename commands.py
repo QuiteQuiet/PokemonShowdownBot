@@ -148,6 +148,18 @@ def Command(self, cmd, msg, user):
         return options[randint(0,(len(options)-1))], True
     elif cmd == 'ask':
         return Lines[randint(0, len(Lines)-1)], True
+    elif cmd == 'squid':
+        if msg:
+            if msg.isdecimal():
+                nr = float(msg)
+                if 0 < nr <= 10:
+                    return '\u304f\u30b3\u003a\u5f61' * int(nr), True
+                else:
+                    return 'Can only use whole numbers between 1 and 10', True
+            else:
+                return 'Invalid parameter given. Accepting whole numbers between 1 and 10.', True
+        else:
+            return '\u304f\u30b3\u003a\u5f61', True
     elif cmd == 'joke':
         if randint(0, 1) and self.Groups[user['group']] >= self.Groups['+']:
             return user['unform'], True
