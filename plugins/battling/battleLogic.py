@@ -12,64 +12,36 @@ fireImmune = ['flashfire','primordialsea']
 groundImmune = ['levitate']
 def getMove(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
-    options = []
+    values = {}
     for m in moves:
         m = m.replace('-','')
+        # This begins a score system for the moves, naively trying to pick the best moves without calculating damage
+        # Based on the move's base power
+        values[m] = Moves[m]['basePower']
         if m in blacklist or m in chargemoves:
+            values[m] = 0
             continue
-        # Anything under 40 base power is probably useless (priority is 40)
-        if (Moves[m]['basePower'] > 40 or m in ['grass knot', 'low kick']):
-            options.append(m)
-        if Moves[m]['type'] in Pokedex[pokemon.species]['types'] and Moves[m]['basePower'] > 30:
-            options.append(m)
-        if m not in options:
-            continue
-        # Resisted moves get 0 or 1 entry (1 only if STAB and over 40 base power)
-        # SE moves can get more than 1 entry, and moves with type immunities are removed entirely
+
+        if Moves[m]['type'] in Pokedex[pokemon.species]['types']:
+            values[m] *= 1.5
+        # Multiply with the effectiveness of the move
         eff = 1
         if len(Pokedex[opponent.species]['types']) > 1:
             types = Pokedex[opponent.species]['types']
             eff = Types[types[0]][Moves[m]['type']] * Types[types[1]][Moves[m]['type']]
         else:
             eff = Types[ Pokedex[opponent.species]['types'][0] ][Moves[m]['type']]
-        if eff < 1:
-            options.remove(m)
-        if eff == 0:
-            while m in options:
-                options.remove(m)
-        if eff > 1:
-            options.append(m)
+        values[m] *= eff
         # Abilities that give immunities
         if Moves[m]['type'] == 'Water' and Pokedex[opponent.species]['abilities'][0] in waterImmune:
-            while m in options:
-                options.remove(m)
+            values[m] = 0
         if Moves[m]['type'] == 'Fire' and Pokedex[opponent.species]['abilities'][0] in fireImmune:
-            while m in options:
-                options.remove(m)
+            values[m] = 0
         if Moves[m]['type'] == 'Grass' and Pokedex[opponent.species]['abilities'][0] in grassImmune:
-            while m in options:
-                options.remove(m)
+            values[m] = 0
         if Moves[m]['type'] == 'Ground' and (Pokedex[opponent.species]['abilities'][0] in groundImmune or opponent.item == 'airballon'):
-            while m in options:
-                options.remove(m)
-    if len(options) == 0:
-        return moves[randint(0, len(moves)-1)]
-    # This will pick moves that have a much higher possible damage output than guessing
-    # since it will always use the better attacking stat (hopefully with a good base power move)
-    for o in options:
-        if pokemon.stats['atk'] > (50 + pokemon.stats['spa']) and Moves[o]['category'] == 'Physical':
-            return o
-        if (pokemon.stats['atk'] + 50) < pokemon.stats['spa'] and Moves[o]['category'] == 'Special':
-            return o
-        eff = 1
-        if len(Pokedex[opponent.species]['types']) > 1:
-            types = Pokedex[opponent.species]['types']
-            eff = Types[types[0]][Moves[o]['type']] * Types[types[1]][Moves[o]['type']]
-        if len(Pokedex[opponent.species]['types']) == 1:
-            eff =  Types[ Pokedex[opponent.species]['types'][0] ][Moves[o]['type']]
-        # A good SE move will probably always be best, STAB or not
-        if eff > 1 and Moves[o]['basePower'] > 70:
-            return o
+            values[m] = 0
+    options = [m for m,v in values.items() if v == max(values.values())]
     return options[randint(0, len(options)-1)]
         
 def getLead(team, opposing):
