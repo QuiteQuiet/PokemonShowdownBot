@@ -10,7 +10,7 @@ whitelistedUrls = [
     ]
 URL_REGEX = re.compile(r'\b(?:(?:(?:https?://|www[.])[a-z0-9\-]+(?:[.][a-z0-9\-]+)*|[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:/(?:(?:[^\s()<>]|[(][^\s()<>]*[)])*(?:[^\s`()<>\[\]{}\'".,!?;:]|[(][^\s()<>]*[)]))?)?|[a-z0-9.]+\b@[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.][a-z]{2,3})', flags = re.I)
 bannedPhrases = [
-    'sd*skarmory fuckin spanked pokeaim in this ubers'
+    'sd*skarmory fuckin spanked pokeaim in this ubers match'
     ]
 def getUrl(text):
     match = re.search(URL_REGEX, text.replace(' ',''))
@@ -18,7 +18,7 @@ def getUrl(text):
         return match.group(0)
     else:
         return False
-    
+
 def containUrl(msg):
     if getUrl(msg):
         return True
@@ -42,7 +42,7 @@ def badLink(link):
 
 def isBanword(msg):
     for ban in bannedPhrases:
-        if ban in msg.lower():
+        if ban.lower() in msg:
             return True
     return False
 def getAction(user, wrong):
@@ -52,13 +52,13 @@ def getAction(user, wrong):
         return 'mute', 'Stop posting that please'
         
 def shouldAct(msg, user):
+    if isBanword(msg):
+        return 'banword'
     if containUrl(msg):
         return False # Ignore urls for now
         url = moderation.getUrl(message[4])
         if moderation.badLink(url):
             if self.Groups[user['group']] >= self.Groups['%']: return False
             return 'badlink'
-    if isBanword(msg):
-        return 'banword'
     return False
     
