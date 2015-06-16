@@ -91,10 +91,10 @@ class PSBot(PokemonShowdownBot):
             challs = json.loads(message[2])
             if challs['challengesFrom']:
                 opp = [name for name, form in challs['challengesFrom'].items()][0]
-                if challs['challengesFrom'][opp] == 'challengecup1v1':
+                if challs['challengesFrom'][opp] in supportedFormats:
                     self.send('|/accept {name}'.format(name = opp))
                 else:
-                    self.sendPm(opp, 'Sorry, I only accept challenges in Battle Cup 1v1 :(')
+                    self.sendPm(opp, 'Sorry, I only accept challenges in Challenge Cup 1v1 :(')
 
         # This is a safeguard for l and n in case that a moderation action happen
         elif 'unlink' == message[1]:
