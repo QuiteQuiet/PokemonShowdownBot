@@ -10,7 +10,11 @@ waterImmune = ['dryskin','waterabsorb','stormdrain','desolateland']
 grassImmune = ['sapsipper']
 fireImmune = ['flashfire','primordialsea']
 groundImmune = ['levitate']
-def getMove(moves, pokemon, opponent):
+def getMove(moves, pokemon, opponent, playing):
+    if playing == 'challengecup1v1':
+        return getCC1v1Move(moves, pokemon, opponent)
+
+def getCC1v1Move(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
     values = {}
     for m in moves:
