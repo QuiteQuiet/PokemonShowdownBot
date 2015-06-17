@@ -10,9 +10,73 @@ waterImmune = ['dryskin','waterabsorb','stormdrain','desolateland']
 grassImmune = ['sapsipper']
 fireImmune = ['flashfire','primordialsea']
 groundImmune = ['levitate']
-def getMove(moves, pokemon, opponent, playing):
+
+def getAction(battle, playing):
+    active = battle.me.active
+    moveData = battle.myActiveData[0]['moves']
+    moves = []
+    if len(moveData) == 1:
+        moves = [moveData[0]['move'].replace(' ','').lower()]
+    else:
+        moves = [m['move'].replace(' ','').lower() for m in moveData if not m['disabled']]
     if playing == 'challengecup1v1':
-        return getCC1v1Move(moves, pokemon, opponent)
+        return getCC1v1Move(moves, active, battle.other.active), 'move'
+    else:
+        act = pickAction(battle.me, battle.other.active)
+        if act == 'switch':
+            return getSwitch(battle.me.team, battle.me.active, battle.other.active), 'switch'
+        else:
+            return getMove(moves, active, battle.other.active), 'move'
+def calcMatchup(me, other):
+    score = 0
+    for m in me.moves:
+        score += calcScore(m, me, other.species)
+    if score > 140:
+        return 'good'
+    return 'bad'
+def pickAction(me, other):
+    matchup = calcMatchup(me.active, other)
+    if matchup == 'good':
+        return 'move'
+    if not randint(0,5):
+        return 'move'
+    fainted = 0
+    for mon in me.team:
+        if me.team[mon].condition == '0 fnt':
+            fainted += 1
+    if fainted == 5:
+        return 'move'
+    return 'switch'
+def getMove(moves, active, opponent):
+    move = getCC1v1Move(moves, active, opponent)
+    if active.canMega:
+        move += ' mega'
+    return move
+def getSwitch(myTeam, myActive, opponent):
+    scores = {}
+    for poke in myTeam:
+        scores[poke] = 0
+        if myTeam[poke].condition == '0 fnt':
+            scores[poke] = -1000
+            continue
+        moves = myTeam[poke].moves
+        for move in moves:
+            scores[poke] += calcScore(move, myTeam[poke], opponent.species)
+    m = max(scores.values())
+    picks = [poke for poke,score in scores.items() if score == m]
+    pick = 2 # Default switch to the next member
+    if len(picks) == 1:
+        if myActive in picks:
+            picks.remove(myActive)
+            pick = randint(2,6)
+        else:
+            pick = myTeam[picks[0]].teamSlot
+    else:
+        if myActive in picks:
+            picks.remove(myActive)
+        pick = myTeam[picks[randint(0,len(picks)-1)]].teamSlot
+
+    return pick if not opponent.condition == '0 fnt' else randint(2,6) # If asked to switch and the best match-up is in just switched out, pick a random
 
 def getCC1v1Move(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
@@ -47,7 +111,7 @@ def getCC1v1Move(moves, pokemon, opponent):
             values[m] = 0
     options = [m for m,v in values.items() if v == max(values.values())]
     return options[randint(0, len(options)-1)]
-        
+ 
 def getLead(team, opposing):
     scores = {}
     for mon in team:
@@ -62,7 +126,6 @@ def getLead(team, opposing):
         return team[options[randint(0,len(options)-1)]].teamSlot
     except ValueError:
         return randint(1,6)
-
 
 def calcScore(move, mon, opponents):
     ''' Calculates an arbitrary score for a move against an opponent to decide how good it is '''

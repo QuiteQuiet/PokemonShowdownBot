@@ -10,6 +10,9 @@ class Pokemon:
         self.item = item
         self.canMega = canMegaEvo
         self.teamSlot = slot
+    def status(self, cond):
+        self.condition = cond
+        print(self.condition)
 
 class Player:
     def __init__(self):
@@ -21,6 +24,12 @@ class Player:
         self.active = poke
     def updateTeam(self, poke):
         self.team[poke.species] = poke
+    def updateTeamSlots(self):
+        for mon in self.team:
+            if mon == self.active.species:
+                self.team[mon].teamSlot = 1
+                return
+            self.team[mon].teamSlot += 1
     def getPokemon(self, species):
         for poke in self.team:
             if self.team[poke].species == species:
