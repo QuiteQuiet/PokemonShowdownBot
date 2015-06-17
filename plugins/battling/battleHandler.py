@@ -59,7 +59,7 @@ class BattleHandler:
                 species = self.getSpecies(msg[3])
                 stats = {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}
                 moves = ['','','','']
-                hasMega = True if hasMega in Pokedex[species] else False
+                hasMega = True if 'hasMega' in Pokedex[species] else False
                 self.activeBattles[battle].other.updateTeam(
                     Pokemon(species, msg[3], '100/100', False, stats, moves, Pokedex[species]['abilities'][0], '', hasMega, len(self.activeBattles[battle].other.team)+1))
         elif 'player' == msg[1]:
