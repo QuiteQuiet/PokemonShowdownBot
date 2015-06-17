@@ -31,14 +31,18 @@ def calcMatchup(me, other):
     score = 0
     for m in me.moves:
         score += calcScore(m, me, other.species)
-    if score > 140:
-        return 'good'
-    return 'bad'
+    return score
 def pickAction(me, other):
-    matchup = calcMatchup(me.active, other)
-    if matchup == 'good':
+    matchups = {}
+    for mon in me.team:
+        if not me.team[mon].condition == '0 fnt':
+            matchups[mon] = calcMatchup(me.team[mon], other)
+    if matchups[me.active.species] > 140:
         return 'move'
     if not randint(0,5):
+        return 'move'
+    best = [poke for poke,res in matchups.items() if res == max(matchups.values())]
+    if best[0] == me.active.species:
         return 'move'
     fainted = 0
     for mon in me.team:
