@@ -70,17 +70,17 @@ def getSwitch(myTeam, myActive, opponent):
     picks = [poke for poke,score in scores.items() if score == m]
     pick = 2 # Default switch to the next member
     if len(picks) == 1:
-        if myActive in picks:
+        if myActive.species in picks:
             picks.remove(myActive)
             pick = randint(2,6)
         else:
             pick = myTeam[picks[0]].teamSlot
     else:
-        if myActive in picks:
+        if myActive.species in picks:
             picks.remove(myActive)
         pick = myTeam[picks[randint(0,len(picks)-1)]].teamSlot
 
-    return pick if not opponent.condition == '0 fnt' else randint(2,6) # If asked to switch and the best match-up is in just switched out, pick a random
+    return pick if not opponent.condition == '0 fnt' else randint(2,6)
 
 def getCC1v1Move(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
