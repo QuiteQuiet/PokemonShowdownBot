@@ -26,7 +26,7 @@ import json
 
 from robot import PokemonShowdownBot
 from commands import Command, GameCommands
-from plugins.tournaments import supportedFormats
+from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
 
 class PSBot(PokemonShowdownBot):
