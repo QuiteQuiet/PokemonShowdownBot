@@ -13,4 +13,9 @@ Chat games like hangman are supported by one game at a time. No two games can be
 Tournaments
 -----------
 
-TODO
+Tournaments in any of the supported formats will be joined if the following conditions are met:
+- The tournament start after the bot enter the room.
+- The tournament format is among the supported formats (see below).
+- The option to join tournamets is enabled.
+
+Currently only Challenge Cup 1v1 is supported.
