@@ -81,7 +81,7 @@ def getSwitch(myTeam, myActive, opponent):
     if pick <= 1:
         notFaintedMons = []
         for mon in myTeam:
-            if not myTeam[mon].condition == '0 fnt' and not myTeam[mon].condition == 1:
+            if not myTeam[mon].condition == '0 fnt' and not myTeam[mon].teamSlot == 1:
                 notFaintedMons.append(myTeam[mon].teamSlot)
         print(pick, notFaintedMons)
         pick = notFaintedMons[randint(0,len(notFaintedMons)-1)]

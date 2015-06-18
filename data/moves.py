@@ -159,7 +159,8 @@ Moves = {
         "category": "Status",
         "pp": 15,
         "priority": 1,
-        "flags": {},        "secondary": False,
+        "flags": {},
+        "secondary": False,
         "target": "self",
         "type": "Psychic"
     },
@@ -252,6 +253,7 @@ Moves = {
         "pp": 5,
         "priority": 0,
         "flags": {"snatch", "distance"},
+        "secondary": False,
         "target": "allyTeam",
         "type": "Grass"
     },
@@ -669,7 +671,8 @@ Moves = {
         "category": "Physical",
         "pp": 5,
         "priority": 0,
-        "flags": {"contact", "charge", "protect", "mirror", "gravity", "distance"},     "secondary": {
+        "flags": {"contact", "charge", "protect", "mirror", "gravity", "distance"},
+        "secondary": {
             "chance": 30,
             "status": 'par'
         },
@@ -1201,7 +1204,8 @@ Moves = {
         "pp": 10,
         "priority": 3,
         "flags": {},
-        "sidecondition": 'craftyshield',      "secondary": False,
+        "sidecondition": 'craftyshield',
+        "secondary": False,
         "target": "allySide",
         "type": "Fairy"
     },
@@ -1229,6 +1233,10 @@ Moves = {
             "status": 'psn'
         },
         "critRatio": 2,
+        "secondary": {
+            "chance": 10,
+            "status": 'psn'
+        },
         "target": "normal",
         "type": "Poison"
     },
@@ -1426,7 +1434,8 @@ Moves = {
         "category": "Physical",
         "pp": 10,
         "priority": 0,
-        "flags": {"contact", "charge", "protect", "mirror", "nonsky"},      "secondary": False,
+        "flags": {"contact", "charge", "protect", "mirror", "nonsky"},
+        "secondary": False,
         "target": "normal",
         "type": "Ground"
     },
@@ -1473,7 +1482,8 @@ Moves = {
         "category": "Physical",
         "pp": 10,
         "priority": 0,
-        "flags": {"contact", "charge", "protect", "mirror", "nonsky"},      "secondary": False,
+        "flags": {"contact", "charge", "protect", "mirror", "nonsky"},
+        "secondary": False,
         "target": "normal",
         "type": "Water"
     },
@@ -1594,6 +1604,7 @@ Moves = {
                 "spd": -1
             }
         },
+        "secondary": False,
         "target": "any",
         "type": "Flying"
     },
@@ -1682,6 +1693,7 @@ Moves = {
         "priority": -6,
         "flags": {"contact", "protect", "mirror"},
         "forceSwitch": True,
+        "secondary": False,
         "target": "normal",
         "type": "Dragon"
     },
@@ -1803,7 +1815,8 @@ Moves = {
         "category": "Special",
         "pp": 15,
         "priority": 0,
-        "flags": {"protect", "mirror", "sound", "authentic"},       "secondary": False,
+        "flags": {"protect", "mirror", "sound", "authentic"},
+        "secondary": False,
         "target": "normal",
         "type": "Normal"
     },
@@ -1967,7 +1980,8 @@ Moves = {
         "category": "Status",
         "pp": 15,
         "priority": 0,
-        "flags": {"protect", "reflectable", "mirror"},      "secondary": False,
+        "flags": {"protect", "reflectable", "mirror"},
+        "secondary": False,
         "target": "normal",
         "type": "Normal"
     },
@@ -2136,7 +2150,8 @@ Moves = {
         "category": "Physical",
         "pp": 25,
         "priority": 0,
-        "flags": {"contact", "protect", "mirror"},      "secondary": False,
+        "flags": {"contact", "protect", "mirror"},
+        "secondary": False,
         "target": "normal",
         "type": "Bug"
     },
@@ -2191,7 +2206,7 @@ Moves = {
         "pp": 15,
         "priority": 0,
         "flags": {"bite", "contact", "protect", "mirror"},
-        "secondaries": [
+        "secondary": [
             {
                 "chance": 10,
                 "status": 'brn'
@@ -2408,7 +2423,8 @@ Moves = {
         "category": "Physical",
         "pp": 15,
         "priority": 0,
-        "flags": {"contact", "charge", "protect", "mirror", "gravity", "distance"},     "secondary": False,
+        "flags": {"contact", "charge", "protect", "mirror", "gravity", "distance"},
+        "secondary": False,
         "target": "any",
         "type": "Flying"
     },
@@ -2495,7 +2511,8 @@ Moves = {
         "pp": 40,
         "priority": 0,
         "flags": {"protect", "reflectable", "mirror", "authentic"},
-        "volatileStatus": 'foresight',      "secondary": False,
+        "volatileStatus": 'foresight',
+        "secondary": False,
         "target": "normal",
         "type": "Normal"
     },
@@ -2605,7 +2622,8 @@ Moves = {
         "category": "Physical",
         "pp": 20,
         "priority": 0,
-        "flags": {"contact", "protect", "mirror"},      "secondary": False,
+        "flags": {"contact", "protect", "mirror"},
+        "secondary": False,
         "target": "normal",
         "type": "Bug"
     },
@@ -2663,7 +2681,8 @@ Moves = {
         "pp": 10,
         "priority": 0,
         "flags": {"protect", "reflectable", "mirror"},
-        "volatileStatus": 'gastroacid',     "secondary": False,
+        "volatileStatus": 'gastroacid',
+        "secondary": False,
         "target": "normal",
         "type": "Poison"
     },
@@ -3027,6 +3046,7 @@ Moves = {
         "pp": 5,
         "priority": 0,
         "flags": {"snatch", "sound", "distance", "authentic"},
+        "secondary": False,
         "target": "allyTeam",
         "type": "Normal"
     },
@@ -3146,7 +3166,8 @@ Moves = {
         "pp": 20,
         "priority": 5,
         "flags": {"authentic"},
-        "volatileStatus": 'helpinghand',        "secondary": False,
+        "volatileStatus": 'helpinghand',
+        "secondary": False,
         "target": "adjacentAlly",
         "type": "Normal"
     },
@@ -3614,7 +3635,7 @@ Moves = {
         "pp": 15,
         "priority": 0,
         "flags": {"bite", "contact", "protect", "mirror"},
-        "secondaries": [
+        "secondary": [
             {
                 "chance": 10,
                 "status": 'frz'
@@ -3982,7 +4003,8 @@ Moves = {
         "pp": 10,
         "priority": 0,
         "flags": {"protect", "reflectable", "mirror"},
-        "volatileStatus": 'leechseed',      "secondary": False,
+        "volatileStatus": 'leechseed',
+        "secondary": False,
         "target": "normal",
         "type": "Grass"
     },
@@ -4159,7 +4181,8 @@ Moves = {
         "category": "Status",
         "pp": 10,
         "priority": 0,
-        "flags": {"mirror"},        "secondary": False,
+        "flags": {"mirror"},
+        "secondary": False,
         "target": "all",
         "type": "Psychic"
     },
@@ -4239,7 +4262,8 @@ Moves = {
         "priority": 0,
         "flags": {"snatch", "nonsky"},
         "stallingMove": True,
-        "volatileStatus": 'matblock',       "secondary": False,
+        "volatileStatus": 'matblock',
+        "secondary": False,
         "target": "allySide",
         "type": "Fighting"
     },
@@ -4249,7 +4273,8 @@ Moves = {
         "category": "Status",
         "pp": 20,
         "priority": 0,
-        "flags": {"protect", "authentic"},      "secondary": False,
+        "flags": {"protect", "authentic"},
+        "secondary": False,
         "target": "adjacentFoe",
         "type": "Normal"
     },
@@ -4346,7 +4371,6 @@ Moves = {
         "pp": 10,
         "priority": 0,
         "flags": {"protect", "mirror"},
-
         "secondary": False,
         "target": "scripted",
         "type": "Steel"
@@ -4441,7 +4465,8 @@ Moves = {
         "category": "Status",
         "pp": 5,
         "priority": 0,
-        "flags": {"protect", "mirror"},     "secondary": False,
+        "flags": {"protect", "mirror"},
+        "secondary": False,
         "target": "normal",
         "type": "Normal"
     },
@@ -4467,7 +4492,8 @@ Moves = {
         "pp": 40,
         "priority": 0,
         "flags": {"protect", "reflectable", "mirror", "authentic"},
-        "volatileStatus": 'miracleeye',     "secondary": False,
+        "volatileStatus": 'miracleeye',
+        "secondary": False,
         "target": "normal",
         "type": "Psychic"
     },
@@ -4478,7 +4504,6 @@ Moves = {
         "pp": 20,
         "priority": -5,
         "flags": {"protect"},
-
         "secondary": False,
         "target": "scripted",
         "type": "Psychic"
@@ -4699,7 +4724,8 @@ Moves = {
         "category": "Physical",
         "pp": 15,
         "priority": 0,
-        "flags": {"protect", "mirror"},     "secondary": False,
+        "flags": {"protect", "mirror"},
+        "secondary": False,
         "target": "normal",
         "type": "Normal"
     },
@@ -4878,6 +4904,7 @@ Moves = {
         "pp": 10,
         "priority": 0,
         "flags": {"protect", "pulse", "mirror"},
+        "secondary": False,
         "target": "allAdjacentFoes",
         "type": "Water"
     },
@@ -7364,7 +7391,7 @@ Moves = {
         "pp": 15,
         "priority": 0,
         "flags": {"bite", "contact", "protect", "mirror"},
-        "secondaries": [
+        "secondary": [
             {
                 "chance": 10,
                 "status": 'par'
