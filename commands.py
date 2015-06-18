@@ -31,6 +31,10 @@ def Command(self, cmd, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
     # Debug commands and program info
     if cmd == 'echo':
+        if msg[0] == '/':
+            msg = '/' + msg
+        if msg[0] == '!':
+            msg = ' ' + msg
         return msg, True
     elif cmd in ['source', 'git']:
         return 'Source code can be found at: {url}'.format(url = URL()), False
@@ -38,6 +42,8 @@ def Command(self, cmd, msg, user):
         return 'Credits can be found: {url}'.format(url = URL()), True
     elif cmd in ['commands', 'help']:
         return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True
+    elif cmd == 'explain':
+        return "People often call me BB, even though that's not my name :)", True
     elif cmd == 'leave':
         msg = msg.replace(' ','')
         if self.leaveRoom(msg):
