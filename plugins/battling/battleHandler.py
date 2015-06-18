@@ -52,7 +52,7 @@ class BattleHandler:
             if 'forceSwitch' in request:
                 if request['forceSwitch'][0]:
                     curBattle = self.activeBattles[battle]
-                    self.act(battle, 'switch', getSwitch(curBattle.me.team, curBattle.me.active, curBattle.other.active), curBattle.rqid)
+                    self.act(battle, 'switch', getSwitch(curBattle.me.team, curBattle.me.active.species, curBattle.other.active), curBattle.rqid)
                 
         elif 'poke' == msg[1]:
             if not self.activeBattles[battle].me.id == msg[2]:
@@ -77,8 +77,9 @@ class BattleHandler:
         elif 'switch' == msg[1]:
             btl = self.activeBattles[battle]
             if msg[2].startswith(btl.me.id):
+                lastActive = btl.me.active
                 btl.me.setActive(btl.me.getPokemon(self.getSpecies(msg[3])))
-                btl.me.updateTeamSlots()
+                btl.me.changeTeamSlot(lastActive, btl.me.active)
             else:
                 mon = self.getSpecies(msg[3])
                 if mon not in btl.other.team:
@@ -92,3 +93,14 @@ class BattleHandler:
             else:
                 self.respond(battle, "It's okay, I didn't think I'd win anyway :>")
             self.respond(battle, '/leave')
+
+        # In-battle events
+        elif '-mega' == msg[1]:
+            btl = self.activeBattles[battle]
+            mega = msg[3] + '-Mega'
+            if msg[3] in ['Charizard', 'Mewtwo']:
+                mega += '-' + msg[4].split()[1]
+            if msg[2].startswith(btl.me.id):
+                btl.me.removeBaseForm(msg[3], mega)
+            else:
+                btl.other.removeBaseForm(msg[3], mega)

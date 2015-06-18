@@ -12,7 +12,6 @@ class Pokemon:
         self.teamSlot = slot
     def status(self, cond):
         self.condition = cond
-        print(self.condition)
 
 class Player:
     def __init__(self):
@@ -24,16 +23,22 @@ class Player:
         self.active = poke
     def updateTeam(self, poke):
         self.team[poke.species] = poke
-    def updateTeamSlots(self):
-        for mon in self.team:
-            if mon == self.active.species:
-                self.team[mon].teamSlot = 1
-                return
-            self.team[mon].teamSlot += 1
+    def changeTeamSlot(self, old, new):
+        if old == None:
+            for m in self.team:
+                if self.team[m].teamSlot == 1:
+                    old = self.team[m]
+        old.teamSlot, new.teamSlot = new.teamSlot, old.teamSlot
+        print('switched',old.species,'with',new.species)
+        for m in self.team:
+            print(self.team[m].teamSlot, m)
     def getPokemon(self, species):
         for poke in self.team:
             if self.team[poke].species == species:
                 return self.team[poke]
+    def removeBaseForm(self, pokemon, mega):
+        self.team[mega] = self.team.pop(pokemon, None)
+        self.team[mega].species = mega
 
 class Battle:
     def __init__(self, name):

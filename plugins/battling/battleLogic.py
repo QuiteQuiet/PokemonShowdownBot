@@ -6,9 +6,9 @@ from data.types import Types
 
 blacklist = {'focuspunch','fakeout','snore','dreameater','lastresort','explosion','selfdestruct','synchronoise','belch','trumphcard','wringout'}
 chargemoves = {'hyperbeam','gigaimpact','frenzyplant','blastburn','hydrocannon','rockwrecker','roaroftime','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash','skyattack','skydrop','solarbeam'}
-waterImmune = ['dryskin','waterabsorb','stormdrain','desolateland']
+waterImmune = ['dryskin','waterabsorb','stormdrain']
 grassImmune = ['sapsipper']
-fireImmune = ['flashfire','primordialsea']
+fireImmune = ['flashfire']
 groundImmune = ['levitate']
 
 def getAction(battle, playing):
@@ -24,7 +24,7 @@ def getAction(battle, playing):
     else:
         act = pickAction(battle.me, battle.other.active)
         if act == 'switch':
-            return getSwitch(battle.me.team, battle.me.active, battle.other.active), 'switch'
+            return getSwitch(battle.me.team, battle.me.active.species, battle.other.active), 'switch'
         else:
             return getMove(moves, active, battle.other.active), 'move'
 def calcMatchup(me, other):
@@ -57,6 +57,7 @@ def getMove(moves, active, opponent):
         move += ' mega'
     return move
 def getSwitch(myTeam, myActive, opponent):
+    print('getting switch...')
     scores = {}
     for poke in myTeam:
         scores[poke] = 0
@@ -68,19 +69,23 @@ def getSwitch(myTeam, myActive, opponent):
             scores[poke] += calcScore(move, myTeam[poke], opponent.species)
     m = max(scores.values())
     picks = [poke for poke,score in scores.items() if score == m]
-    pick = 2 # Default switch to the next member
+    print(picks)
+    pick = 0 # Default switch to the next member
     if len(picks) == 1:
-        if myActive.species in picks:
-            picks.remove(myActive)
-            pick = randint(2,6)
-        else:
+        if myActive not in picks:
             pick = myTeam[picks[0]].teamSlot
     else:
-        if myActive.species in picks:
+        if myActive in picks:
             picks.remove(myActive)
         pick = myTeam[picks[randint(0,len(picks)-1)]].teamSlot
-
-    return pick if not opponent.condition == '0 fnt' else randint(2,6)
+    if pick <= 1:
+        notFaintedMons = []
+        for mon in myTeam:
+            if not myTeam[mon].condition == '0 fnt' and not myTeam[mon].condition == 1:
+                notFaintedMons.append(myTeam[mon].teamSlot)
+        print(pick, notFaintedMons)
+        pick = notFaintedMons[randint(0,len(notFaintedMons)-1)]
+    return pick
 
 def getCC1v1Move(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
@@ -135,6 +140,7 @@ def calcScore(move, mon, opponents):
     ''' Calculates an arbitrary score for a move against an opponent to decide how good it is '''
     if 'hiddenpower' in  move:
         move = move[:-2]
+    move = move.replace("'",'')
     move = Moves[move]
     opp = Pokedex[opponents]
 
