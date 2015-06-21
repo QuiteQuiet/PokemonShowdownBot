@@ -275,6 +275,11 @@ def Command(self, cmd, msg, user):
             else:
             	return 'You do not have permission to end the anagram. (Requires %)', True
         else:
+            if not msg:
+                if isGameType(self.details['gamerunning'], Anagram):
+                    return 'Current anagram: {word}'.format(word = self.details['gamerunning'].getWord()), True
+                else:
+                    return 'There is no active anagram right now', False
             return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
     elif cmd == 'a':
         if isGameType(self.details['gamerunning'], Anagram):
