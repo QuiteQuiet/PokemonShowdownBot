@@ -148,6 +148,17 @@ def Command(self, cmd, msg, user):
             return Links[cmd][msg], True
         else:
             return '{tier} is not a supported format for {command}'.format(tier = msg, command = cmd), True
+    # Offline messages
+    elif cmd == 'tell':
+        if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
+        msg = msg.split(',')
+        to = re.sub(r'[^a-zA-z0-9]', '', msg[0]).lower()
+        if self.usernotes.hasMessage(to):
+            return 'This user already have a message waiting', False
+        if len(msg[1].lstrip()) > 150:
+            return 'Message is too long. Max limit is 150 characters', False
+        self.usernotes.addMessage(to, user['unform'], msg[1].lstrip())
+        return "I'll be sure to tell them that.", True 
     # Fun stuff
     elif cmd == 'pick':
         options = msg.split(',')

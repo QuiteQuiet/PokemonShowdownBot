@@ -28,11 +28,13 @@ from robot import PokemonShowdownBot
 from commands import Command, GameCommands
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
+from plugins.messages import MessageDatabase
 
 class PSBot(PokemonShowdownBot):
     def __init__(self):
         self.do = Command
         self.gameCommands = GameCommands
+        self.usernotes = MessageDatabase()
         PokemonShowdownBot.__init__(self,
                                     'ws://sim.smogon.com:8000/showdown/websocket',
                                     self.splitMessage)
@@ -109,6 +111,9 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(message[2][1:]): self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].addUser(user, message[2][0])
+            # If the user have a message waiting, send that message in a pm
+            if self.usernotes.hasMessage(user):
+                self.sendPm(user, self.usernotes.getMessage(user))
         elif 'l' in message[1].lower():
             if self.userIsSelf(message[2][1:]): return
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
@@ -130,7 +135,6 @@ class PSBot(PokemonShowdownBot):
             if room.moderate:
                 anything = moderation.shouldAct(message[4].lower(), user)
                 if anything:
-                    print(anything)
                     action, reason = moderation.getAction(user, anything)
                     self.log(action, user['name'])
                     self.takeAction(room.title, user['name'], action, reason)
