@@ -6,10 +6,10 @@ from data.types import Types
 
 blacklist = {'focuspunch','fakeout','snore','dreameater','lastresort','explosion','selfdestruct','synchronoise','belch','trumphcard','wringout'}
 chargemoves = {'hyperbeam','gigaimpact','frenzyplant','blastburn','hydrocannon','rockwrecker','roaroftime','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash','skyattack','skydrop','solarbeam'}
-waterImmune = ['dryskin','waterabsorb','stormdrain']
-grassImmune = ['sapsipper']
-fireImmune = ['flashfire']
-groundImmune = ['levitate']
+waterImmune = ['Dry Skin','Water Absorb','Storm Drain']
+grassImmune = ['Sap Sipper']
+fireImmune = ['Flash Fire']
+groundImmune = ['Levitate']
 
 def getAction(battle, playing):
     active = battle.me.active
@@ -116,7 +116,7 @@ def getCC1v1Move(moves, pokemon, opponent):
             values[m] = 0
         if Moves[m]['type'] == 'Grass' and Pokedex[opponent.species]['abilities'][0] in grassImmune:
             values[m] = 0
-        if Moves[m]['type'] == 'Ground' and (Pokedex[opponent.species]['abilities'][0] in groundImmune or opponent.item == 'airballon'):
+        if Moves[m]['type'] == 'Ground' and Pokedex[opponent.species]['abilities'][0] in groundImmune or opponent.item == 'airballon':
             values[m] = 0
     options = [m for m,v in values.items() if v == max(values.values())]
     return options[randint(0, len(options)-1)]

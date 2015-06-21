@@ -28,8 +28,9 @@ class Player:
             for m in self.team:
                 if self.team[m].teamSlot == 1:
                     old = self.team[m]
+        print('switching',old.species)
+        print('with',new.species)
         old.teamSlot, new.teamSlot = new.teamSlot, old.teamSlot
-        print('switched',old.species,'with',new.species)
         for m in self.team:
             print(self.team[m].teamSlot, m)
     def getPokemon(self, species):
