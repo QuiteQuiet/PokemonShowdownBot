@@ -1,8 +1,6 @@
 import json
 from random import randint
 
-supportedFormats = ['challengecup1v1']
-
 class Tournament:
     def __init__(self, ws, roomName):
         self.ws = ws
