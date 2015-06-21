@@ -19,6 +19,8 @@ Standard commands
 - ~viability tier, ~speedtiers tier, ~np tier, ~sample tier, ~roles tier :
 - The above five commands bring up their respective forum resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 
+- tell [user], [message] : This will save [message], and when [user] join any room the bot is in, they will get a PM with the message, as well as who sent it. Messages are not saved on a restart, and each recipient can only wait on one message at a time.
+
 Chat Games
 ----------
 These commands are only allowed after relevant part enbling them through the allowgames command, and then it's only enabled for a single room. Only one of these can be played at any point, which is shared across all rooms it's currently in.
@@ -31,6 +33,7 @@ Anagram
 - anagram new : Generates a new anagram from a Pokémon or a move.
 - anagram hint : Display the hint for the current anagram
 - anagram end : Forcefully ends the current game, revealing the solution
+- Doing ~anagram without any parameter prints out the current anagram if one exists.
 - a : Guess the solution. Everything after a is treated as the guess.
 
 Extended commands
@@ -46,4 +49,4 @@ and as such require global or roomauth of some degree.
 - whitelistadd [user]: Add a user to the whitelist.
 - removewl [user]: Remove a user from the whitelist.
 
-None of the above commands save the current settings, and will be cleared on a restart. To save settings, use `savedetails`, which save everything currently in details.
+None of the above commands save the current settings, and will be cleared on a restart. To save settings, use `savedetails`, which save everything currently in details (including games and battles for now).
