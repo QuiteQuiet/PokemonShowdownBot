@@ -24,10 +24,11 @@ from data.types import Types
 from data.replies import Lines
 
 from plugins.games import Hangman, Anagram
+from plugins.trivia.trivia import Trivia
 
-GameCommands = ['hangman', 'hg', 'anagram']
+GameCommands = ['hangman', 'hg', 'anagram', 'trivia', 'ta']
 
-def Command(self, cmd, msg, user):
+def Command(self, cmd, room, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
     # Debug commands and program info
     if cmd == 'echo':
@@ -45,7 +46,7 @@ def Command(self, cmd, msg, user):
     elif cmd == 'explain':
         return "People often call me BB, even though that's not my name :)", True
     elif cmd == 'leave':
-        msg = msg.replace(' ','')
+        msg = removeSpaces(msg)
         if self.leaveRoom(msg):
             return 'Leaving room {r} succeeded'.format(r = msg), False
         else:
@@ -69,7 +70,7 @@ def Command(self, cmd, msg, user):
     elif cmd == 'broadcast':
         return 'Rank required to broadcast: {rank}'.format(rank = self.details['broadcastrank']), True
     elif cmd == 'setbroadcast':
-        msg = msg.replace(' ','')
+        msg = removeSpaces(msg)
         if msg in self.Groups or msg in ['off', 'no', 'false']:
             if canChange(self, user):
                 if msg in ['off', 'no', 'false']: msg = ' '
@@ -97,13 +98,13 @@ def Command(self, cmd, msg, user):
     elif cmd == 'removewl':
         if canAddUser(self, user):
             self.details['whitelist'].remove(msg)
-            return 'User {usr} removed from the whitelist.'.format(usr =msg), True
+            return 'User {usr} removed from the whitelist.'.format(usr = msg), True
     elif cmd == 'moderate':
         if not msg:
             return 'No parameters given. Command is ~moderate [room],True/False', False
         else:
             if canChange(self, user):
-                things = msg.replace(' ','').split(',')
+                things = removeSpaces(msg).split(',')
                 if not len(things) == 2:
                     return 'Too few/mant parameters given. Command is ~moderate [room],True/False', False
                 if things[0] in self.details['rooms']:
@@ -120,7 +121,7 @@ def Command(self, cmd, msg, user):
 
     elif cmd == 'allowgames':
         if canChange(self, user):
-            msg = msg.replace(' ','')
+            msg = removeSpaces(msg)
             things = msg.split(',')
             if len(things) == 2:
                 if things[0] in self.details['rooms']:
@@ -214,35 +215,35 @@ def Command(self, cmd, msg, user):
     # Hangman
     elif cmd == 'hangman':
         msg = msg.strip().split(',')
-        if 'end' in msg[0] and canStartGame(self, user) and isGameType(self.details['gamerunning'], Hangman):
-            phrase = self.details['gamerunning'].getSolution()
-            self.details['gamerunning'] = None
+        if 'end' in msg[0] and canStartGame(self, user) and isGameType(self.details['rooms'][room].game, Hangman):
+            phrase = self.details['rooms'][room].game.getSolution()
+            self.details['rooms'][room].game = None
             return 'The hangman game was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = phrase), True
         elif 'new' in msg[0]: # ~hangman new,room,[phrase]
             if canStartGame(self, user):
-                if self.details['gamerunning']:
+                if self.details['rooms'][room].game:
                     return 'A game is already running somewhere', False            
                 phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
                 if not phrase.strip():
                     return 'You can only have letters, numbers or spaces in the phrase', False
-                if len(phrase.replace(' ','')) <= 1:
+                if len(removeSpaces(phrase)) <= 1:
                 	  return 'The phrase must be at least two characters long', False
-                self.details['gamerunning'] = Hangman(phrase)
-                return 'A new game of hangman has begun:\n' + self.details['gamerunning'].printCurGame(), True
+                self.details['rooms'][room].game = Hangman(phrase)
+                return 'A new game of hangman has begun:\n' + self.details['rooms'][room].game.printCurGame(), True
             else:
                 return 'You do not have permission to start a game in this room. (Requires %)', False
         else:
             return 'To start a new hangman game: ~hangman new,[room],[phrase]', True
     elif cmd == 'hg':
-        if isGameType(self.details['gamerunning'], Hangman):
-            if len(msg.replace(' ','')) == 1:
-                return self.details['gamerunning'].guessLetter(msg.replace(' ','').lower()), True
+        if isGameType(self.details['rooms'][room].game, Hangman):
+            if len(removeSpaces(msg)) == 1:
+                return self.details['rooms'][room].game.guessLetter(msg.replace(' ','').lower()), True
             else:
                 if not msg.lstrip():
                     return "You can't guess nothing", True
-                if self.details['gamerunning'].guessPhrase(msg.lstrip()):
-                    solved = self.details['gamerunning'].getFormatedPhrase()
-                    self.details['gamerunning'] = None
+                if self.details['rooms'][room].game.guessPhrase(msg.lstrip()):
+                    solved = self.details['rooms'][room].game.getFormatedPhrase()
+                    self.details['rooms'][room].game = None
                     return 'Congratulations {name}. You won!\nThe phrase was: {phrase}'.format(name = user['unform'], phrase = solved), True
                 else:
                     return '{test} is wrong!'.format(test = msg.lstrip()), True
@@ -252,23 +253,23 @@ def Command(self, cmd, msg, user):
     elif cmd == 'anagram':
         if msg == 'new':
             if canStartGame(self, user):    
-                if self.details['gamerunning']:
+                if self.details['rooms'][room].game:
                     return 'A game is already running somewhere', False
                 else:
-                    self.details['gamerunning'] = Anagram()
-                    return 'A new anagram has been created:\n' + self.details['gamerunning'].getWord(), True
+                    self.details['rooms'][room].game = Anagram()
+                    return 'A new anagram has been created:\n' + self.details['rooms'][room].game.getWord(), True
             else:
                 return 'You do not have permission to start a game in this room. (Requires %)', False
         elif msg == 'hint':
-            if self.details['gamerunning']:
-                return 'The hint is: ' + self.details['gamerunning'].getHint(), True
+            if self.details['rooms'][room].game:
+                return 'The hint is: ' + self.details['rooms'][room].game.getHint(), True
             else:
                 return 'There is no active anagram right now', False
         elif msg == 'end':
             if canStartGame(self, user):
-                if isGameType(self.details['gamerunning'], Anagram):
-                    solved = self.details['gamerunning'].getSolvedWord()
-                    self.details['gamerunning'] = None
+                if isGameType(self.details['rooms'][room].game, Anagram):
+                    solved = self.details['rooms'][room].game.getSolvedWord()
+                    self.details['rooms'][room].game = None
                     return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = solved), True
                 else:
                     return 'There is no active anagram or a different game is active.', False
@@ -276,23 +277,53 @@ def Command(self, cmd, msg, user):
             	return 'You do not have permission to end the anagram. (Requires %)', True
         else:
             if not msg:
-                if isGameType(self.details['gamerunning'], Anagram):
-                    return 'Current anagram: {word}'.format(word = self.details['gamerunning'].getWord()), True
+                if isGameType(self.details['rooms'][room].game, Anagram):
+                    return 'Current anagram: {word}'.format(word = self.details['rooms'][room].game.getWord()), True
                 else:
                     return 'There is no active anagram right now', False
             return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
     elif cmd == 'a':
-        if isGameType(self.details['gamerunning'], Anagram):
-            if self.details['gamerunning'].isCorrect(msg.replace(' ','').lower()):
-                solved = self.details['gamerunning'].getSolvedWord()
-                timeTaken = self.details['gamerunning'].getSolveTimeStr()
-                self.details['gamerunning'] = None
+        game = self.details['rooms'][room].game
+        if isGameType(game, Anagram):
+            if game.isCorrect(removeSpaces(msg).lower()):
+                solved = game.getSolvedWord()
+                timeTaken = game.getSolveTimeStr()
+                self.details['rooms'][room].game = None
                 return 'Congratulations, {name} got it{time}\nThe solution was: {solution}'.format(name = user['unform'], time = timeTaken, solution = solved), True
             else:
                 return '{test} is wrong!'.format(test = msg.lstrip()), True
         else:
-            return 'There is no anagram active right now', True 
-
+            return 'There is no anagram active right now', True
+    # Trivia
+    elif cmd == 'trivia':
+        if msg:
+            params = removeSpaces(msg).split(',')
+            if params[0] == 'start':
+                kind = 'first'
+                if len(params) > 1:
+                    kind = params[1]
+                if canStartTrivia(self, user):
+                    self.details['rooms'][room].game = Trivia(self.ws, room, kind)
+                    return 'A new trivia session has started.', True
+                else:
+                    return 'You do not have permission to set up a trivia session', False
+            elif params[0] in ['stop', 'end']:
+                # The trivia class will solve everything after doing this.
+                self.details['rooms'][room].game.endSession = True
+                return 'The trivia session has been ended', True
+        return '{msg} is not an valid parameter for trivia', False
+    elif cmd == 'ta':
+        game = self.details['rooms'][room].game
+        if isGameType(game, Trivia):
+            # Don't give information if wrong or right here, let Trivia deal with that
+            if game.tryAnswer(msg):
+                if not game.solver:
+                    game.wasSolved(user['unform'])
+                else:
+                    game.multiple = True
+            return 'NoAnswer', False
+        else:
+            return 'There is no ongoing trivia session.', True            
 
     # Commands with awful conditions last
     elif cmd in formats:
@@ -309,7 +340,7 @@ def Command(self, cmd, msg, user):
                        'giratina-o':'giratina-origin',
                        'mr.mime':'mr_mime',
                        'mimejr.':'mime_jr'}
-        if cmd.lower() not in (p.replace(' ','').lower() for p in Pokedex):
+        if cmd.lower() not in (removeSpaces(p).lower() for p in Pokedex):
             return '{cmd} is not a valid command'.format(cmd = cmd),True
         if cmd in substitutes:
             cmd = substitutes[cmd]
@@ -319,6 +350,10 @@ def Command(self, cmd, msg, user):
         return False, False
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
+def removeSpaces(text):
+    return text.replace(' ','')
+# Permission settings for different things
+# These can't be changed during operation, compared to the general permission
 def isMaster(self, user):
     return user['name'] == self.details['master']
 def canSee(self, user):
@@ -329,6 +364,8 @@ def canAddUser(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
 def canStartGame(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
+def canStartTrivia(self, user):
+    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['@']
 def isGameType(running, gameType):
     return type(running) == gameType  
 def acceptableWeakness(team):
