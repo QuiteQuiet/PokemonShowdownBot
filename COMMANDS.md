@@ -23,7 +23,7 @@ Standard commands
 
 Chat Games
 ----------
-These commands are only allowed after relevant part enbling them through the allowgames command, and then it's only enabled for a single room. Only one of these can be played at any point, which is shared across all rooms it's currently in.
+These commands are only allowed after relevant part enbling them through the allowgames command, and then it's only enabled for a single room. Only one of these can be played per room, so to play something else the first game has to end.
 
 Hangman
 - hangman new, [room], [phrase] : Use hangman new, [room], [phrase] to create a hangman game in [room], with the solution being [phrase]. Forcefully end an ongoing hangman game with hangman end.
@@ -35,6 +35,13 @@ Anagram
 - anagram end : Forcefully ends the current game, revealing the solution
 - Doing ~anagram without any parameter prints out the current anagram if one exists.
 - a : Guess the solution. Everything after a is treated as the guess.
+
+Trivia
+Trivia is played in a 30 second guessing period and a 5 second wait between every question. Answers are only accepted during the answering period
+and not before or after. Games can be stopped at any point during either period.
+- trivia start : Begin a selfrepeating trivia session that will continue until cancelled.
+- trivia end/stop : Stop the ongoing trivia session.
+- ta : Guess on the current question. This doesn't give a reply until after the time runs out.
 
 Extended commands
 -----------------
