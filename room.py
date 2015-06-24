@@ -8,12 +8,13 @@ class Room:
         if not data:
             # This is a hack to support both strings and dicts as input to the class
             data = {'moderate':False, 'allow games':False}
-        self.users = []
+        self.users = {}
         self.loading = True
         self.title = room
         self.moderate = data['moderate']
         self.allowGames = data['allow games']
         self.tour = None
+        self.game = None
     def doneLoading(self):
         self.loading = False
 

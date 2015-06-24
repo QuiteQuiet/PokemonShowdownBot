@@ -153,7 +153,8 @@ class PSBot(PokemonShowdownBot):
                         response = "Please use Pm to start a hangman game."
                         
                 if not response:
-                    response, samePlace = self.do(self, command, message[4][len(command) + 1:].lstrip(), user)
+                    response, samePlace = self.do(self, command, room.title, message[4][len(command) + 1:].lstrip(), user)
+                if response == 'NoAnswer': return
 
                 if self.evalPermission(user) or command in self.gameCommands:
                     if response:
@@ -188,11 +189,13 @@ class PSBot(PokemonShowdownBot):
                             response = 'This room does not support chat games'
                         else:
                             user['group'] = self.getRoom(room).users[user['name']]
-                            response, where = self.do(self, command, params, user)
+                            response, where = self.do(self, command, room, params, user)
                             self.reply(room, user, response, where)
                             return
+                    else:
+                        response = "Don't try to play games in pm please"
                 if not response:
-                    response, where = self.do(self, command, params, user)
+                    response, where = self.do(self, command, 'room', params, user)
                     
                 if response:
                     self.sendPm(user['name'], response)
