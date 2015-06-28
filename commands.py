@@ -310,6 +310,7 @@ def Command(self, cmd, room, msg, user):
             elif params[0] in ['stop', 'end']:
                 # The trivia class will solve everything after doing this.
                 self.details['rooms'][room].game.endSession = True
+                self.details['rooms'][room].game = None
                 return 'The trivia session has been ended', True
         return '{msg} is not an valid parameter for trivia', False
     elif cmd == 'ta':
@@ -403,5 +404,5 @@ def saveDetails(self):
         yaml.dump(details, yf, default_flow_style = False)
 
 def getJoke():
-    people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'iplaytennislol', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'Chef Rice', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern', 'Aladyyn', 'Blast Chance', 'Blastral', 'blaziken1337', 'Dentricos', 'Draeden', 'Finchinator', 'flcl', 'Hjad', 'kiyo', 'oshony', 'Pokedots', "winter's howl"]
+    people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'Tennis', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'Chef Rice', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern', 'Aladyyn', 'Blast Chance', 'Blastral', 'blaziken1337', 'Dentricos', 'Draeden', 'Finchinator', 'flcl', 'Hjad', 'kiyo', 'oshony', 'Pokedots', "winter's howl"]
     return people[randint(0, len(people)-1)]
