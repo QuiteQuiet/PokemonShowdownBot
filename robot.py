@@ -105,7 +105,8 @@ class PokemonShowdownBot:
             self.say(room, response)
         else:
             self.sendPm(user['name'], response)
-
+    def extractCommand(self, msg):
+        return msg[len(self.details['command']):].split(' ')[0].lower()
     def evalPermission(self, user):
         return self.Groups[user['group']] >= self.Groups[self.details['broadcastrank']] or self.details['master'] == user['name'] or user['name'] in self.details['whitelist']
     def takeAction(self, room, user, action, reason):

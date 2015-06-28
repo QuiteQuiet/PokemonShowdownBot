@@ -141,7 +141,7 @@ class PSBot(PokemonShowdownBot):
 
 
             if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():            
-                command = message[4][1:].split()[0].lower()
+                command = self.extractCommand(message[4])
                 self.log(message[4], user['name'])
 
                 response, samePlace = '', True
@@ -177,9 +177,9 @@ class PSBot(PokemonShowdownBot):
                         self.sendPm(user['name'], 'Only global voices (+) and up can add me to rooms, sorry :(')
 
             if message[4].startswith(self.details['command']):
-                command = message[4][1:].split(' ')[0].lower()
+                command = self.extractCommand(message[4])
                 self.log(message[4], user['name'])
-                params = message[4][len(command) + 1:].lstrip()
+                params = message[4][len(command) + len(self.details['command']):].lstrip()
 
                 response, where = '', False
                 if command in self.gameCommands:
