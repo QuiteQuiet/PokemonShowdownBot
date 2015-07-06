@@ -158,7 +158,7 @@ class PSBot(PokemonShowdownBot):
 
                 if self.evalPermission(user) or command in self.gameCommands:
                     if response:
-                        self.reply(room.title, user, response, samePlace)
+                        self.reply(room.title, user, self.escapeText(response), samePlace)
                     else:
                         self.reply(room.title, user, '{cmd} is not a valid command.'.format(cmd = command), samePlace)
                 else:
@@ -176,7 +176,7 @@ class PSBot(PokemonShowdownBot):
                     else:
                         self.sendPm(user['name'], 'Only global voices (+) and up can add me to rooms, sorry :(')
 
-            if message[4].startswith(self.details['command']):
+            if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
                 self.log(message[4], user['name'])
                 params = message[4][len(command) + len(self.details['command']):].lstrip()

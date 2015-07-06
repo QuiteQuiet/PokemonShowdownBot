@@ -105,6 +105,13 @@ class PokemonShowdownBot:
             self.say(room, response)
         else:
             self.sendPm(user['name'], response)
+
+    def escapeText(self, line):
+        if line[0] == '/':
+            return '/' + line
+        elif line[0] == '!':
+            return ' ' + line
+        return line
     def extractCommand(self, msg):
         return msg[len(self.details['command']):].split(' ')[0].lower()
     def evalPermission(self, user):

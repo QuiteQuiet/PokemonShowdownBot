@@ -32,10 +32,6 @@ def Command(self, cmd, room, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
     # Debug commands and program info
     if cmd == 'echo':
-        if msg[0] == '/':
-            msg = '/' + msg
-        if msg[0] == '!':
-            msg = ' ' + msg
         return msg, True
     elif cmd in ['source', 'git']:
         return 'Source code can be found at: {url}'.format(url = URL()), False
