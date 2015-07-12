@@ -102,7 +102,7 @@ def Command(self, cmd, room, msg, user):
             if canChange(self, user):
                 things = removeSpaces(msg).split(',')
                 if not len(things) == 2:
-                    return 'Too few/mant parameters given. Command is ~moderate [room],True/False', False
+                    return 'Too few/many parameters given. Command is ~moderate [room],True/False', False
                 if things[0] in self.details['rooms']:
                     if things[1] in ['True', 'true']:
                         self.details['rooms'][things[0]].moderate = True
