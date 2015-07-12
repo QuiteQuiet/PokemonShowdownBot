@@ -108,7 +108,9 @@ class PSBot(PokemonShowdownBot):
             self.getRoom(room).addUserlist(users)
 
         elif 'j' in message[1].lower():
-            if self.userIsSelf(message[2][1:]): self.getRoom(room).doneLoading()
+            if self.userIsSelf(message[2][1:]):
+                self.details['rooms'][room].rank = message[2][0]
+                self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].addUser(user, message[2][0])
             # If the user have a message waiting, send that message in a pm
@@ -133,7 +135,7 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(user['unform']): return
 
             if room.moderate:
-                anything = moderation.shouldAct(message[4].lower(), user)
+                anything = moderation.shouldAct(message[4].lower(), user)   
                 if anything:
                     action, reason = moderation.getAction(user, anything)
                     self.log(action, user['name'])
