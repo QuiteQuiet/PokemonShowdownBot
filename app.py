@@ -134,10 +134,13 @@ class PSBot(PokemonShowdownBot):
             if user['name'] not in room.users: return
             if self.userIsSelf(user['unform']): return
 
-            if room.moderate:
-                anything = moderation.shouldAct(message[4].lower(), user)   
+            if room.moderate and moderation.canPunish(self, room.title):
+                anything = moderation.shouldAct(message[4], user, room.title)   
                 if anything:
                     action, reason = moderation.getAction(user, anything)
+                    # If the current rank isn't allowed to roomban, keep hourmuting them
+                    if action == 'roomban' and not moderation.canBan(self, room.title):
+                        action = 'hourmute'
                     self.log(action, user['name'])
                     self.takeAction(room.title, user['name'], action, reason)
 
