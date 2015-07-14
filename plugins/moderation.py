@@ -43,6 +43,14 @@ def SPAM_INTERVAL(): return timedelta(seconds = 6)
 
 def canPunish(self, room): return self.Groups[self.details['rooms'][room].rank] >= self.Groups['%']
 def canBan(self, room): return self.Groups[self.details['rooms'][room].rank] >= self.Groups['@']
+
+# User Punishment Class
+class PunishedUser:
+    def __init__(self, name, score, now):
+        self.name = name
+        self.points = score
+        self.lastPunished = now
+        self.lastAction = ''
 # Everything else
 def getUrl(text):
     match = re.search(URL_REGEX, text.replace(' ',''))
@@ -71,14 +79,17 @@ def badLink(link):
             pass
         return True
     return False
-
+def recentlyPunished(user, now):
+    if user['name'] not in punishedUsers:
+        return False
+    timeDiff = now - punishedUsers[user['name']].lastPunished
+    return timeDiff > timedelta(seconds = 3)
 def isBanword(msg):
     for ban in bannedPhrases:
         if ban.lower() in msg:
             return True
     return False
-def isSpam(msg, user, room):
-    now = datetime.now()
+def isSpam(msg, user, room, now):
     if room not in spamTracker:
         spamTracker[room] = {}
     if user['name'] not in spamTracker[room]:
@@ -109,14 +120,17 @@ def isCaps(msg):
     capsCount = len(re.findall(r'[A-Z]', re.sub(r'[^A-Za-z]', '', msg)))
     return capsCount and len(re.sub(r' ','',msg)) > MIN_CAPS_LENGTH() and capsCount >= int(len(re.sub(r' ','',msg)) * CAPS_PROPORTION())
 def getAction(user, wrong):
-    #infractionScore
+    # This time is slightly off to the time gotten for everything else, but not by much
+    # and it's not a large enough error to matter
+    now = datetime.now()
     # Judge users based on their past behavior
     if user['name'] not in punishedUsers:
-        punishedUsers[user['name']] = infractionScore[wrong]
+        punishedUsers[user['name']] = PunishedUser(user['name'], infractionScore[wrong], now)
     else:
-        punishedUsers[user['name']] += infractionScore[wrong]
+        punishedUsers[user['name']].points += infractionScore[wrong]
+        punishedUsers[user['name']].lastPunished = now
 
-    score =  punishedUsers[user['name']]
+    score =  punishedUsers[user['name']].points
     action = ''
     # Under 3 points are low and warning is enough
     if score < 3:
@@ -132,12 +146,16 @@ def getAction(user, wrong):
     # Just ban them then...
     else:
         action = 'roomban'
+    punishedUsers[user['name']].lastAction = action
     return action, actionReplies[wrong]
         
 def shouldAct(msg, user, room):
+    now = datetime.now()
+    if recentlyPunished(user, now):
+        return False
     if isBanword(msg.lower()):
         return 'banword'
-    if isSpam(msg, user, room):
+    if isSpam(msg, user, room, now):
         return 'flooding'
     if isStretching(msg):
         return 'stretching'
