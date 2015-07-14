@@ -31,7 +31,7 @@ actionReplies = {
         'caps': 'Would you mind not using caps so much, please.',
         'stretching': "Please don't stretch words unnecessarily.",
         'badlink': 'The link has nothing to do with NU.',
-        'flooding': "Please type slower and don't spam. :)",
+        'flooding': "Please type slower and don't spam.",
         'banword': "You can't say that in here, so please don't."
     }
 # Constants
