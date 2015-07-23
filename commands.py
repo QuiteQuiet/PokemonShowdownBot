@@ -18,6 +18,7 @@ import json
 import math # For funsies
 
 from data.tiers import tiers, formats
+from data.teams import Teams
 from data.links import Links
 from data.pokedex import Pokedex
 from data.types import Types
@@ -145,6 +146,10 @@ def Command(self, cmd, room, msg, user):
             return Links[cmd][msg], True
         else:
             return '{tier} is not a supported format for {command}'.format(tier = msg, command = cmd), True
+    elif cmd == 'team':
+        if msg not in Teams:
+            return 'Unsupported format', True
+        return Teams[msg][randint(0, len(Teams[msg])-1)], True
     # Offline messages
     elif cmd == 'tell':
         if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
