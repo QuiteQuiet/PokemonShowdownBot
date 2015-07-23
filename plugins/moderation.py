@@ -119,10 +119,9 @@ def isStretching(msg):
 def isCaps(msg):
     capsCount = len(re.findall(r'[A-Z]', re.sub(r'[^A-Za-z]', '', msg)))
     return capsCount and len(re.sub(r' ','',msg)) > MIN_CAPS_LENGTH() and capsCount >= int(len(re.sub(r' ','',msg)) * CAPS_PROPORTION())
-def getAction(user, wrong):
-    # This time is slightly off to the time gotten for everything else, but not by much
-    # and it's not a large enough error to matter
-    now = datetime.now()
+def getAction(user, wrong, unixTime):
+    # This assumes unixTime is a valid unix timestamp
+    now = datetime.utcfromtimestamp(int(unixTime))
     # Judge users based on their past behavior
     if user['name'] not in punishedUsers:
         punishedUsers[user['name']] = PunishedUser(user['name'], infractionScore[wrong], now)
@@ -149,8 +148,8 @@ def getAction(user, wrong):
     punishedUsers[user['name']].lastAction = action
     return action, actionReplies[wrong]
         
-def shouldAct(msg, user, room):
-    now = datetime.now()
+def shouldAct(msg, user, room, unixTime):
+    now = datetime.utcfromtimestamp(int(unixTime))
     if recentlyPunished(user, now):
         return False
     if isBanword(msg.lower()):

@@ -67,7 +67,6 @@ class PSBot(PokemonShowdownBot):
     def parseMessage(self, msg, room):
         if not msg.startswith('|'): return
         message = msg.split('|')
-
        
         # Logging in
         if message[1] == 'challstr':
@@ -134,10 +133,10 @@ class PSBot(PokemonShowdownBot):
             if user['name'] not in room.users: return
             if self.userIsSelf(user['unform']): return
 
-            if room.moderate and moderation.canPunish(self, room.title):
-                anything = moderation.shouldAct(message[4], user, room.title)   
+            if False and room.moderate and moderation.canPunish(self, room.title):
+                anything = moderation.shouldAct(message[4], user, room.title, message[2])   
                 if anything:
-                    action, reason = moderation.getAction(user, anything)
+                    action, reason = moderation.getAction(user, anything, message[2])
                     # If the current rank isn't allowed to roomban, keep hourmuting them
                     if action == 'roomban' and not moderation.canBan(self, room.title):
                         action = 'hourmute'
