@@ -133,7 +133,7 @@ class PSBot(PokemonShowdownBot):
             if user['name'] not in room.users: return
             if self.userIsSelf(user['unform']): return
 
-            if False and room.moderate and moderation.canPunish(self, room.title):
+            if room.moderate and moderation.canPunish(self, room.title):
                 anything = moderation.shouldAct(message[4], user, room.title, message[2])   
                 if anything:
                     action, reason = moderation.getAction(user, anything, message[2])
@@ -207,10 +207,11 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(user['name'], '{cmd} is not a valid command.'.format(cmd = command))
 
         # Tournaments
-        elif self.details['joinTours'] and 'tournament' == message[1]:
+        elif 'tournament' == message[1]:
             if self.getRoom(room).loading: return
             if 'create' in message[2]:
                 # Tour was created, join it if in supported formats
+                if not self.details['joinTours']: return
                 room = self.getRoom(room)
                 if not room.tour:
                     room.createTour(self.ws)
@@ -230,6 +231,6 @@ class PSBot(PokemonShowdownBot):
             else:
                 if self.getRoom(room).tour:
                     self.getRoom(room).tour.onUpdate(message[2:])
-            
+                
 
 psb = PSBot()
