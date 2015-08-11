@@ -196,6 +196,8 @@ class PSBot(PokemonShowdownBot):
                             response, where = self.do(self, command, room, params, user)
                             self.reply(room, user, response, where)
                             return
+                    elif params.startswith('score'):
+                        response, where = self.do(self, command, 'pm', params, user)
                     else:
                         response = "Don't try to play games in pm please"
                 if not response:

@@ -27,7 +27,12 @@ from data.replies import Lines
 from plugins.games import Hangman, Anagram
 from plugins.trivia.trivia import Trivia
 
-GameCommands = ['hangman', 'hg', 'anagram', 'trivia', 'ta']
+GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
+Scoreboard = {}
+with open('plugins/scoreboard.yaml') as yf:
+    Scoreboard = yaml.load(yf)
+    if not Scoreboard: # Empty yaml file set Scoreboard to None, but an empty dict is better
+        Scoreboard = {}
 
 def Command(self, cmd, room, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
@@ -276,6 +281,14 @@ def Command(self, cmd, room, msg, user):
                     return 'There is no active anagram or a different game is active.', False
             else:
             	return 'You do not have permission to end the anagram. (Requires %)', True
+        elif msg.startswith('score'):
+            if msg.strip() == 'score':
+                return 'No name was given', True
+            name = re.sub(r'[^a-zA-z0-9]', '', msg[len('score '):]).lower()
+            if name not in Scoreboard:
+                return "This user never won any anagrams", True
+            return 'This user has won {number} anagrams'.format(number = Scoreboard[name]), True
+            
         else:
             if not msg:
                 if isGameType(self.details['rooms'][room].game, Anagram):
@@ -290,6 +303,10 @@ def Command(self, cmd, room, msg, user):
                 solved = game.getSolvedWord()
                 timeTaken = game.getSolveTimeStr()
                 self.details['rooms'][room].game = None
+                # Save score
+                Scoreboard[user['name']] = 1 if user['name'] not in Scoreboard else Scoreboard[user['name']] + 1
+                with open('plugins/scoreboard.yaml', 'w') as ym:
+                    yaml.dump(Scoreboard, ym)
                 return 'Congratulations, {name} got it{time}\nThe solution was: {solution}'.format(name = user['unform'], time = timeTaken, solution = solved), True
             else:
                 return '{test} is wrong!'.format(test = msg.lstrip()), True
