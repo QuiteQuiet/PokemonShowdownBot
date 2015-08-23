@@ -25,6 +25,7 @@ from data.types import Types
 from data.replies import Lines
 
 from plugins.games import Hangman, Anagram
+from plugins.workshop import Workshop
 from plugins.trivia.trivia import Trivia
 
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
@@ -217,6 +218,36 @@ def Command(self, cmd, room, msg, user):
                 break
         return ' / '.join(list(team)), True
 
+    # Workshop is not a hangman game, but uses the allowed slot for a game anyway
+    # Workshops also doesn't follow the chatgames rule, as they're not chat games 
+    elif cmd == 'workshop':
+        if not isGameType(self.details['rooms'][room].game, Workshop):
+            if msg.startswith('new') and canStartGame(self, user):
+                self.details['rooms'][room].game = Workshop(re.sub(r'[^a-zA-z0-9]', '', msg[len('new '):]).lower())
+                return 'A new workshop session was created', True
+            else:
+                return 'No active workshop right now', True
+        workshop = self.details['rooms'][room].game
+        if msg.startswith('add'):
+            if not user['name'] == workshop.host and not canStartGame(self, user):
+                return 'Only the workshop host or a Room Moderator can add Pokemon', True
+            return workshop.addPokemon(msg[len('add '):]), True
+        elif msg.startswith('remove'):
+            if not user['name'] == workshop.host and not canStartGame(self, user):
+                return 'Only the workshop host or a Room Moderator can remove Pokemon', True
+            return workshop.removePokemon(msg[len('remove '):]), True
+        elif msg == 'clear':
+            if not user['name'] == workshop.host and not canStartGame(self, user):
+                return 'Only the workshop host or a Room Moderator can clear the team', True
+            return workshop.clearTeam(), True
+        elif msg == 'team':
+            return workshop.getTeam(), True
+        elif msg == 'end':
+            if not user['name'] == workshop.host and not canStartGame(self, user):
+                return 'Only the workshop host or a Room Moderator can end the workshop', True
+            workshop = None
+            return 'Workshop session ended', True
+
     # Chat games go here
     # Hangman
     elif cmd == 'hangman':
@@ -228,7 +259,7 @@ def Command(self, cmd, room, msg, user):
         elif 'new' in msg[0]: # ~hangman new,room,[phrase]
             if canStartGame(self, user):
                 if self.details['rooms'][room].game:
-                    return 'A game is already running somewhere', False            
+                    return 'A game is already running in this room', False            
                 phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
                 if not phrase.strip():
                     return 'You can only have letters, numbers or spaces in the phrase', False
@@ -287,7 +318,7 @@ def Command(self, cmd, room, msg, user):
             name = re.sub(r'[^a-zA-z0-9]', '', msg[len('score '):]).lower()
             if name not in Scoreboard:
                 return "This user never won any anagrams", True
-            return 'This user has won {number} anagrams'.format(number = Scoreboard[name]), True
+            return 'This user has won {number} anagram{plural}'.format(number = Scoreboard[name], plural = '' if Scoreboard[name] < 2 else 's'), True
             
         else:
             if not msg:
@@ -316,7 +347,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd == 'trivia':
         if msg:
             params = removeSpaces(msg).split(',')
-            if params[0] == 'start':
+            if params[0] in ['start', 'begin']:
                 kind = 'first'
                 if len(params) > 1:
                     kind = params[1]
