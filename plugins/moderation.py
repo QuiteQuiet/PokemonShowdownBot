@@ -12,7 +12,7 @@ whitelistedUrls = [
     ]
 # Important regexes
 URL_REGEX = re.compile(r'\b(?:(?:(?:https?://|www[.])[a-z0-9\-]+(?:[.][a-z0-9\-]+)*|[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:/(?:(?:[^\s()<>]|[(][^\s()<>]*[)])*(?:[^\s`()<>\[\]{}\'".,!?;:]|[(][^\s()<>]*[)]))?)?|[a-z0-9.]+\b@[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.][a-z]{2,3})', flags = re.I)
-STRETCH_REGEX = re.compile(r'((.)\2{7,})|((..+)\4{4,})', flags = re.I)
+STRETCH_REGEX = re.compile(r'((.)\2{9,})|((..+)\4{6,})', flags = re.I)
 
 # Importat variables
 spamTracker = {}
@@ -25,7 +25,6 @@ infractionScore = {
 }
 punishedUsers = {}
 bannedPhrases = [
-    'sd*skarmory fuckin spanked pokeaim in this ubers match'
     ]
 actionReplies = {
         'caps': 'Would you mind not using caps so much, please.',
@@ -34,9 +33,10 @@ actionReplies = {
         'flooding': "Please type slower and don't spam.",
         'banword': "You can't say that in here, so please don't."
     }
+bannedUsers = []
 # Constants
 def MIN_CAPS_LENGTH(): return 12
-def CAPS_PROPORTION(): return 0.8
+def CAPS_PROPORTION(): return 0.9
 def MESSAGES_FOR_SPAM(): return 5
 def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * MESSAGES_FOR_SPAM()
 def SPAM_INTERVAL(): return timedelta(seconds = 6)
