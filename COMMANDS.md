@@ -44,6 +44,15 @@ and not before or after. Games can be stopped at any point during either period.
 - trivia end/stop : Stop the ongoing trivia session.
 - ta : Guess on the current question. This doesn't give a reply until after the time runs out.
 
+Workshops
+Although not a chatgame, the workshop command use the same container as they do and as such cannot be used if a game is in progress. Similarly, no chat games can be started during a workshop. Do note that the config option about chat games does not apply to workshops.
+- workshop new [name] : Starts a new workshop session with [name] as the host.
+- workshop add [anything] : Adds [anything] to the current workshop team. There's no checking if [anything] exists, so that's up to the host. (Requires Host or @)
+- workshop remove [anything] : Removes [anything] if its in the team. Otherwise the same conditions as add.
+- workshop team : Displays the current workshop team. (Requires Host or @)
+- workshop clear : Deletes the workshop team. (Requires Host or @)
+- workshop end : Ends the workshop session, deleting the team as well. (Requires Host or @)
+
 Extended commands
 -----------------
 
