@@ -28,6 +28,7 @@ from plugins.games import Hangman, Anagram
 from plugins.workshop import Workshop
 from plugins.trivia.trivia import Trivia
 
+usageLink = r'http://www.smogon.com/stats/2015-07/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
 Scoreboard = {}
 with open('plugins/scoreboard.yaml') as yf:
@@ -156,6 +157,8 @@ def Command(self, cmd, room, msg, user):
         if msg not in Teams:
             return 'Unsupported format', True
         return Teams[msg][randint(0, len(Teams[msg])-1)], True
+    elif cmd == 'usage':
+        return usageLink, True
     # Offline messages
     elif cmd == 'tell':
         if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
