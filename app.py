@@ -25,7 +25,7 @@ import re
 import json
 
 from robot import PokemonShowdownBot
-from commands import Command, GameCommands
+from commands import Command, GameCommands, CanPmReplyCommands
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
 from plugins.messages import MessageDatabase
@@ -165,6 +165,8 @@ class PSBot(PokemonShowdownBot):
                         self.reply(room.title, user, self.escapeText(response), samePlace)
                     else:
                         self.reply(room.title, user, '{cmd} is not a valid command.'.format(cmd = command), samePlace)
+                elif command in CanPmReplyCommands:
+                    self.sendPm(user['name'], self.escapeText(response))
                 else:
                     self.sendPm(user['name'], 'Please pm the commands for a response.')
 

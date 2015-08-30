@@ -19,7 +19,7 @@ import math # For funsies
 
 from data.tiers import tiers, formats
 from data.teams import Teams
-from data.links import Links
+from data.links import Links, YoutubeLinks
 from data.pokedex import Pokedex
 from data.types import Types
 from data.replies import Lines
@@ -30,6 +30,7 @@ from plugins.trivia.trivia import Trivia
 
 usageLink = r'http://www.smogon.com/stats/2015-07/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
+CanPmReplyCommands = ['usage', 'help']
 Scoreboard = {}
 with open('plugins/scoreboard.yaml') as yf:
     Scoreboard = yaml.load(yf)
@@ -176,6 +177,8 @@ def Command(self, cmd, room, msg, user):
         return options[randint(0,(len(options)-1))], True
     elif cmd == 'ask':
         return Lines[randint(0, len(Lines)-1)], True
+    elif cmd in YoutubeLinks:
+        return YoutubeLinks[cmd], True
     elif cmd == 'squid':
         if msg:
             if msg.isdecimal():
