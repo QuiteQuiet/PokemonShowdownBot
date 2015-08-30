@@ -54,3 +54,7 @@ Links = {
 	'lc':'http://www.smogon.com/forums/threads/3524037/'
 	}
 }
+YoutubeLinks = {
+    'kiyo':'metaphysical said use Adblock: http://www.youtube.com/user/gottagokiyo',
+    'raseri':'NUTL Content: http://www.youtube.com/user/SmogonRaseri'
+}
