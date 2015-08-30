@@ -318,7 +318,7 @@ def Command(self, cmd, room, msg, user):
             name = re.sub(r'[^a-zA-z0-9]', '', msg[len('score '):]).lower()
             if name not in Scoreboard:
                 return "This user never won any anagrams", True
-            return 'This user has won {number} anagram{plural}'.format(number = Scoreboard[name], plural = '' if Scoreboard[name] < 2 else 's'), True
+            return 'This user has won {number} anagram{plural}'.format(number = Scoreboard[name], plural = '' if not type(Scoreboard[name]) == str and Scoreboard[name] < 2  else 's'), True
             
         else:
             if not msg:
