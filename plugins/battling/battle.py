@@ -24,7 +24,7 @@ class Player:
     def updateTeam(self, poke):
         self.team[poke.species] = poke
     def changeTeamSlot(self, old, new):
-        if old == None:
+        if not old:
             for m in self.team:
                 if self.team[m].teamSlot == 1:
                     old = self.team[m]
