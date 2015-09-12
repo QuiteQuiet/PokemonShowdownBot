@@ -229,7 +229,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd == 'workshop':
         if not isGameType(self.details['rooms'][room].game, Workshop):
             if msg.startswith('new') and canStartGame(self, user):
-                self.details['rooms'][room].game = Workshop(re.sub(r'[^a-zA-z0-9]', '', msg[len('new '):]).lower())
+                self.details['rooms'][room].game = Workshop(re.sub(r'[^a-zA-z0-9]', '', msg[len('new '):] if msg[len('new '):] else user['name']).lower())
                 return 'A new workshop session was created', True
             else:
                 return 'No active workshop right now', True
