@@ -49,7 +49,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd in ['commands', 'help']:
         return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True
     elif cmd == 'explain':
-        return "People often call me BB, even though that's not my name :)", True
+        return "BB-8 is a reference to a robot in the seventh Star Wars movie :)", True
     elif cmd == 'leave':
         msg = removeSpaces(msg)
         if self.leaveRoom(msg):
