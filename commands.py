@@ -266,7 +266,7 @@ def Command(self, cmd, room, msg, user):
             if canStartGame(self, user):
                 if self.details['rooms'][room].game:
                     return 'A game is already running in this room', False            
-                phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].lstrip()))
+                phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].strip()))
                 if not phrase.strip():
                     return 'You can only have letters, numbers or spaces in the phrase', False
                 if len(removeSpaces(phrase)) <= 1:
