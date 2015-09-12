@@ -27,7 +27,7 @@ class PokemonShowdownBot:
     def __init__(self, url, onMessage = None):
         with open("details.yaml", 'r') as yaml_file:
             self.details = yaml.load(yaml_file)
-            self.Groups = {' ':0,'+':1,'%':2,'@':3,'&':4,'#':5,'~':6}
+            self.Groups = {' ':0,'+':1,'★':1,'%':2,'@':3,'&':4,'#':5,'~':6}
             self.splitMessage = onMessage if onMessage else self.onMessage
             self.intro()
             websocket.enableTrace(True)
