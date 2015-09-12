@@ -26,7 +26,7 @@ class Player:
     def changeTeamSlot(self, old, new):
         if not old:
             for m in self.team:
-                if self.team[m].teamSlot == 1:
+                if self.team[m]:
                     old = self.team[m]
         print('switching',old.species)
         print('with',new.species)
