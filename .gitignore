@@ -7,3 +7,6 @@ details.yaml
 
 #scoreboard
 plugins/scoreboard.yaml
+
+# logs
+logs/

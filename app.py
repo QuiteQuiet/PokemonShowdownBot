@@ -16,7 +16,7 @@
 #
 #     user['group'] contain the auth level of the user, as a single character string of
 #     either ' ', +, %, @, &, #, or ~. To compare groups against each other self.Groups have
-#     the information reuiqred when used like: self.Groups[user['group']] for a numeric value.
+#     the information required when used like: self.Groups[user['group']] for a numeric value.
 #
 #     Lastly, user['unform'] is the unaltered name as seen in the chatrooms, and can be used
 #     for things like replying, but shouldn't be used for comparisions.
@@ -29,6 +29,7 @@ from commands import Command, GameCommands, CanPmReplyCommands
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
 from plugins.messages import MessageDatabase
+from plugins.workshop import Workshop
 
 class PSBot(PokemonShowdownBot):
     def __init__(self):
@@ -169,6 +170,10 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(user['name'], self.escapeText(response))
                 else:
                     self.sendPm(user['name'], 'Please pm the commands for a response.')
+
+            if type(room.game) == Workshop:
+                room.game.logSession(room.title, user['group'] + user['unform'], message[4])
+                
 
         elif 'pm' in message[1].lower():
             user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[2]).lower(),'group':message[2][0], 'unform': message[2][1:]}

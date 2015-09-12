@@ -20,3 +20,7 @@ class Workshop:
     def clearTeam(self):
         self.team = []
         return 'team cleared'
+
+    def logSession(self, room, user, message):
+        with open('logs/{room}-workshop-{host}.txt'.format(room = room, host = self.host), 'a') as log:
+            log.write('{name}: {text}\n'.format(name = user, text = message))
