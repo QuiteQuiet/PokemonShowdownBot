@@ -12,7 +12,7 @@ whitelistedUrls = [
     ]
 # Important regexes
 URL_REGEX = re.compile(r'\b(?:(?:(?:https?://|www[.])[a-z0-9\-]+(?:[.][a-z0-9\-]+)*|[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:/(?:(?:[^\s()<>]|[(][^\s()<>]*[)])*(?:[^\s`()<>\[\]{}\'".,!?;:]|[(][^\s()<>]*[)]))?)?|[a-z0-9.]+\b@[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.][a-z]{2,3})', flags = re.I)
-STRETCH_REGEX = re.compile(r'((.)\2{9,})|((..+)\4{6,})', flags = re.I)
+STRETCH_REGEX = re.compile(r'((.)\2{6,})|((..+)\4{4,})', flags = re.I)
 
 # Importat variables
 spamTracker = {}
