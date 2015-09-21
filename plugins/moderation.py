@@ -28,7 +28,7 @@ bannedPhrases = [
     ]
 actionReplies = {
         'caps': 'Would you mind not using caps so much, please.',
-        'stretching': "Please don't stretch words unnecessarily.",
+        'stretching': "Please don't stretch unnecessarily.",
         'badlink': 'The link has nothing to do with NU.',
         'flooding': "Please type slower and don't spam.",
         'banword': "You can't say that in here, so please don't."
@@ -113,7 +113,7 @@ def isSpam(msg, user, room, now):
         return True
     return False
 def isStretching(msg):
-    if re.match(STRETCH_REGEX, msg):
+    if re.search(STRETCH_REGEX, msg):
         return True
     return False
 def isCaps(msg):
