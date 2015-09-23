@@ -35,7 +35,7 @@ def calcMatchup(me, other):
 def pickAction(me, other):
     matchups = {}
     for mon in me.team:
-        if not me.team[mon].condition == '0 fnt':
+        if not me.team[mon].status == 'fnt':
             matchups[mon] = calcMatchup(me.team[mon], other)
     if matchups[me.active.species] > 140:
         return 'move'

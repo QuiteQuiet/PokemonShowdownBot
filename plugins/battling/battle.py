@@ -2,7 +2,8 @@ class Pokemon:
     def __init__(self, ident, details, condition, active, stats, moves, baseAbility, item, canMegaEvo, slot):
         self.species = ident
         self.details = details
-        self.condition = condition
+        self.condition = condition.split()[0]
+        self.status = condition.split()[1] if ' ' in condition else ''
         self.active = active
         self.stats = stats
         self.moves = moves
@@ -10,8 +11,10 @@ class Pokemon:
         self.item = item
         self.canMega = canMegaEvo
         self.teamSlot = slot
-    def status(self, cond):
+        self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0}
+    def setCondition(self, cond, status):
         self.condition = cond
+        self.status = status
 
 class Player:
     def __init__(self):

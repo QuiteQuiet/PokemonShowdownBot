@@ -8,6 +8,7 @@ from plugins.battling.battleLogic import getAction, getSwitch, getLead
 
 supportedFormats = ['challengecup1v1', 'battlefactory', 'randombattle']
 
+# This currently only work in singles and not doubles / triples
 class BattleHandler:
     def __init__(self, ws, name):
         self.ws = ws
@@ -31,6 +32,7 @@ class BattleHandler:
         if not msg: return
         if battle in self.activeBattles and 'init' in msg: return
         msg = msg.split('|')
+        btl = self.activeBattles[battle] if battle in self.activeBattles else None
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
             self.respond(battle, '/timer')
@@ -42,7 +44,7 @@ class BattleHandler:
             sidedata = request['side']
             teamSlot = 1
             for poke in sidedata['pokemon']:
-                self.activeBattles[battle].me.updateTeam(
+                btl.me.updateTeam(
                     Pokemon(self.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
                             poke['stats'],poke['moves'],poke['baseAbility'],poke['item'],poke['canMegaEvo'], teamSlot))
                 teamSlot += 1
@@ -51,8 +53,7 @@ class BattleHandler:
             # This doesn't work for fainting
             if 'forceSwitch' in request:
                 if request['forceSwitch'][0]:
-                    curBattle = self.activeBattles[battle]
-                    self.act(battle, 'switch', getSwitch(curBattle.me.team, curBattle.me.active.species, curBattle.other.active), curBattle.rqid)
+                    self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
                 
         elif 'poke' == msg[1]:
             if not self.activeBattles[battle].me.id == msg[2]:
@@ -60,22 +61,21 @@ class BattleHandler:
                 stats = {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}
                 moves = ['','','','']
                 hasMega = True if 'hasMega' in Pokedex[species] else False
-                self.activeBattles[battle].other.updateTeam(
+                btl.other.updateTeam(
                     Pokemon(species, msg[3], '100/100', False, stats, moves, Pokedex[species]['abilities'][0], '', hasMega, len(self.activeBattles[battle].other.team)+1))
         elif 'player' == msg[1]:
             if len(msg) < 4: return
             if msg[3] == self.botName:
-                self.activeBattles[battle].setMe(msg[3], msg[2])
+                btl.setMe(msg[3], msg[2])
             else:
-                self.activeBattles[battle].setOther(msg[3], msg[2])
+                btl.setOther(msg[3], msg[2])
         elif 'teampreview' == msg[1]:
-            poke = getLead(self.activeBattles[battle].me.team, self.activeBattles[battle].other.team)
-            self.lead(battle, poke, self.activeBattles[battle].rqid)
+            poke = getLead(btl.me.team, btl.other.team)
+            self.lead(battle, poke, btl.rqid)
         elif 'turn' == msg[1]:
-            action, actionType = getAction(self.activeBattles[battle], battle.split('-')[1])
-            self.act(battle, actionType, action, self.activeBattles[battle].rqid)
+            action, actionType = getAction(btl, battle.split('-')[1])
+            self.act(battle, actionType, action, btl.rqid)
         elif 'switch' == msg[1]:
-            btl = self.activeBattles[battle]
             if msg[2].startswith(btl.me.id):
                 lastActive = btl.me.active
                 btl.me.setActive(btl.me.getPokemon(self.getSpecies(msg[3])))
@@ -83,9 +83,9 @@ class BattleHandler:
             else:
                 mon = self.getSpecies(msg[3])
                 if mon not in btl.other.team:
-                    self.activeBattles[battle].other.updateTeam(
+                    btl.other.updateTeam(
                         Pokemon(self.getSpecies(msg[3]), msg[3], '100/100', False,
-                                {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(self.activeBattles[battle].other.team)+1))
+                                {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(btl.other.team)+1))
                 btl.other.setActive(btl.other.getPokemon(mon))
         elif msg[1] in ['win', 'tie']:
             if msg[2] == self.botName:
@@ -95,8 +95,9 @@ class BattleHandler:
             self.respond(battle, '/leave')
 
         # In-battle events
+        # Most of these events just keep track of how the game is progressing
+        # but as a lot of information about the own team is sent by the request for action
         elif '-mega' == msg[1]:
-            btl = self.activeBattles[battle]
             mega = msg[3] + '-Mega'
             if msg[3] in ['Charizard', 'Mewtwo']:
                 mega += '-' + msg[4].split()[1]
@@ -104,3 +105,33 @@ class BattleHandler:
                 btl.me.removeBaseForm(msg[3], mega)
             else:
                 btl.other.removeBaseForm(msg[3], mega)
+
+        # This keeps track of what moves the opponent has revealed
+        elif 'move' == msg[1]:
+            move = re.sub(r'[^a-zA-Z0-9]', '', msg[3])
+            if not msg[2].startswith(btl.me.id):
+                if move not in btl.other.active.moves:
+                    btl.other.active.moves.append(move)
+
+        # Boosting moves
+        elif '-boost' == msg[1]:
+            stat = msg[3]
+            if msg[2].startswith(btl.me.id):
+                btl.me.active.boosts[stat] += int(msg[4])
+            else:
+                btl.other.active.boosts[stat] += int(msg[4])
+
+        # Because of how they're treated, taking damage and healing it are done the same things to
+        elif msg[1] in ['-heal','-damage']:
+            parts = msg[3].split()
+            if not msg[2].startswith(btl.me.id):
+                btl.other.active.setCondition(parts[0], parts[1] if ' ' in msg[3] else '')
+        elif '-status' == msg[1]:
+            if not msg[2].startswith(btl.me.id):
+                btl.other.active.setCondition(btl.other.active.condition, msg[3])
+
+        elif 'faint' == msg[1]:
+            if not msg[2].startswith(btl.me.id):
+                btl.other.active.setCondition('0', 'fnt')
+            
+            
