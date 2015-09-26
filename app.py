@@ -54,7 +54,7 @@ class PSBot(PokemonShowdownBot):
             if room not in self.details['rooms']:
                 # Battle rooms don't need the same interface as chatrooms
                 self.details['rooms'][room] = True
-            if 'leave|{me}'.format(me = self.details['user']) == msg[0]:
+            if 'deinit' in msg[0]:
                 self.details['rooms'].pop(room)
             # Go to battle handler instead of regular rooms
             # (we don't allow commands in battle rooms anyway)
