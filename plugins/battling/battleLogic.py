@@ -46,7 +46,7 @@ def pickAction(me, other):
         return 'move'
     fainted = 0
     for mon in me.team:
-        if me.team[mon].condition == '0 fnt':
+        if me.team[mon].status == 'fnt':
             fainted += 1
     if fainted == 5:
         return 'move'
@@ -61,7 +61,7 @@ def getSwitch(myTeam, myActive, opponent):
     scores = {}
     for poke in myTeam:
         scores[poke] = 0
-        if myTeam[poke].condition == '0 fnt':
+        if myTeam[poke].status == 'fnt':
             scores[poke] = -1000
             continue
         moves = myTeam[poke].moves
@@ -81,7 +81,7 @@ def getSwitch(myTeam, myActive, opponent):
     if pick <= 1:
         notFaintedMons = []
         for mon in myTeam:
-            if not myTeam[mon].condition == '0 fnt' and not myTeam[mon].teamSlot == 1:
+            if not myTeam[mon].status == 'fnt' and not myTeam[mon].teamSlot == 1:
                 notFaintedMons.append(myTeam[mon].teamSlot)
         print(pick, notFaintedMons)
         pick = notFaintedMons[randint(0,len(notFaintedMons)-1)]

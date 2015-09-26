@@ -22,6 +22,7 @@ class Player:
         self.id = ''
         self.active = None
         self.team = {}
+        self.side = {}
     def setActive(self, poke):
         self.active = poke
     def updateTeam(self, poke):
@@ -50,6 +51,7 @@ class Battle:
         self.myActiveData = {}
         self.me = Player()
         self.other = Player()
+        self.field = {}
 
     def setMe(self, me, pId):
         self.me.name = me
@@ -57,4 +59,6 @@ class Battle:
     def setOther(self, other, pId):
         self.other.name = other
         self.other.id = pId
+    def setFieldCond(self, cond):
+        pass
     

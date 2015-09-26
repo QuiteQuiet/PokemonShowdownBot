@@ -28,10 +28,10 @@ class BattleHandler:
     def getSpecies(self, details):
         return details.split(',')[0].replace('-*', '')
 
-    def parse(self, battle, msg):
-        if not msg: return
-        if battle in self.activeBattles and 'init' in msg: return
-        msg = msg.split('|')
+    def parse(self, battle, message):
+        if not message: return
+        if battle in self.activeBattles and 'init' in message: return
+        msg = message.split('|')
         btl = self.activeBattles[battle] if battle in self.activeBattles else None
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
@@ -126,6 +126,12 @@ class BattleHandler:
             parts = msg[3].split()
             if not msg[2].startswith(btl.me.id):
                 btl.other.active.setCondition(parts[0], parts[1] if ' ' in msg[3] else '')
+                if '[from]' in message:
+                    thing = msg[4][len('[from] '):]
+                    if 'item:' in thing:
+                        btl.other.active.item = thing[len('item: '):]
+                    elif 'ability' in thing:
+                        pass
         elif '-status' == msg[1]:
             if not msg[2].startswith(btl.me.id):
                 btl.other.active.setCondition(btl.other.active.condition, msg[3])
