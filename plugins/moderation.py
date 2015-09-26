@@ -13,10 +13,12 @@ whitelistedUrls = [
 # Important regexes
 URL_REGEX = re.compile(r'\b(?:(?:(?:https?://|www[.])[a-z0-9\-]+(?:[.][a-z0-9\-]+)*|[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:/(?:(?:[^\s()<>]|[(][^\s()<>]*[)])*(?:[^\s`()<>\[\]{}\'".,!?;:]|[(][^\s()<>]*[)]))?)?|[a-z0-9.]+\b@[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.][a-z]{2,3})', flags = re.I)
 STRETCH_REGEX = re.compile(r'((.)\2{6,})|((..+)\4{4,})', flags = re.I)
+GROUP_REGEX = re.compile(r'(/groupchat-.+?-.+?\b)|(<<groupchat-.+?-.+?>>)', flags = re.I)
 
 # Importat variables
 spamTracker = {}
 infractionScore = {
+    'groupchat': 0,
     'caps': 1,
     'stretching': 1,
     'badlink': 2,
@@ -27,12 +29,13 @@ punishedUsers = {}
 bannedPhrases = [
     ]
 actionReplies = {
-        'caps': 'Would you mind not using caps so much, please.',
-        'stretching': "Please don't stretch unnecessarily.",
-        'badlink': 'The link has nothing to do with NU.',
-        'flooding': "Please type slower and don't spam.",
-        'banword': "You can't say that in here, so please don't."
-    }
+    'groupchat': "Don't link groupchats in here please",
+    'caps': 'Would you mind not using caps so much, please.',
+    'stretching': "Please don't stretch unnecessarily.",
+    'badlink': 'The link has nothing to do with NU.',
+    'flooding': "Please type slower and don't spam.",
+    'banword': "You can't say that in here, so please don't."
+}
 bannedUsers = []
 # Constants
 def MIN_CAPS_LENGTH(): return 12
@@ -119,6 +122,10 @@ def isStretching(msg):
 def isCaps(msg):
     capsCount = len(re.findall(r'[A-Z]', re.sub(r'[^A-Za-z]', '', msg)))
     return capsCount and len(re.sub(r' ','',msg)) > MIN_CAPS_LENGTH() and capsCount >= int(len(re.sub(r' ','',msg)) * CAPS_PROPORTION())
+def isGroupMention(msg):
+    if re.search(GROUP_REGEX, msg):
+        return True
+    return False
 def getAction(user, wrong, unixTime):
     # This assumes unixTime is a valid unix timestamp
     now = datetime.utcfromtimestamp(int(unixTime))
@@ -160,6 +167,8 @@ def shouldAct(msg, user, room, unixTime):
         return 'stretching'
     if isCaps(msg):
         return 'caps'
+    if isGroupMention(msg):
+        return 'groupchat'
     if containUrl(msg.lower()):
         return False # Ignore urls for now
         url = moderation.getUrl(message[4])
