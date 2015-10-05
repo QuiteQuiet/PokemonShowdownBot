@@ -32,7 +32,8 @@ usageLink = r'http://www.smogon.com/stats/2015-08/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
 CanPmReplyCommands = ['usage', 'help']
 Scoreboard = {}
-with open('plugins/scoreboard.yaml', 'w+') as yf:
+with open('plugins/scoreboard.yaml', 'a+') as yf:
+    yf.seek(0, 0)
     Scoreboard = yaml.load(yf)
     if not Scoreboard: # Empty yaml file set Scoreboard to None, but an empty dict is better
         Scoreboard = {}
