@@ -28,7 +28,7 @@ from plugins.games import Hangman, Anagram
 from plugins.workshop import Workshop
 from plugins.trivia.trivia import Trivia
 
-usageLink = r'http://www.smogon.com/stats/2015-08/'
+usageLink = r'http://www.smogon.com/stats/2015-09/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
 CanPmReplyCommands = ['usage', 'help']
 Scoreboard = {}
