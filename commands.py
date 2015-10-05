@@ -53,6 +53,7 @@ def Command(self, cmd, room, msg, user):
         return "BB-8 is a reference to a robot in the seventh Star Wars movie :)", True
     elif cmd == 'leave':
         msg = removeSpaces(msg)
+        if not msg: msg = room
         if self.leaveRoom(msg):
             return 'Leaving room {r} succeeded'.format(r = msg), False
         else:
