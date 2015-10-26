@@ -99,7 +99,7 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(opp, 'Sorry, I only accept challenges in Challenge Cup 1v1, Random Battles or Battle Factory :(')
 
         # This is a safeguard for l and n in case that a moderation action happen
-        elif 'unlink' == message[1]:
+        elif 'unlink' == message[1] or 'uhtml' in message[1]:
             return
 
         # Joined new room
@@ -116,7 +116,7 @@ class PSBot(PokemonShowdownBot):
             # If the user have a message waiting, send that message in a pm
             if self.usernotes.hasMessage(user):
                 self.sendPm(user, self.usernotes.getMessage(user))
-        elif 'l' in message[1].lower():
+        elif 'l' == message[1].lower() or 'leave' == message[1].lower():
             if self.userIsSelf(message[2][1:]): return
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].removeUser(user)
@@ -135,7 +135,7 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(user['unform']): return
 
             if room.moderate and moderation.canPunish(self, room.title):
-                anything = moderation.shouldAct(message[4], user, room.title, message[2])   
+                anything = moderation.shouldAct(message[4], user, room, message[2])   
                 if anything:
                     action, reason = moderation.getAction(user, anything, message[2])
                     # If the current rank isn't allowed to roomban, keep hourmuting them

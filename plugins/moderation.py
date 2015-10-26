@@ -33,7 +33,7 @@ actionReplies = {
     'caps': 'Would you mind not using caps so much, please.',
     'stretching': "Please don't stretch unnecessarily.",
     'badlink': 'The link has nothing to do with NU.',
-    'flooding': "Please type slower and don't spam.",
+    'flooding': "Don't spam, please :c",
     'banword': "You can't say that in here, so please don't."
 }
 bannedUsers = []
@@ -161,7 +161,7 @@ def shouldAct(msg, user, room, unixTime):
         return False
     if isBanword(msg.lower()):
         return 'banword'
-    if isSpam(msg, user, room, now):
+    if isSpam(msg, user, room.title, now):
         return 'flooding'
     if isStretching(msg):
         return 'stretching'

@@ -50,7 +50,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd in ['commands', 'help']:
         return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True
     elif cmd == 'explain':
-        return "BB-8 is a reference to a robot in the seventh Star Wars movie :)", True
+        return "BB-8 is the name of a robot in the seventh Star Wars movie :)", True
     elif cmd == 'leave':
         msg = removeSpaces(msg)
         if not msg: msg = room
@@ -338,7 +338,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd == 'a':
         game = self.details['rooms'][room].game
         if isGameType(game, Anagram):
-            if game.isCorrect(removeSpaces(msg).lower()):
+            if game.isCorrect(re.sub(r'[ -]', '', msg).lower()):
                 solved = game.getSolvedWord()
                 timeTaken = game.getSolveTimeStr()
                 self.details['rooms'][room].game = None
@@ -461,5 +461,5 @@ def saveDetails(self):
         yaml.dump(details, yf, default_flow_style = False)
 
 def getJoke():
-    people = ['Can-Eh-Dian', 'Disjunction', 'innovamania', 'Tennis', 'marilli', 'Montsegur', 'Punchshroom', 'QueenOfLuvdiscs', 'Quite Quiet', 'scorpdestroyer', 'Teddeh', 'boltsandbombers', 'Deej Dy', 'Realistic Waters', 'Sir Kay', 'Chef Rice', 'SolarisFox', 'Soulgazer', 'The Goomy', 'xzern', 'Aladyyn', 'Blast Chance', 'Blastral', 'blaziken1337', 'Dentricos', 'Draeden', 'Finchinator', 'flcl', 'Hjad', 'kiyo', 'oshony', 'Pokedots', "winter's howl"]
+    people = ['Disjunction','Aladyyn','boltsandbombers','Can-Eh-Dian','Deej Dy','innovamania','Kiyo','Marilli','Montsegur','Pokedots','Punchshroom','Queen of Luvdiscs','rw','Scorpdestroyer','silver Aurum','Sir Kay','tennis','Blast Chance','HJAD','shaneghoul','Soulgazer','Allstar124','Blaziken1337','Dentricos','Finchinator','flcl','GyRro','hootie','Jarii','Less Than Three Man','Marikeinen','Metaphysical','Not Nova','Nozzle','orphic','Raptures Finest','rozes','Sweet Jesus','Syncrasy','Vileman',"Winter's Howl"]
     return people[randint(0, len(people)-1)]
