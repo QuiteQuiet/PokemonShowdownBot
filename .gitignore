@@ -2,11 +2,10 @@
 __pycache__/
 *.py[cod]
 
-# details.yaml
+#personal files
 details.yaml
-
-#scoreboard
 plugins/scoreboard.yaml
+plugins/bans.yaml
 
 # logs
 logs/

@@ -112,6 +112,9 @@ class PSBot(PokemonShowdownBot):
                 self.details['rooms'][room].rank = message[2][0]
                 self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
+            if moderation.isBanned(user) and moderation.canBan(self, room):
+                self.takeAction(room, user, 'roomban', 'Banned user')
+                return
             self.details['rooms'][room].addUser(user, message[2][0])
             # If the user have a message waiting, send that message in a pm
             if self.usernotes.hasMessage(user):
@@ -137,10 +140,7 @@ class PSBot(PokemonShowdownBot):
             if room.moderate and moderation.canPunish(self, room.title):
                 anything = moderation.shouldAct(message[4], user, room, message[2])   
                 if anything:
-                    action, reason = moderation.getAction(user, anything, message[2])
-                    # If the current rank isn't allowed to roomban, keep hourmuting them
-                    if action == 'roomban' and not moderation.canBan(self, room.title):
-                        action = 'hourmute'
+                    action, reason = moderation.getAction(self, room.title, user, anything, message[2])
                     self.log(action, user['name'])
                     self.takeAction(room.title, user['name'], action, reason)
 

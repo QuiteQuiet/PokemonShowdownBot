@@ -27,6 +27,7 @@ from data.replies import Lines
 from plugins.games import Hangman, Anagram
 from plugins.workshop import Workshop
 from plugins.trivia.trivia import Trivia
+from plugins.moderation import addBan, removeBan
 
 usageLink = r'http://www.smogon.com/stats/2015-09/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
@@ -125,6 +126,25 @@ def Command(self, cmd, room, msg, user):
                     return 'You cannot set moderation in a room without me in it.', False
             else:
                 return 'You do not have permission to set this. (Requires #)', False
+    # Autobans
+    elif cmd in ['banuser', 'banphrase']:
+        if canAddUser(self, user):
+            error = addBan(cmd[3:], room, msg)
+            if not error:
+                return 'Added {thing} to the banlist'.format(thing = msg), True
+            else:
+                return error, True
+        else:
+            return 'You do not have permission to do this. (Requires #)', False
+    elif cmd in ['unbanuser', 'unbanphrase']:
+        if canAddUser(self, user):
+            error = removeBan(cmd[5:], room, msg)
+            if not error:
+                return 'Removed {thing} from banlist'.format(thing = msg), True
+            else:
+                return error, True
+        else:
+            return 'You do not have permission to do this. (Requires #)', False
 
     elif cmd == 'allowgames':
         if canChange(self, user):
