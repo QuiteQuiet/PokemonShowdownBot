@@ -58,7 +58,7 @@ def addBan(t, room, ban):
     ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
     if t == 'user' and ban in banned['user']:
             return 'User already banned'
-    elif t == 'phrase' and ban in banned['phrases']:
+    elif t == 'phrase' and ban in banned['phrase']:
             return 'Phrase already banned'
     banned[t].append(ban)
     with open('plugins/bans.yaml', 'w') as yf:
@@ -68,7 +68,7 @@ def removeBan(t, room, ban):
     ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
     if t == 'user' and ban not in banned['user']:
             return 'User not banned'
-    elif t == 'phrase' and ban not in banned['phrases']:
+    elif t == 'phrase' and ban not in banned['phrase']:
             return 'Phrase not banned'
     banned[t].remove(ban)
     with open('plugins/bans.yaml', 'w') as yf:

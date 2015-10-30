@@ -112,7 +112,7 @@ class PSBot(PokemonShowdownBot):
                 self.details['rooms'][room].rank = message[2][0]
                 self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
-            if moderation.isBanned(user) and moderation.canBan(self, room):
+            if self.getRoom(room).moderate and moderation.isBanned(user) and moderation.canBan(self, room):
                 self.takeAction(room, user, 'roomban', 'Banned user')
                 return
             self.details['rooms'][room].addUser(user, message[2][0])
@@ -240,6 +240,12 @@ class PSBot(PokemonShowdownBot):
             else:
                 if self.getRoom(room).tour:
                     self.getRoom(room).tour.onUpdate(message[2:])
+                    
+        # Keep track of own rank by prmotion / demotion
+        elif message[1].startswith(self.details['user']):
+            parts = message[1].lower().split()
+            ranks = {'regular':' ','voice':'+','driver':'%','moderator':'@','owner':'#'}
+            self.getRoom(room).rank = ranks[parts[parts.index('room') + 1]]
                 
 
 psb = PSBot()
