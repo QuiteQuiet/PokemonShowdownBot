@@ -22,7 +22,7 @@ class Tournament:
     def sendChallenge(self, opponent):
         self.sendTourCmd('challenge {opp}'.format(opp = opponent))
     def acceptChallenge(self, opponent):
-        self.sendTourCmd('accept {opp}'.format(opp = opponent))
+        self.sendTourCmd('acceptchallenge')
     def onUpdate(self, msg):
         if 'updateEnd' in msg : return
         if 'update' in msg:
@@ -30,6 +30,6 @@ class Tournament:
             if 'challenges' in info and info['challenges']:
                 self.sendChallenge(info['challenges'][0])
             elif 'challengeBys' in info and info['challengeBys']:
-                self.acceptChallenge(info['challengeBys'][0])
+                self.acceptChallenge()
             elif 'isStarted' in info:
                 self.hasStarted = info['isStarted']

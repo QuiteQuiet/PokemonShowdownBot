@@ -11,7 +11,7 @@ class Pokemon:
         self.item = item
         self.canMega = canMegaEvo
         self.teamSlot = slot
-        self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0}
+        self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
     def setCondition(self, cond, status):
         self.condition = cond
         self.status = status
