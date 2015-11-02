@@ -27,7 +27,6 @@ infractionScore = {
     'flooding': 3,
     'banword': 3
 }
-nextReset = datetime.now().date() + timedelta(days = 2)
 punishedUsers = {}
 actionReplies = {
     'groupchat': "Don't link groupchats in here please",
@@ -187,8 +186,11 @@ def getAction(self, room, user, wrong, unixTime):
         action = 'hourmute'
     punishedUsers[user['name']].lastAction = action
     return action, actionReplies[wrong]
-        
+   
+nextReset = datetime.now().date() + timedelta(days = 2)     
 def shouldAct(msg, user, room, unixTime):
+    global nextReset
+
     now = datetime.utcfromtimestamp(int(unixTime))
     # Clear the punishment scores every two days
     if now.date() == nextReset:
