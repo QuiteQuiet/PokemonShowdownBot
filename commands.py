@@ -184,11 +184,12 @@ def Command(self, cmd, room, msg, user):
         return usageLink, True
     # Offline messages
     elif cmd == 'tell':
+        if not isWhitelisted(self, user): return "You don't have the permission to use this feature.", False
         if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
         msg = msg.split(',')
         to = re.sub(r'[^a-zA-z0-9]', '', msg[0]).lower()
-        if self.usernotes.hasMessage(to):
-            return 'This user already have a message waiting', False
+        if self.usernotes.alreadySentMessage(to, user['unform']):
+            return 'You already have a message to this user waiting', False
         if len(msg[1].lstrip()) > 150:
             return 'Message is too long. Max limit is 150 characters', False
         self.usernotes.addMessage(to, user['unform'], msg[1].lstrip())
@@ -434,6 +435,8 @@ def removeSpaces(text):
 # These can't be changed during operation, compared to the general permission
 def isMaster(self, user):
     return user['name'] == self.details['master']
+def isWhitelisted(self, user):
+    return user['name'] == self.details['master'] or user['name'] in self.details['whitelist']
 def canSee(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
 def canChange(self, user):

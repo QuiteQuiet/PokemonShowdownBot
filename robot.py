@@ -32,6 +32,7 @@ class PokemonShowdownBot:
             self.intro()
             self.splitMessage = onMessage if onMessage else self.onMessage
             self.url = url
+            websocket.enableTrace(True)
             self.openWebsocket()
             self.bh = BattleHandler(self.ws, self.details['user'])
             self.ws.run_forever()
@@ -111,7 +112,12 @@ class PokemonShowdownBot:
         else:
             self.send('{room}|{text}'.format(room = room, text = msg))
     def sendPm(self, user, msg):
-        self.send('|/pm {usr}, {text}'.format(usr = user, text = msg))
+        if '\n' in msg:
+            # DO NOT ABUSE THIS
+            for m in msg.split('\n'):
+                self.send('|/pm {usr}, {text}'.format(usr = user, text = m))
+        else:
+            self.send('|/pm {usr}, {text}'.format(usr = user, text = msg))
 
     def reply(self, room, user, response, samePlace):
         if samePlace:
