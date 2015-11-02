@@ -94,7 +94,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd == 'whitelist':
         if canSee(self, user):
             if self.details['whitelist']:
-                return ' ,'.join(self.details['whitelist']), False
+                return ', '.join(self.details['whitelist']), False
             else:
                 return 'Whitelist is empty :(', False
         else:
