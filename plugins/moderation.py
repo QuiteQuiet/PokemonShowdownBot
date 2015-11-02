@@ -14,7 +14,7 @@ whitelistedUrls = [
     ]
 # Important regexes
 URL_REGEX = re.compile(r'\b(?:(?:(?:https?://|www[.])[a-z0-9\-]+(?:[.][a-z0-9\-]+)*|[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:/(?:(?:[^\s()<>]|[(][^\s()<>]*[)])*(?:[^\s`()<>\[\]{}\'".,!?;:]|[(][^\s()<>]*[)]))?)?|[a-z0-9.]+\b@[a-z0-9\-]+(?:[.][a-z0-9\-]+)*[.][a-z]{2,3})', flags = re.I)
-STRETCH_REGEX = re.compile(r'((.)\2{6,})|((..+)\4{4,})', flags = re.I)
+STRETCH_REGEX = re.compile(r'((.)\2{9,})|((..+)\4{5,})', flags = re.I)
 GROUP_REGEX = re.compile(r'(/groupchat-.+?-.+?\b)|(<<groupchat-.+?-.+?>>)', flags = re.I)
 
 # Importat variables
@@ -27,6 +27,7 @@ infractionScore = {
     'flooding': 3,
     'banword': 3
 }
+nextReset = datetime.now().date() + timedelta(days = 2)
 punishedUsers = {}
 actionReplies = {
     'groupchat': "Don't link groupchats in here please",
@@ -189,6 +190,11 @@ def getAction(self, room, user, wrong, unixTime):
         
 def shouldAct(msg, user, room, unixTime):
     now = datetime.utcfromtimestamp(int(unixTime))
+    # Clear the punishment scores every two days
+    if now.date() == nextReset:
+        punishedUsers.clear()
+        nextReset = now.date() + timedelta(days = 2)
+    
     if recentlyPunished(user, now):
         return False
     if isBanword(msg.lower()):
@@ -204,8 +210,7 @@ def shouldAct(msg, user, room, unixTime):
     if containUrl(msg.lower()):
         return False # Ignore urls for now
         url = moderation.getUrl(message[4])
-        if moderation.badLink(url):
-            if self.Groups[user['group']] >= self.Groups['%']: return False
+        if badLink(url):
             return 'badlink'
     return False
 
