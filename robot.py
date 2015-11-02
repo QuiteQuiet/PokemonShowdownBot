@@ -15,6 +15,7 @@ import websocket
 import requests
 import json
 import yaml
+from time import sleep
 import datetime
 
 import prettyText
@@ -28,23 +29,35 @@ class PokemonShowdownBot:
         with open("details.yaml", 'r') as yaml_file:
             self.details = yaml.load(yaml_file)
             self.Groups = {' ':0,'+':1,'★':1,'%':2,'@':3,'&':4,'#':5,'~':6}
-            self.splitMessage = onMessage if onMessage else self.onMessage
             self.intro()
-            websocket.enableTrace(True)
-            self.ws = websocket.WebSocketApp(url,
-                                             on_message = onMessage,
-                                             on_error = self.onError,
-                                             on_close = self.onClose)
-            self.ws.on_open = self.onOpen
+            self.splitMessage = onMessage if onMessage else self.onMessage
+            self.url = url
+            self.openWebsocket()
             self.bh = BattleHandler(self.ws, self.details['user'])
             self.ws.run_forever()
 
     def onError(self, ws, error):
         print(error)
     def onClose(self, message):
-        print('websocket closed')
+        print('Websocket closed')
+        self.ws = None
+        
+        # Retry opening the socket after it closed once every 30 secs
+        while not self.ws:
+            sleep(30)
+            try:
+                self.openWebsocket()
+            except:
+                self.ws = None
     def onOpen(self, message):
-        print('websocket opened')
+        print('Websocket opened')
+    
+    def openWebsocket(self):
+        self.ws = websocket.WebSocketApp(self.url,
+                                         on_message = self.splitMessage,
+                                         on_error = self.onError,
+                                         on_close = self.onClose)
+        self.ws.on_open = self.onOpen
         
     def intro(self):
         print(prettyText.intro)
