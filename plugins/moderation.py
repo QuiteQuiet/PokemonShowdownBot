@@ -1,4 +1,5 @@
 import re
+from collections import deque
 from datetime import datetime, timedelta
 from urllib.request import urlopen
 import yaml
@@ -126,7 +127,7 @@ def isSpam(msg, user, room, now):
         spamTracker[room] = {}
     if user['name'] not in spamTracker[room]:
         # The first time this user have talked, so there's no way it's spam now
-        spamTracker[room][user['name']] = []
+        spamTracker[room][user['name']] = deque('', 50)
         return False
     spamTracker[room][user['name']].append(now)
     times = spamTracker[room][user['name']]
