@@ -101,10 +101,16 @@ def Command(self, cmd, room, msg, user):
             return 'You are not allowed to see the whitelist :l (Requires %)', False
     elif cmd in ['whitelistuser', 'wluser']:
         if canAddUser(self, user):
+            msg = re.sub(r'[^a-zA-z0-9]', '', msg)
+            if msg in self.details['whitelist']:
+                return '{user} is already whitelisted'.format(user = msg), True
             self.details['whitelist'].append(msg)
             return 'User {usr} added to whitelist.'.format(usr = msg), True
     elif cmd == 'removewl':
         if canAddUser(self, user):
+            msg = re.sub(r'[^a-zA-z0-9]', '', msg)
+            if msg not in self.details['whitelist']:
+                return '{user} is not whitelisted'.format(user = msg), True
             self.details['whitelist'].remove(msg)
             return 'User {usr} removed from the whitelist.'.format(usr = msg), True
     elif cmd == 'moderate':
