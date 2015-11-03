@@ -25,16 +25,18 @@ infractionScore = {
     'stretching': 1,
     'badlink': 2,
     'flooding': 3,
-    'banword': 3
+    'banword': 3,
+    'roomban': 10
 }
 punishedUsers = {}
 actionReplies = {
-    'groupchat': "Don't link groupchats in here please",
+    'groupchat': "Don't link groupchats in here please.",
     'caps': 'Would you mind not using caps so much, please.',
     'stretching': "Please don't stretch unnecessarily.",
     'badlink': 'The link has nothing to do with NU.',
     'flooding': "Don't spam, please :c",
-    'banword': "You can't say that in here, so please don't."
+    'banword': "You can't say that in here, so please don't.",
+    'roomban': "You are banned from this room."
 }
 banned = {}
 with open('plugins/bans.yaml', 'a+') as yf:
@@ -196,7 +198,9 @@ def shouldAct(msg, user, room, unixTime):
     if now.date() == nextReset:
         punishedUsers.clear()
         nextReset = now.date() + timedelta(days = 2)
-    
+
+    if isBanned(user):
+        return 'roomban'
     if recentlyPunished(user, now):
         return False
     if isBanword(msg.lower()):
