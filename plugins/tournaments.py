@@ -21,7 +21,7 @@ class Tournament:
 
     def sendChallenge(self, opponent):
         self.sendTourCmd('challenge {opp}'.format(opp = opponent))
-    def acceptChallenge(self, opponent):
+    def acceptChallenge(self):
         self.sendTourCmd('acceptchallenge')
     def onUpdate(self, msg):
         if 'updateEnd' in msg : return

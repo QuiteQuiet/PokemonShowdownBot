@@ -32,7 +32,6 @@ class PokemonShowdownBot:
             self.intro()
             self.splitMessage = onMessage if onMessage else self.onMessage
             self.url = url
-            websocket.enableTrace(True)
             self.openWebsocket()
             self.bh = BattleHandler(self.ws, self.details['user'])
             self.ws.run_forever()
@@ -41,15 +40,6 @@ class PokemonShowdownBot:
         print(error)
     def onClose(self, message):
         print('Websocket closed')
-        self.ws = None
-        
-        # Retry opening the socket after it closed once every 30 secs
-        while not self.ws:
-            sleep(30)
-            try:
-                self.openWebsocket()
-            except:
-                self.ws = None
     def onOpen(self, message):
         print('Websocket opened')
     
