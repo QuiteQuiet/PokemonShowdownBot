@@ -178,6 +178,7 @@ def Command(self, cmd, room, msg, user):
 
     # Informational commands
     elif cmd in Links:
+        msg = msg.lower()
         if msg in Links[cmd]:
             return Links[cmd][msg], True
         else:
