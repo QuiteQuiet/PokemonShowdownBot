@@ -281,6 +281,7 @@ def Command(self, cmd, room, msg, user):
         elif msg == 'end':
             if not user['name'] == workshop.host and not canStartGame(self, user):
                 return 'Only the workshop host or a Room Moderator can end the workshop', True
+            self.sendPm(workshop.host, workshop.pasteLog(room, self.details['apikey']))
             self.details['rooms'][room].game = None
             return 'Workshop session ended', True
 
