@@ -27,9 +27,10 @@ class Tournament:
         if 'updateEnd' in msg : return
         if 'update' in msg:
             info = json.loads(msg[1])
+            print(info)
             if 'challenges' in info and info['challenges']:
                 self.sendChallenge(info['challenges'][0])
-            elif 'challengeBys' in info and info['challengeBys']:
+            elif 'challenged' in info and info['challenged']:
                 self.acceptChallenge()
             elif 'isStarted' in info:
                 self.hasStarted = info['isStarted']

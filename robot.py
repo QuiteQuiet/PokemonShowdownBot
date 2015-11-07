@@ -40,6 +40,7 @@ class PokemonShowdownBot:
         print(error)
     def onClose(self, message):
         print('Websocket closed')
+
     def onOpen(self, message):
         print('Websocket opened')
     
