@@ -10,7 +10,6 @@ class Tournament:
 
     def sendTourCmd(self, cmd):
         self.ws.send('{room}|/tour {cmd}'.format(room = self.room, cmd = cmd))
-        pass
     def joinTour(self):
         self.sendTourCmd('join')
     def leaveTour(self):
@@ -27,7 +26,6 @@ class Tournament:
         if 'updateEnd' in msg : return
         if 'update' in msg:
             info = json.loads(msg[1])
-            print(info)
             if 'challenges' in info and info['challenges']:
                 self.sendChallenge(info['challenges'][0])
             elif 'challenged' in info and info['challenged']:
