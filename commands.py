@@ -200,7 +200,17 @@ def Command(self, cmd, room, msg, user):
         if len(msg[1].lstrip()) > 150:
             return 'Message is too long. Max limit is 150 characters', False
         self.usernotes.addMessage(to, user['unform'], msg[1].lstrip())
-        return "I'll be sure to tell them that.", True 
+        return "I'll be sure to tell them that.", True
+    # Getting the messages back
+    elif cmd == 'read':
+        if not self.usernotes.hasMessage(user['name']): return 'You have no messages waiting', False
+        if not msg:
+            # If the user didn't speify any amount to return, give back a single message
+            return self.usernotes.getMessage(user['name']), False
+        else:
+            if not msg.isdigit(): return 'Please enter a whole, positive number', False
+            return self.usernotes.getMessages(user['name'], int(msg)), False
+
     # Fun stuff
     elif cmd == 'pick':
         options = msg.split(',')

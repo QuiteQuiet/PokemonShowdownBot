@@ -116,9 +116,9 @@ class PSBot(PokemonShowdownBot):
                 self.takeAction(room, user, 'roomban', 'Banned user')
                 return
             self.details['rooms'][room].addUser(user, message[2][0])
-            # If the user have a message waiting, send that message in a pm
+            # If the user have a message waiting, tell them that in a pm
             if self.usernotes.hasMessage(user):
-                self.sendPm(user, self.usernotes.getMessage(user))
+                self.sendPm(user, self.usernotes.pendingMessages(user))
         elif 'l' == message[1].lower() or 'leave' == message[1].lower():
             if self.userIsSelf(message[2][1:]): return
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
@@ -128,7 +128,7 @@ class PSBot(PokemonShowdownBot):
             oldName = re.sub(r'[^a-zA-z0-9]', '', message[3]).lower()
             self.details['rooms'][room].renamedUser(oldName, newName)
 
- 
+
         # Chat messages            
         elif 'c' in message[1].lower():
             user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[3]).lower(),'group':message[3][0], 'unform': message[3][1:]}
@@ -240,12 +240,12 @@ class PSBot(PokemonShowdownBot):
             else:
                 if self.getRoom(room).tour:
                     self.getRoom(room).tour.onUpdate(message[2:])
-                    
+
         # Keep track of own rank by prmotion / demotion
         elif message[1].startswith(self.details['user']):
             parts = message[1].lower().split()
             ranks = {'regular':' ','voice':'+','driver':'%','moderator':'@','owner':'#'}
             self.getRoom(room).rank = ranks[parts[parts.index('room') + 1]]
-                
+
 
 psb = PSBot()
