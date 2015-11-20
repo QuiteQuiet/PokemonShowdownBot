@@ -29,7 +29,7 @@ class MessageDatabase:
         # as they can opt to look at all at once
         reply = ''
         if amnt > len(self.messages[user]): amnt = len(self.messages[user])
-        while amnt > 0 and len(self.messages[user]) > 0:
+        while amnt > 0:
             reply += self.getMessage(user) + ('\n' if amnt > 1 else '')
             amnt -= 1
         # Remove the user from the list if there's no messages left
@@ -44,8 +44,8 @@ class MessageDatabase:
         # and usage should first test for existance.
         messages = self.removeAllMessages(user)
         combine = []
-        for msg in messages: 
-            combine.append(messages[msg].replyFormat())      
+        for msg in messages:
+            combine.append(messages[msg].replyFormat())
         return '\n'.join(combine)
 
     def hasMessage(self, user):
