@@ -52,7 +52,10 @@ Links = {
 	'nu':'http://www.smogon.com/forums/threads/3524139/',
 	'pu':'http://www.smogon.com/forums/threads/3526592/',
 	'lc':'http://www.smogon.com/forums/threads/3524037/'
-	}
+	},
+'tour':{
+    'lt':'http://www.smogon.com/forums/threads/3555097/',
+    }
 }
 YoutubeLinks = {
     'kiyo':'metaphysical said use Adblock: http://www.youtube.com/user/gottagokiyo',
