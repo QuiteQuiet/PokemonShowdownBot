@@ -10,6 +10,19 @@
 # True: Allows that the command in question can, if gotten from a room,
 #       be returned to the same room rather than a PM.
 # False: This will ALWAYS return the reply as a PM, no matter where it came from
+#
+# Information passed from the chat-parser:
+#   self: The program object itself.
+#
+#   cmd: Contains what command was used.
+#
+#   msg: This hold everything else that was passed with the command, such as
+#        optional parameters.
+#
+#   room: What room the command was used in. If the command was sent in a pm,
+#         room will contain: 'room'.
+#
+#   user: A user object like the one described in the app.py file
 
 from random import randint, sample
 import re
