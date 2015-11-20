@@ -1,4 +1,5 @@
 import random
+import re
 
 class Message:
     def __init__(self, sent, msg):
@@ -17,7 +18,7 @@ class MessageDatabase:
         if to not in self.messages: self.messages[to] = {}
         if sent in self.messages[to]: return False
 
-        self.messages[to][sent] = Message(sent, msg)
+        self.messages[to][re.sub(r'[^a-zA-z0-9]', '', sent).lower()] = Message(sent, msg)
         return True
 
     def getMessage(self, user):
@@ -56,6 +57,12 @@ class MessageDatabase:
 
     def removeRandomMessage(self, to):
         return self.messages[to].pop(random.choice(list(self.messages[to].keys())), None)
+    def removeMessage(self, to, frm):
+        msg = self.messages[to].pop(frm, None)
+        # If the user has no message left, clear the name entry
+        if not self.messages[to]: self.messages.pop(to)
+        return msg
+
     # Unused but still supported
     def removeAllMessages(self, to):
         return self.messages.pop(to, None)

@@ -209,6 +209,7 @@ def Command(self, cmd, room, msg, user):
         to = re.sub(r'[^a-zA-z0-9]', '', msg[0]).lower()
         if self.usernotes.alreadySentMessage(to, user['unform']):
             return 'You already have a message to this user waiting', False
+        if len(msg) < 2: return 'You forgot a message', True
         if len(msg[1].lstrip()) > 150:
             return 'Message is too long. Max limit is 150 characters', False
         self.usernotes.addMessage(to, user['unform'], msg[1].lstrip())
@@ -222,6 +223,11 @@ def Command(self, cmd, room, msg, user):
         else:
             if not msg.isdigit(): return 'Please enter a whole, positive number', False
             return self.usernotes.getMessages(user['name'], int(msg)), False
+    elif cmd == 'removetell':
+        if not msg: return 'You need to specify a user to remove', False
+        if not self.usernotes.hasMessage(msg): 'This user has no waiting messages', False
+        if not self.usernotes.removeMessage(msg, user['name']): 'You have no message to this user waiting', False
+        return 'Message removed', True
 
     # Fun stuff
     elif cmd == 'pick':
@@ -272,12 +278,12 @@ def Command(self, cmd, room, msg, user):
                 # Prevents locking up if a pokemon turns the team to an impossible genration
                 # Since the team is probably bad anyway, just finish it and exit
                 while len(team) < 6:
-                   team |= {list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]} 
+                   team |= {list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]}
                 break
         return ' / '.join(list(team)), True
 
     # Workshop is not a hangman game, but uses the allowed slot for a game anyway
-    # Workshops also doesn't follow the chatgames rule, as they're not chat games 
+    # Workshops also doesn't follow the chatgames rule, as they're not chat games
     elif cmd == 'workshop':
         if not isGameType(self.details['rooms'][room].game, Workshop):
             if msg.startswith('new') and canStartGame(self, user):
@@ -318,7 +324,7 @@ def Command(self, cmd, room, msg, user):
         elif 'new' in msg[0]: # ~hangman new,room,[phrase]
             if canStartGame(self, user):
                 if self.details['rooms'][room].game:
-                    return 'A game is already running in this room', False            
+                    return 'A game is already running in this room', False
                 phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].strip()))
                 if not phrase.strip():
                     return 'You can only have letters, numbers or spaces in the phrase', False
@@ -348,7 +354,7 @@ def Command(self, cmd, room, msg, user):
     # Anagrams of Pokemon names
     elif cmd == 'anagram':
         if msg == 'new':
-            if canStartGame(self, user):    
+            if canStartGame(self, user):
                 if self.details['rooms'][room].game:
                     return 'A game is already running somewhere', False
                 else:
@@ -432,7 +438,7 @@ def Command(self, cmd, room, msg, user):
                     game.multiple = True
             return 'NoAnswer', False
         else:
-            return 'There is no ongoing trivia session.', True            
+            return 'There is no ongoing trivia session.', True
 
     # Commands with awful conditions last
     elif cmd in formats:
@@ -478,7 +484,7 @@ def canStartGame(self, user):
 def canStartTrivia(self, user):
     return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['@']
 def isGameType(running, gameType):
-    return type(running) == gameType  
+    return type(running) == gameType
 def acceptableWeakness(team):
     if not team: return False
     comp = {t:{'weak':0,'res':0} for t in Types}
