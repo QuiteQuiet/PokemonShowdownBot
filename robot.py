@@ -43,21 +43,21 @@ class PokemonShowdownBot:
 
     def onOpen(self, message):
         print('Websocket opened')
-    
+
     def openWebsocket(self):
         self.ws = websocket.WebSocketApp(self.url,
                                          on_message = self.splitMessage,
                                          on_error = self.onError,
                                          on_close = self.onClose)
         self.ws.on_open = self.onOpen
-        
+
     def intro(self):
         print(prettyText.intro)
     def log(self, msg, user):
         print('Command: {cmd} (user: {user})'.format(cmd = msg, user = user))
     def userIsSelf(self, user):
         return self.details['user'] == user
-        
+
     def send(self, msg):
         self.ws.send(msg)
 
@@ -70,14 +70,14 @@ class PokemonShowdownBot:
                     }
         r = requests.post('http://play.pokemonshowdown.com/action.php', data=payload)
         assertion = json.loads(r.text[1:])['assertion']
-            
+
         if assertion:
             self.send(('|/trn '+ self.details['user']+',0,'+str(assertion)).encode('utf-8'))
             return True
         else:
             print('Assertion failed')
             return False
-            
+
     def joinRoom(self, room, data = None):
         self.send('|/join ' + room)
         self.details['rooms'][room] = Room(room, data)
@@ -141,4 +141,4 @@ class PokemonShowdownBot:
             if self.details['user'] not in parts[2]: return
             if parts[3] == '1':
                 print('Loged in...')
-        
+

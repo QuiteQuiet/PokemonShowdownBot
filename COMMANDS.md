@@ -11,16 +11,18 @@ Standard commands
 - source : Prints a link to this github repository.
 - pick a,b,c,d... : Randomly selects one of the entered options.
 
-- [tier]poke : Randomly selects one Pokémon from the viable tier list from [tier]. Supported tiers are Uber, OU, UU, RU, NU, PU, and LC. 
+- [tier]poke : Randomly selects one Pokémon from the viable tier list from [tier]. Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 - [tier]team : Randomly generate a team that is usable in [tier]. Same restrictions as [tier]poke apply.
 - team [tier]: Select a random sample team in [tier], with the same restrictions as the above two.
 - pokemon : Entering any existing pokemon (for example ~kyogre) gives a link to their respective Smogon analysis page.
 - tier : Similar to the above, entering any official Smogon tier (such as ~ou) brings up a link to the Smogon hub for that tier.
 
-- ~viability tier, ~speedtiers tier, ~np tier, ~sample tier, ~roles tier :
+- ~viability [tier], ~speedtiers [tier], ~np [tier], ~sample [tier], ~roles [tier] :
 - The above five commands bring up their respective forum resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 
-- tell [user], [message] : This will save [message], and when [user] join any room the bot is in, they will get a PM with the message, as well as who sent it. Messages are not saved on a restart, and each recipient can only wait on one message at a time.
+- tell [user], [message] : This will save [message], and when [user] join any room the bot is in, they will get a PM notifying them they have a message waiting. Messages are not saved on a restart, and you can only have one message to each user waiting at any time.
+- read [number] : Returns [number] messages that you have waiting. If you have no messages it returns nothing, and if [number] is larger than your waiting messages, all of them are returned.
+- removetell [user] : Remove your waiting message to [user], if one exists.
 
 Chat Games
 ----------
@@ -46,7 +48,7 @@ and not before or after. Games can be stopped at any point during either period.
 
 Workshops
 Although not a chatgame, the workshop command use the same container as they do and as such cannot be used if a game is in progress. Similarly, no chat games can be started during a workshop. Do note that the config option about chat games does not apply to workshops.
-- workshop new [name] : Starts a new workshop session with [name] as the host.
+- workshop new [name] : Starts a new workshop session with [name] as the host. If [name] is blank, the person doing the command is set as host.
 - workshop add [anything] : Adds [anything] to the current workshop team. There's no checking if [anything] exists, so that's up to the host. (Requires Host or @)
 - workshop remove [anything] : Removes [anything] if its in the team. Otherwise the same conditions as add.
 - workshop team : Displays the current workshop team. (Requires Host or @)
@@ -65,5 +67,7 @@ and as such require global or roomauth of some degree.
 - whitelist : Print the current whitelist that allow regular users the ability to broadcast commands.
 - whitelistadd [user]: Add a user to the whitelist.
 - removewl [user]: Remove a user from the whitelist.
+- (un)banuser [user] : Room(un)bans [user] from any room the bot moderate.
+- (un)banphrase [phrase] : (un)Bans [phrase] in every room the bot moderate.
 
 None of the above commands save the current settings, and will be cleared on a restart. To save settings, use `savedetails`, which save everything currently in details (including games and battles for now).

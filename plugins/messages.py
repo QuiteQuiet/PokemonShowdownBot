@@ -60,7 +60,7 @@ class MessageDatabase:
     def removeMessage(self, to, frm):
         msg = self.messages[to].pop(frm, None)
         # If the user has no message left, clear the name entry
-        if not self.messages[to]: self.messages.pop(to)
+        if len(self.messages[to]) < 1: self.messages.pop(to)
         return msg
 
     # Unused but still supported

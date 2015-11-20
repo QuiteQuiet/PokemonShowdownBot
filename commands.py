@@ -225,8 +225,8 @@ def Command(self, cmd, room, msg, user):
             return self.usernotes.getMessages(user['name'], int(msg)), False
     elif cmd == 'removetell':
         if not msg: return 'You need to specify a user to remove', False
-        if not self.usernotes.hasMessage(msg): 'This user has no waiting messages', False
-        if not self.usernotes.removeMessage(msg, user['name']): 'You have no message to this user waiting', False
+        if not self.usernotes.hasMessage(msg): return 'This user has no waiting messages', False
+        if not self.usernotes.removeMessage(msg, user['name']): return 'You have no message to this user waiting', False
         return 'Message removed', True
 
     # Fun stuff
