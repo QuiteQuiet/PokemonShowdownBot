@@ -191,7 +191,6 @@ def Command(self, cmd, room, msg, user):
         return usageLink, True
     # Offline messages
     elif cmd == 'tell':
-        if not isWhitelisted(self, user): return "You don't have the permission to use this feature.", False
         if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
         msg = msg.split(',')
         to = re.sub(r'[^a-zA-z0-9]', '', msg[0]).lower()
@@ -366,7 +365,7 @@ def Command(self, cmd, room, msg, user):
             if name not in Scoreboard:
                 return "This user never won any anagrams", True
             return 'This user has won {number} anagram{plural}'.format(number = Scoreboard[name], plural = '' if not type(Scoreboard[name]) == str and Scoreboard[name] < 2  else 's'), True
-            
+
         else:
             if not msg:
                 if isGameType(self.details['rooms'][room].game, Anagram):
@@ -442,7 +441,7 @@ def Command(self, cmd, room, msg, user):
         if cmd in substitutes:
             cmd = substitutes[cmd]
         return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
-    
+
     else:
         return False, False
 
