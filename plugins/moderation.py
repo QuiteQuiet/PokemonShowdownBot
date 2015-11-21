@@ -66,7 +66,7 @@ def addBan(t, room, ban):
     banned[t].append(ban)
     with open('plugins/bans.yaml', 'w') as yf:
         yaml.dump(banned, yf)
-    
+
 def removeBan(t, room, ban):
     ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
     if t == 'user' and ban not in banned['user']:
@@ -118,7 +118,7 @@ def recentlyPunished(user, now):
     if user['name'] not in punishedUsers:
         return False
     timeDiff = now - punishedUsers[user['name']].lastPunished
-    return timeDiff > timedelta(seconds = 3)
+    return timeDiff < timedelta(seconds = 3)
 def isBanword(msg):
     for ban in banned['phrase']:
         if ban.lower() in msg:
@@ -188,8 +188,8 @@ def getAction(self, room, user, wrong, unixTime):
         action = 'hourmute'
     punishedUsers[user['name']].lastAction = action
     return action, actionReplies[wrong]
-   
-nextReset = datetime.now().date() + timedelta(days = 2)     
+
+nextReset = datetime.now().date() + timedelta(days = 2)
 def shouldAct(msg, user, room, unixTime):
     global nextReset
 
