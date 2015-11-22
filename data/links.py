@@ -4,7 +4,7 @@ Links = {
     'ou':'http://www.smogon.com/forums/threads/3536420/',
     'uu':'http://www.smogon.com/forums/threads/3533364/',
     'ru':'http://www.smogon.com/forums/threads/3538036/',
-    'nu':'http://www.smogon.com/forums/threads/3553680/',
+    'nu':'http://www.smogon.com/forums/threads/3555650/',
     'pu':'http://www.smogon.com/forums/threads/3528743/',
     'lc':'http://www.smogon.com/forums/threads/3496013/'
     },
@@ -22,7 +22,7 @@ Links = {
     'ou':'http://www.smogon.com/forums/threads/3521695/',
     'uu':'http://www.smogon.com/forums/threads/3536731/',
     'ru':'http://www.smogon.com/forums/threads/3523714/',
-    'nu':'http://www.smogon.com/forums/threads/3524218/',
+    'nu':'http://www.smogon.com/forums/threads/3548150/',
     'pu':'http://www.smogon.com/forums/threads/3519428/',
     'lc':'http://www.smogon.com/forums/threads/3524438/'
     },
