@@ -68,7 +68,7 @@ class PSBot(PokemonShowdownBot):
     def parseMessage(self, msg, room):
         if not msg.startswith('|'): return
         message = msg.split('|')
-       
+
         # Logging in
         if message[1] == 'challstr':
             print('{name}: Attempting to login...'.format(name = self.details['user']))
@@ -120,7 +120,12 @@ class PSBot(PokemonShowdownBot):
             if self.usernotes.hasMessage(user):
                 self.sendPm(user, self.usernotes.pendingMessages(user))
         elif 'l' == message[1].lower() or 'leave' == message[1].lower():
-            if self.userIsSelf(message[2][1:]): return
+            if self.userIsSelf(message[2][1:]):
+                # This is just a failsafe in case the bot is forcibly removed from a room.
+                # Any other memory release required is handeled by the room destruction
+                if room in self.details['rooms']:
+                    self.details['rooms'].pop(room)
+                return
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].removeUser(user)
         elif 'n' in message[1].lower() and len(message[1]) < 3:
@@ -129,7 +134,7 @@ class PSBot(PokemonShowdownBot):
             self.details['rooms'][room].renamedUser(oldName, newName)
 
 
-        # Chat messages            
+        # Chat messages
         elif 'c' in message[1].lower():
             user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[3]).lower(),'group':message[3][0], 'unform': message[3][1:]}
             room = self.getRoom(room)
@@ -138,14 +143,14 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(user['unform']): return
 
             if room.moderate and moderation.canPunish(self, room.title):
-                anything = moderation.shouldAct(message[4], user, room, message[2])   
+                anything = moderation.shouldAct(message[4], user, room, message[2])
                 if anything:
                     action, reason = moderation.getAction(self, room.title, user, anything, message[2])
                     self.log(action, user['name'])
                     self.takeAction(room.title, user['name'], action, reason)
 
 
-            if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():            
+            if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
                 self.log(message[4], user['name'])
 
@@ -156,7 +161,7 @@ class PSBot(PokemonShowdownBot):
                         response = 'This room does not support chatgames.'
                     if 'new' in message[4] and command in ['hangman']:
                         response = "Please use Pm to start a hangman game."
-                        
+
                 if not response:
                     response, samePlace = self.do(self, command, room.title, message[4][len(command) + 1:].lstrip(), user)
                 if response == 'NoAnswer': return
@@ -173,7 +178,7 @@ class PSBot(PokemonShowdownBot):
 
             if type(room.game) == Workshop:
                 room.game.logSession(room.title, user['group'] + user['unform'], message[4])
-                
+
 
         elif 'pm' in message[1].lower():
             user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[2]).lower(),'group':message[2][0], 'unform': message[2][1:]}
@@ -209,7 +214,7 @@ class PSBot(PokemonShowdownBot):
                         response = "Don't try to play games in pm please"
                 if not response:
                     response, where = self.do(self, command, 'room', params, user)
-                    
+
                 if response:
                     self.sendPm(user['name'], response)
                 else:
