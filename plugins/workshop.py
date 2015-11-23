@@ -26,11 +26,11 @@ class Workshop:
     def logSession(self, room, user, message):
         with open('logs/{room}-workshop-{host}.txt'.format(room = room, host = self.host), 'a') as log:
             log.write('{name}: {text}\n'.format(name = user, text = message))
-            
+
     def pasteLog(self, room, apiKey):
         if apiKey == '0': return 'No paste for the workshop could be generated'
-        with open('logs/{room}-workshop-{host}.txt'.format(room = room, host = self.host), 'a') as log:
-            r = requests.post('http://pastebin.com/api/api_post.php', 
+        with open('logs/{room}-workshop-{host}.txt'.format(room = room, host = self.host), 'r') as log:
+            r = requests.post('http://pastebin.com/api/api_post.php',
                             data = {
                                 'api_dev_key': apiKey,
                                 'api_option':'paste',
