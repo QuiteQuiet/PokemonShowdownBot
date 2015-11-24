@@ -201,12 +201,12 @@ def shouldAct(msg, user, room, unixTime):
 
     if isBanned(user):
         return 'roomban'
-    if recentlyPunished(user, now):
-        return False
-    if isBanword(msg.lower()):
-        return 'banword'
     if isSpam(msg, user, room.title, now):
         return 'flooding'
+    if isBanword(msg.lower()):
+        return 'banword'
+    if recentlyPunished(user, now):
+        return False
     if isStretching(msg):
         return 'stretching'
     if isCaps(msg):
