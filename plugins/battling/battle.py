@@ -32,11 +32,7 @@ class Player:
             for m in self.team:
                 if self.team[m]:
                     old = self.team[m]
-        print('switching',old.species)
-        print('with',new.species)
         old.teamSlot, new.teamSlot = new.teamSlot, old.teamSlot
-        for m in self.team:
-            print(self.team[m].teamSlot, m)
     def getPokemon(self, species):
         for poke in self.team:
             if self.team[poke].species == species:
@@ -61,4 +57,4 @@ class Battle:
         self.other.id = pId
     def setFieldCond(self, cond):
         pass
-    
+

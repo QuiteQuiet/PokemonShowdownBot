@@ -57,7 +57,6 @@ def getMove(moves, active, opponent):
         move += ' mega'
     return move
 def getSwitch(myTeam, myActive, opponent):
-    print('getting switch...')
     scores = {}
     for poke in myTeam:
         scores[poke] = 0
@@ -69,7 +68,6 @@ def getSwitch(myTeam, myActive, opponent):
             scores[poke] += calcScore(move, myTeam[poke], opponent.species)
     m = max(scores.values())
     picks = [poke for poke,score in scores.items() if score == m]
-    print(picks)
     pick = 0 # Default switch to the next member
     if len(picks) == 1:
         if myActive not in picks:
@@ -83,7 +81,6 @@ def getSwitch(myTeam, myActive, opponent):
         for mon in myTeam:
             if not myTeam[mon].status == 'fnt' and not myTeam[mon].teamSlot == 1:
                 notFaintedMons.append(myTeam[mon].teamSlot)
-        print(pick, notFaintedMons)
         pick = notFaintedMons[randint(0,len(notFaintedMons)-1)]
     return pick
 
@@ -121,7 +118,7 @@ def getCC1v1Move(moves, pokemon, opponent):
             values[m] = 0
     options = [m for m,v in values.items() if v == max(values.values())]
     return options[randint(0, len(options)-1)]
- 
+
 def getLead(team, opposing):
     scores = {}
     for mon in team:
