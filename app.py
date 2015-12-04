@@ -146,13 +146,13 @@ class PSBot(PokemonShowdownBot):
                 anything = moderation.shouldAct(message[4], user, room, message[2])
                 if anything:
                     action, reason = moderation.getAction(self, room.title, user, anything, message[2])
-                    self.log(action, user['name'])
+                    self.log('Action', action, user['name'])
                     self.takeAction(room.title, user['name'], action, reason)
 
 
             if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
-                self.log(message[4], user['name'])
+                self.log('Command', message[4], user['name'])
 
                 response, samePlace = '', True
                 # If the command was a chat game and permissions aren't met, kill the game (even if it just started)
@@ -188,13 +188,13 @@ class PSBot(PokemonShowdownBot):
                 if not message[4][8:] == 'lobby':
                     if self.Groups[user['group']] >= 1:
                         self.joinRoom(message[4][8:])
-                        self.log(message[4], user['name'])
+                        self.log('Invite', message[4], user['name'])
                     else:
                         self.sendPm(user['name'], 'Only global voices (+) and up can add me to rooms, sorry :(')
 
             if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
-                self.log(message[4], user['name'])
+                self.log('Command', message[4], user['name'])
                 params = message[4][len(command) + len(self.details['command']):].lstrip()
 
                 response, where = '', False
