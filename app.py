@@ -102,10 +102,19 @@ class PSBot(PokemonShowdownBot):
         elif 'unlink' == message[1] or 'uhtml' in message[1]:
             return
 
+        # As long as the room have a roomintro (whih even groupchats do now)
+        # Roomintros are also the last thing that is sent when joining a room
+        # so when this show up, assume the room is loaded
+        elif 'raw' == message[1]:
+            if message[2].startswith('<div class="infobox">'):
+                self.getRoom(room).doneLoading()
+
         # Joined new room
         elif 'users' in message[1]:
             users = ','.join([u[0]+re.sub(r'[^a-zA-z0-9,]', '',u[1:]).lower() for u in message[2].split(',') if message[2].split(',').index(u) > 0])
             self.getRoom(room).addUserlist(users)
+            # If PS doesn't tell us we joined, this still give us our room rank
+            self.getRoom(room).rank = message[2][message[2].index(self.details['user']) - 1]
 
         elif 'j' in message[1].lower():
             if self.userIsSelf(message[2][1:]):
