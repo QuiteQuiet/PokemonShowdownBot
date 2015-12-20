@@ -219,9 +219,9 @@ def Command(self, cmd, room, msg, user):
         if not self.usernotes.hasMessage(user['name']): return 'You have no messages waiting', False
         if not msg:
             # If the user didn't speify any amount to return, give back a single message
-            return self.usernotes.getMessage(user['name']), False
+            return self.usernotes.getMessages(user['name'], 1), False
         else:
-            if not msg.isdigit(): return 'Please enter a whole, positive number', False
+            if not msg.isdigit() and int(msg) < 1: return 'Please enter a whole, positive number', False
             return self.usernotes.getMessages(user['name'], int(msg)), False
     elif cmd == 'removetell':
         if not msg: return 'You need to specify a user to remove', False
