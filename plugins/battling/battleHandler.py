@@ -39,6 +39,7 @@ class BattleHandler:
         elif 'request' == msg[1]:
             # This is where all the battle picking happen
             request = json.loads(msg[2])
+            print(request)
             if 'rqid' in request:
                 self.activeBattles[battle].rqid = request['rqid']
             sidedata = request['side']
@@ -46,15 +47,20 @@ class BattleHandler:
             for poke in sidedata['pokemon']:
                 btl.me.updateTeam(
                     Pokemon(self.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
-                            poke['stats'],poke['moves'],poke['baseAbility'],poke['item'],poke['canMegaEvo'], teamSlot))
+                            poke['stats'],poke['moves'],poke['baseAbility'],poke['item'], False, teamSlot))
                 teamSlot += 1
             if 'active' in request:
                 self.activeBattles[battle].myActiveData = request['active']
+                if 'canMegaEvo' in request['active'][0]:
+                    for poke in btl.me.team:
+                        if btl.me.team[poke].active:
+                            btl.me.team[poke].canMega = True
+
             # This doesn't work for fainting
             if 'forceSwitch' in request:
                 if request['forceSwitch'][0]:
                     self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
-                
+
         elif 'poke' == msg[1]:
             if not self.activeBattles[battle].me.id == msg[2]:
                 species = self.getSpecies(msg[3])
@@ -103,6 +109,7 @@ class BattleHandler:
                 mega += '-' + msg[4].split()[1]
             if msg[2].startswith(btl.me.id):
                 btl.me.removeBaseForm(msg[3], mega)
+                btl.me.active.canMega = False
             else:
                 btl.other.removeBaseForm(msg[3], mega)
 
@@ -139,5 +146,5 @@ class BattleHandler:
         elif 'faint' == msg[1]:
             if not msg[2].startswith(btl.me.id):
                 btl.other.active.setCondition('0', 'fnt')
-            
-            
+
+
