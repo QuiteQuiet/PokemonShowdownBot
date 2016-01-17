@@ -30,8 +30,6 @@ class Room:
         self.removeUser(old)
         self.addUser(new[1:], new[0])
 
-    def allowGames(self, yesNo):
-    	self.allowGames = yesNo
     def createTour(self, ws):
         self.tour = Tournament(ws, self.title)
     def endTour(self):
