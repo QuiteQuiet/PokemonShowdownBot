@@ -212,6 +212,7 @@ def shouldAct(msg, user, room, unixTime):
     if isCaps(msg):
         return 'caps'
     if isGroupMention(msg):
+        return False # Groupchats are less of a problem right now
         return 'groupchat'
     if containUrl(msg.lower()):
         return False # Ignore urls for now
