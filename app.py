@@ -97,6 +97,10 @@ class PSBot(PokemonShowdownBot):
                     self.send('|/accept {name}'.format(name = opp))
                 else:
                     self.sendPm(opp, 'Sorry, I only accept challenges in Challenge Cup 1v1, Random Battles or Battle Factory :(')
+        elif 'updatesearch' in message[1]:
+            # This gets sent before `updatechallenges`does when recieving a battle, but it's
+            # not useful for anything, so just return straight away
+            return
 
         # This is a safeguard for l and n in case that a moderation action happen
         elif 'unlink' == message[1] or 'uhtml' in message[1]:
