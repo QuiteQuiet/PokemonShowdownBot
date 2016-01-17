@@ -377,7 +377,7 @@ def Command(self, cmd, room, msg, user):
                     return 'There is no active anagram or a different game is active.', False
             else:
             	return 'You do not have permission to end the anagram. (Requires %)', True
-        elif msg.startswith('score'):
+        elif msg.lower().startswith('score'):
             if msg.strip() == 'score':
                 return 'No name was given', True
             name = re.sub(r'[^a-zA-z0-9]', '', msg[len('score '):]).lower()
