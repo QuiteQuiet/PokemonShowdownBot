@@ -58,8 +58,9 @@ def canBan(self, room): return self.Groups[self.details['rooms'][room].rank] >= 
 
 # Bans
 def addBan(t, room, ban):
-    ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
-    if t == 'user' and ban in banned['user']:
+    if t == 'user':
+        ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
+        if ban in banned['user']:
             return 'User already banned'
     elif t == 'phrase' and ban in banned['phrase']:
             return 'Phrase already banned'
