@@ -61,6 +61,8 @@ def Command(self, cmd, room, msg, user):
         return 'Source code can be found at: {url}'.format(url = URL()), False
     elif cmd == 'credits':
         return 'Credits can be found: {url}'.format(url = URL()), True
+    elif cmd == 'owner':
+        return 'Owned by: {owner}'.format(owner = self.details['master']), True
     elif cmd in ['commands', 'help']:
         return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True
     elif cmd == 'explain':
