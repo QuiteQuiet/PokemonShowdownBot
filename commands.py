@@ -152,7 +152,7 @@ def Command(self, cmd, room, msg, user):
         if canAddUser(self, user):
             error = addBan(cmd[3:], room, msg)
             if not error:
-                return 'Added {thing} to the banlist'.format(thing = msg), True
+                return 'Added {thing} to the banlist for room {room}'.format(thing = msg, room = room), True
             else:
                 return error, True
         else:
@@ -161,7 +161,7 @@ def Command(self, cmd, room, msg, user):
         if canAddUser(self, user):
             error = removeBan(cmd[5:], room, msg)
             if not error:
-                return 'Removed {thing} from banlist'.format(thing = msg), True
+                return 'Removed {thing} from the banlist for room {room}'.format(thing = msg, room = room), True
             else:
                 return error, True
         else:

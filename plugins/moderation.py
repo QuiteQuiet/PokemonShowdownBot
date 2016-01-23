@@ -58,27 +58,29 @@ def canBan(self, room): return self.Groups[self.details['rooms'][room].rank] >= 
 
 # Bans
 def addBan(t, room, ban):
+    if room not in banned[t]:
+        banned[t][room] = []
     if t == 'user':
         ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
-        if ban in banned['user']:
-            return 'User already banned'
-    elif t == 'phrase' and ban in banned['phrase']:
+        if ban in banned['user'][room]:
+            return 'User already banned in this room'
+    elif t == 'phrase' and ban in banned['phrase'][room]:
             return 'Phrase already banned'
-    banned[t].append(ban)
+    banned[t][room].append(ban)
     with open('plugins/bans.yaml', 'w') as yf:
         yaml.dump(banned, yf)
 
 def removeBan(t, room, ban):
     ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
-    if t == 'user' and ban not in banned['user']:
+    if t == 'user' and ban not in banned['user'][room]:
             return 'User not banned'
-    elif t == 'phrase' and ban not in banned['phrase']:
+    elif t == 'phrase' and ban not in banned['phrase'][room]:
             return 'Phrase not banned'
-    banned[t].remove(ban)
+    banned[t][room].remove(ban)
     with open('plugins/bans.yaml', 'w') as yf:
         yaml.dump(banned, yf)
-def isBanned(user):
-    return user in banned['user']
+def isBanned(user, room):
+    return user in banned['user'][room]
 
 # User Punishment Class
 class PunishedUser:
@@ -120,8 +122,8 @@ def recentlyPunished(user, now):
         return False
     timeDiff = now - punishedUsers[user['name']].lastPunished
     return timeDiff < timedelta(seconds = 3)
-def isBanword(msg):
-    for ban in banned['phrase']:
+def isBanword(msg, room):
+    for ban in banned['phrase'][room]:
         if ban.lower() in msg:
             return True
     return False
@@ -200,11 +202,11 @@ def shouldAct(msg, user, room, unixTime):
         punishedUsers.clear()
         nextReset = now.date() + timedelta(days = 2)
 
-    if isBanned(user):
+    if isBanned(user, room.title):
         return 'roomban'
     if isSpam(msg, user, room.title, now):
         return 'flooding'
-    if isBanword(msg.lower()):
+    if isBanword(msg.lower(), room.title):
         return 'banword'
     if recentlyPunished(user, now):
         return False

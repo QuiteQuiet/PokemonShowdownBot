@@ -84,9 +84,9 @@ class PSBot(PokemonShowdownBot):
             if self.details['avatar'] >= 0:
                 self.send('|/avatar {num}'.format(num = self.details['avatar']))
             print('{name}: Successfully logged in.'.format(name = self.details['user']))
-            for room in self.details['joinRooms']:
-                name = [n for n in room][0] # joinRoom entry is a list of dicts
-                self.joinRoom(name, room[name])
+            for rooms in self.details['joinRooms']:
+                name = [n for n in rooms][0] # joinRoom entry is a list of dicts
+                self.joinRoom(name, rooms[name])
 
         # Challenges
         elif 'updatechallenges' in message[1]:
@@ -125,7 +125,7 @@ class PSBot(PokemonShowdownBot):
                 self.details['rooms'][room].rank = message[2][0]
                 self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
-            if self.getRoom(room).moderate and moderation.isBanned(user) and moderation.canBan(self, room):
+            if self.getRoom(room).moderate and moderation.isBanned(user, room) and moderation.canBan(self, room):
                 self.takeAction(room, user, 'roomban', 'Banned user')
                 return
             self.details['rooms'][room].addUser(user, message[2][0])
