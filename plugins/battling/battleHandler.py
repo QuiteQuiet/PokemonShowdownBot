@@ -39,7 +39,6 @@ class BattleHandler:
         elif 'request' == msg[1]:
             # This is where all the battle picking happen
             request = json.loads(msg[2])
-            print(request)
             if 'rqid' in request:
                 self.activeBattles[battle].rqid = request['rqid']
             sidedata = request['side']
