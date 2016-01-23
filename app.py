@@ -126,7 +126,7 @@ class PSBot(PokemonShowdownBot):
                 self.getRoom(room).doneLoading()
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             if self.getRoom(room).moderate and moderation.isBanned(user, room) and moderation.canBan(self, room):
-                self.takeAction(room, user, 'roomban', 'Banned user')
+                self.takeAction(room, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
                 return
             self.details['rooms'][room].addUser(user, message[2][0])
             # If the user have a message waiting, tell them that in a pm
