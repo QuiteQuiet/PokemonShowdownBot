@@ -85,7 +85,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd == 'savedetails':
         if canChange(self, user):
             saveDetails(self)
-            return 'Details saved.', False
+            return 'Details saved.', True
         else:
             return "You don't have permission to save settings. (Requires #)", False
 
@@ -188,6 +188,33 @@ def Command(self, cmd, room, msg, user):
                     return 'Cannot allow chatgames without being in the room', True
             else:
                 return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
+        else:
+            return 'You do not have permission to change this. (Requires #)', False
+
+    # Pipe tour commands for whitelisted people
+    elif cmd == 'tour' or cmd == 'tournament':
+        if not isRoomWhitelisted(self, room, user): return 'You are not allowed to use this command. (Requires whitelisting by a Room Owner)', True
+        if not self.Groups[self.getRoom(room).rank] >= self.Groups['@']: return "I don't have the rank required to start a tour :(", True
+        return '/tour {rest}'.format(rest = msg), True
+    # Tournament whitelisting
+    elif cmd == 'tourwl':
+        if canAddUser(self, user):
+            target = re.sub(r'[^a-zA-z0-9]', '', msg).lower()
+            if self.getRoom(room).addToWhitelist(target):
+                saveDetails(self)
+                return '{name} added to the whitelist in this room.'.format(name = msg), True
+            else:
+                return 'This user is already whitelisted in that room.', False
+        else:
+            return 'You do not have permission to change this. (Requires #)', False
+    elif cmd =='untourwl':
+        if canAddUser(self, user):
+            target = re.sub(r'[^a-zA-z0-9]', '', msg).lower()
+            if self.getRoom(room).delFromWhitelist(target):
+                saveDetails(self)
+                return '{name} removed from the whitelist in this room.'.format(name = msg), True
+            else:
+                return 'This user is not whitelisted in that room.', False
         else:
             return 'You do not have permission to change this. (Requires #)', False
 
@@ -474,17 +501,19 @@ def removeSpaces(text):
 def isMaster(self, user):
     return user['name'] == self.details['master']
 def isWhitelisted(self, user):
-    return user['name'] == self.details['master'] or user['name'] in self.details['whitelist']
+    return isMaster(self, user) or user['name'] in self.details['whitelist']
+def isRoomWhitelisted(self, room, user):
+    return canStartTrivia(self, user) or self.getRoom(room).isWhitelisted(user['name'])
 def canSee(self, user):
-    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
+    return isMaster(self, user) or self.Groups[user['group']] >= self.Groups['%']
 def canChange(self, user):
-    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
+    return isMaster(self, user) or self.Groups[user['group']] >= self.Groups['#']
 def canAddUser(self, user):
-    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['#']
+    return isMaster(self, user) or self.Groups[user['group']] >= self.Groups['#']
 def canStartGame(self, user):
-    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['%']
+    return isMaster(self, user) or self.Groups[user['group']] >= self.Groups['%']
 def canStartTrivia(self, user):
-    return user['name'] == self.details['master'] or self.Groups[user['group']] >= self.Groups['@']
+    return isMaster(self, user) or self.Groups[user['group']] >= self.Groups['@']
 def isGameType(running, gameType):
     return type(running) == gameType
 def acceptableWeakness(team):
@@ -515,8 +544,10 @@ def saveDetails(self):
     details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
     details['joinRooms'] = []
     for e in self.details['rooms']:
-        details['joinRooms'].append({e:{'moderate':self.details['rooms'][e].moderate,
-                                       'allow games':self.details['rooms'][e].allowGames}})
+        details['joinRooms'].append({e:{'moderate':self.getRoom(e).moderate,
+                                        'allow games':self.getRoom(e).allowGames,
+                                        'tourwhitelist':self.getRoom(e).tourwhitelist}
+                                    })
     details['rooms'] = {}
     with open('details.yaml', 'w') as yf:
         yaml.dump(details, yf, default_flow_style = False)

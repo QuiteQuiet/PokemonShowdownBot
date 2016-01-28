@@ -103,7 +103,7 @@ class PSBot(PokemonShowdownBot):
             return
 
         # This is a safeguard for l and n in case that a moderation action happen
-        elif 'unlink' == message[1] or 'uhtml' in message[1]:
+        elif 'unlink' == message[1] or 'uhtml' in message[1] or 'html' == message[1]:
             return
 
         # As long as the room have a roomintro (whih even groupchats do now)
@@ -180,7 +180,8 @@ class PSBot(PokemonShowdownBot):
                 if response == 'NoAnswer': return
 
                 if self.evalPermission(user) or command in self.gameCommands:
-                    self.reply(room.title, user, self.escapeText(response), samePlace)
+                    if command != 'tour': response = self.escapeText(response)
+                    self.reply(room.title, user, response, samePlace)
 
                 elif command in CanPmReplyCommands:
                     self.sendPm(user['name'], self.escapeText(response))

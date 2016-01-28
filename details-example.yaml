@@ -17,10 +17,11 @@ broadcastrank: ' '
 # OPTIONAL: The specific avatar the bot should use. Leave as 0 to pick the default one.
 avatar: 0
 
-# The rooms that should be joined on login. Leave moderate as fale to not enforce punishments. 
+# The rooms that should be joined on login. Leave moderate as fale to not enforce punishments.
 # allow games: Specify if chatgames like hangman should be allowed in the room
+# tourwhitelist: If you want to make specific people able to start tournaments without being @, add them to this list
 joinRooms:
-  - room: { moderate: False, allow games: False }
+  - room: { moderate: False, allow games: False , tourwhitelist: []}
 # Whitelist for people other than MASTER to bypass allowance checks
 whitelist: []
 
