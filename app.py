@@ -180,10 +180,8 @@ class PSBot(PokemonShowdownBot):
                 if response == 'NoAnswer': return
 
                 if self.evalPermission(user) or command in self.gameCommands:
-                    if response:
-                        self.reply(room.title, user, self.escapeText(response), samePlace)
-                    else:
-                        self.reply(room.title, user, '{cmd} is not a valid command.'.format(cmd = command), samePlace)
+                    self.reply(room.title, user, self.escapeText(response), samePlace)
+
                 elif command in CanPmReplyCommands:
                     self.sendPm(user['name'], self.escapeText(response))
                 else:

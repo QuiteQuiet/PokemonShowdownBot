@@ -464,7 +464,7 @@ def Command(self, cmd, room, msg, user):
         return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
 
     else:
-        return False, False
+        return '{command} is not a valid command.'.format(command = cmd), False
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 def removeSpaces(text):
