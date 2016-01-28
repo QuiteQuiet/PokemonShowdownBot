@@ -70,4 +70,11 @@ and as such require global or roomauth of some degree.
 - (un)banuser [user] : Room(un)bans [user] from any room the bot moderate.
 - (un)banphrase [phrase] : (un)Bans [phrase] in every room the bot moderate.
 
+
+Tournament Whitelisting
+Users can be added to a room specific whitelist that allows them to start tours in that specific room, as long as the bot has the rank required to start tournaments itself.
+- tourwl [name]: Add [name] to the whitelist for this room, as long as they're not on the list already.
+- untourwl [name] : Remove [name] from the whitelist for this room.
+- tour [message]: Pipes everything in [message] and outputs `/tour [message]`. (`/tour` syntax required for anything to work)
+
 None of the above commands save the current settings, and will be cleared on a restart. To save settings, use `savedetails`, which save everything currently in details (including games and battles for now).
