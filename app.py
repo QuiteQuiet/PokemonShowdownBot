@@ -88,6 +88,12 @@ class PSBot(PokemonShowdownBot):
                 name = [n for n in rooms][0] # joinRoom entry is a list of dicts
                 self.joinRoom(name, rooms[name])
 
+        # Keep track of own rank by promotion / demotion
+        elif message[1].startswith(self.details['user']):
+            parts = message[1].lower().split()
+            ranks = {'regular':' ','voice':'+','driver':'%','moderator':'@','owner':'#'}
+            self.getRoom(room).rank = ranks[parts[parts.index('room') + 1]]
+
         # Challenges
         elif 'updatechallenges' in message[1]:
             challs = json.loads(message[2])
@@ -257,12 +263,6 @@ class PSBot(PokemonShowdownBot):
             else:
                 if self.getRoom(room).tour:
                     self.getRoom(room).tour.onUpdate(message[2:])
-
-        # Keep track of own rank by prmotion / demotion
-        elif message[1].startswith(self.details['user']):
-            parts = message[1].lower().split()
-            ranks = {'regular':' ','voice':'+','driver':'%','moderator':'@','owner':'#'}
-            self.getRoom(room).rank = ranks[parts[parts.index('room') + 1]]
 
 
 psb = PSBot()
