@@ -88,12 +88,6 @@ class PSBot(PokemonShowdownBot):
                 name = [n for n in rooms][0] # joinRoom entry is a list of dicts
                 self.joinRoom(name, rooms[name])
 
-        # Keep track of own rank by promotion / demotion
-        elif message[1].startswith(self.details['user']):
-            parts = message[1].lower().split()
-            ranks = {'regular':' ','voice':'+','driver':'%','moderator':'@','owner':'#'}
-            self.getRoom(room).rank = ranks[parts[parts.index('room') + 1]]
-
         # Challenges
         elif 'updatechallenges' in message[1]:
             challs = json.loads(message[2])
@@ -148,6 +142,10 @@ class PSBot(PokemonShowdownBot):
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             self.details['rooms'][room].removeUser(user)
         elif 'n' in message[1].lower() and len(message[1]) < 3:
+            # Keep track of your own rank
+            # When demoting / promoting a user the server sends a |N| message to update the userlist
+            if message[2][1:] == self.details['user']:
+                self.getRoom(room).rank = message[2][0]
             newName = message[2][0] + re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             oldName = re.sub(r'[^a-zA-z0-9]', '', message[3]).lower()
             self.details['rooms'][room].renamedUser(oldName, newName)
