@@ -2,9 +2,10 @@ import json
 from random import randint
 
 class Tournament:
-    def __init__(self, ws, roomName):
+    def __init__(self, ws, roomName, tourFormat):
         self.ws = ws
         self.room = roomName
+        self.format = tourFormat
         self.hasStarted = False
         
 

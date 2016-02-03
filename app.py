@@ -25,7 +25,7 @@ import re
 import json
 
 from robot import PokemonShowdownBot
-from commands import Command, GameCommands, CanPmReplyCommands
+from commands import Command, GameCommands, CanPmReplyCommands, IgnoreEscaping
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
 from plugins.messages import MessageDatabase
@@ -184,7 +184,8 @@ class PSBot(PokemonShowdownBot):
                 if response == 'NoAnswer': return
 
                 if self.evalPermission(user) or command in self.gameCommands:
-                    if command != 'tour': response = self.escapeText(response)
+                    if command not in IgnoreEscaping:
+                        response = self.escapeText(response)
                     self.reply(room.title, user, response, samePlace)
 
                 elif command in CanPmReplyCommands:
@@ -240,12 +241,12 @@ class PSBot(PokemonShowdownBot):
         elif 'tournament' == message[1]:
             if self.getRoom(room).loading: return
             if 'create' in message[2]:
-                # Tour was created, join it if in supported formats
-                if not self.details['joinTours']: return
                 room = self.getRoom(room)
                 if not room.tour:
-                    room.createTour(self.ws)
-                if room.tour and message[3] in supportedFormats:
+                    room.createTour(self.ws, message[3])
+                # Tour was created, join it if in supported formats
+                if not self.details['joinTours']: return
+                if room.tour and room.tour.format in supportedFormats:
                     room.tour.joinTour()
             elif 'end' == message[2]:
                 if not self.getRoom(room).tour: return

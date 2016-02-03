@@ -45,6 +45,7 @@ from plugins.moderation import addBan, removeBan
 usageLink = r'http://www.smogon.com/stats/2015-12/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
 CanPmReplyCommands = ['usage', 'help']
+IgnoreEscaping = ['tour', 'oldgentour']
 Scoreboard = {}
 with open('plugins/scoreboard.yaml', 'a+') as yf:
     yf.seek(0, 0)
@@ -231,6 +232,14 @@ def Command(self, cmd, room, msg, user):
         return Teams[msg][randint(0, len(Teams[msg])-1)], True
     elif cmd == 'usage':
         return usageLink, True
+
+    elif cmd == 'oldgentour':
+        curRoom = self.getRoom(room)
+        if not curRoom.tour: return 'No tour is currently active, so this command is disabled.', True
+        if not curRoom.tour.format.startswith('gen'): return "The current tour isn't a previous generation, so this command is disabled.", True
+        pastGens = {'gen1': 'RBY', 'gen2':'GSC', 'gen3':'RSE',  'gen4':'DPP', 'gen5':'BW'}
+        return "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/".format(gen = pastGens[curRoom.tour.format[0:4]]), True
+
     # Offline messages
     elif cmd == 'tell':
         if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False

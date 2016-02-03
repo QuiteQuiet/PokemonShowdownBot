@@ -42,7 +42,7 @@ class Room:
         if target not in self.tourwhitelist: return False
         self.tourwhitelist.remove(target)
         return True
-    def createTour(self, ws):
-        self.tour = Tournament(ws, self.title)
+    def createTour(self, ws, form):
+        self.tour = Tournament(ws, self.title, form)
     def endTour(self):
         self.tour = None

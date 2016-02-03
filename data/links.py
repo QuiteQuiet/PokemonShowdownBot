@@ -59,5 +59,6 @@ Links = {
 }
 YoutubeLinks = {
     'kiyo':'metaphysical said use Adblock: http://www.youtube.com/user/gottagokiyo',
-    'raseri':'NUTL Content: http://www.youtube.com/user/SmogonRaseri'
+    'raseri':'NUTL Content: http://www.youtube.com/user/SmogonRaseri',
+    'disjunction':'This guy is bad: '
 }
