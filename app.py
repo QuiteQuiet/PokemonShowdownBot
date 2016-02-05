@@ -23,6 +23,7 @@
 
 import re
 import json
+import time
 
 from robot import PokemonShowdownBot
 from commands import Command, GameCommands, CanPmReplyCommands, IgnoreEscaping
@@ -230,7 +231,7 @@ class PSBot(PokemonShowdownBot):
                     else:
                         response = "Don't try to play games in pm please"
                 if not response:
-                    response, where = self.do(self, command, 'room', params, user)
+                    response, where = self.do(self, command, 'pm', params, user)
 
                 if response:
                     self.sendPm(user['name'], response)
@@ -265,3 +266,19 @@ class PSBot(PokemonShowdownBot):
 
 
 psb = PSBot()
+restartCount = 0
+while restartCount < 100:
+    # This function has a loop that runs as long as the websocket is connected
+    psb.ws.run_forever()
+    # If we get here, the socket is closed and disconnected
+    # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
+    # (At least, that's the theory)
+    time.sleep(30)
+    print('30 seconds since last disconnect. Retrying connection...')
+    psb.openWebsocket()
+    psb.addBattleHandler()
+    # We have websocket.run_forever earlier, so just loop around here
+    # but count the total number of restarts we managed for debug purposes.
+    restartCount += 1
+print(restartCount)
+

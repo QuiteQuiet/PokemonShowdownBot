@@ -33,8 +33,7 @@ class PokemonShowdownBot:
             self.splitMessage = onMessage if onMessage else self.onMessage
             self.url = url
             self.openWebsocket()
-            self.bh = BattleHandler(self.ws, self.details['user'])
-            self.ws.run_forever()
+            self.addBattleHandler()
 
     def onError(self, ws, error):
         print(error)
@@ -50,6 +49,9 @@ class PokemonShowdownBot:
                                          on_error = self.onError,
                                          on_close = self.onClose)
         self.ws.on_open = self.onOpen
+
+    def addBattleHandler(self):
+        self.bh = BattleHandler(self.ws, self.details['user'])
 
     def intro(self):
         print(prettyText.intro)
