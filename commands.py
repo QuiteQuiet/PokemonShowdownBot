@@ -194,6 +194,7 @@ def Command(self, cmd, room, msg, user):
 
     # Pipe tour commands for whitelisted people
     elif cmd == 'tour' or cmd == 'tournament':
+        if room == 'pm': return "You can't use this command in a pm.", False
         if not isRoomWhitelisted(self, room, user): return 'You are not allowed to use this command. (Requires whitelisting by a Room Owner)', True
         if not self.Groups[self.getRoom(room).rank] >= self.Groups['@']: return "I don't have the rank required to start a tour :(", True
         return '/tour {rest}'.format(rest = msg), True
@@ -287,11 +288,11 @@ def Command(self, cmd, room, msg, user):
                 return 'Invalid parameter given. Accepting whole numbers between 1 and 10.', True
         else:
             return '\u304f\u30b3\u003a\u5f61', True
-    elif cmd == 'joke':
-        if randint(0, 1) and self.Groups[user['group']] >= self.Groups['+']:
-            return user['unform'], True
-        else:
-            return getJoke(), True
+#    elif cmd == 'joke':
+#        if randint(0, 1) and self.Groups[user['group']] >= self.Groups['+']:
+#            return user['unform'], True
+#        else:
+#            return getJoke(), True
     elif cmd in tiers:
         pick = list(tiers[cmd])[randint(0,len(tiers[cmd])-1)]
         pNoForm = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', pick).lower()
