@@ -24,6 +24,12 @@ class BattleHandler:
         self.send('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move) + mega, rqid = rqid))
     def respond(self, battle, msg):
         self.send('{room}|{msg}'.format(room = battle, msg = msg))
+    def handleOutcome(self, battle, won):
+        if won:
+            self.respond(battle, 'O-oh, I won? Sorry :(')
+        else:
+            self.respond(battle, "It's okay, I didn't think I'd win anyway :>")
+        print('Battle: {outcome}'.format(outcome = 'win' if won else 'loss'))
 
     def getSpecies(self, details):
         return details.split(',')[0].replace('-*', '')
@@ -93,10 +99,7 @@ class BattleHandler:
                                 {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(btl.other.team)+1))
                 btl.other.setActive(btl.other.getPokemon(mon))
         elif msg[1] in ['win', 'tie']:
-            if msg[2] == self.botName:
-                self.respond(battle, 'O-oh, I won? Sorry :(')
-            else:
-                self.respond(battle, "It's okay, I didn't think I'd win anyway :>")
+            self.handleOutcome(battle, msg[2] == self.botName)
             self.respond(battle, '/leave')
 
         # In-battle events
