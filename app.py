@@ -280,5 +280,5 @@ while restartCount < 100:
     # We have websocket.run_forever earlier, so just loop around here
     # but count the total number of restarts we managed for debug purposes.
     restartCount += 1
-print(restartCount)
+    print('Restart Count:', restartCount)
 
