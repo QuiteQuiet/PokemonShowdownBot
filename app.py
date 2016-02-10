@@ -131,7 +131,7 @@ class PSBot(PokemonShowdownBot):
                 return
             self.details['rooms'][room].addUser(user, message[2][0])
             # If the user have a message waiting, tell them that in a pm
-            if self.usernotes.hasMessage(user):
+            if self.usernotes.shouldNotifyMessage(user):
                 self.sendPm(user, self.usernotes.pendingMessages(user))
         elif 'l' == message[1].lower() or 'leave' == message[1].lower():
             if self.userIsSelf(message[2][1:]):

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import random
 import re
 
@@ -9,13 +10,19 @@ class Message:
         return 'From {user}: {msg}'.format(user = self.sent, msg = self.msg)
 
 class MessageDatabase:
+    # Constant
+    def NOTIFICATION_GAP(self): return timedelta(hours = 1)
+
     def __init__(self):
         self.messages = {}
+        self.lastNotification = {}
     def pendingMessages(self, user):
         cnt = len(self.messages[user])
         return 'You have {nr} message{s} waiting for you.\nUse ~read [number] to get [number] of messages shown to you'.format(nr = cnt, s = 's' if cnt > 1 else '')
     def addMessage(self, to, sent, msg):
         if to not in self.messages: self.messages[to] = {}
+        # Set last notification to something far in the past so it triggers the first time always
+        if to not in self.lastNotification: self.lastNotification[to] = datetime(2015, 1, 1)
         if sent in self.messages[to]: return False
 
         self.messages[to][re.sub(r'[^a-zA-z0-9]', '', sent).lower()] = Message(sent, msg)
@@ -34,8 +41,10 @@ class MessageDatabase:
             reply += self.getMessage(user) + ('\n' if amnt > 1 else '')
             amnt -= 1
         # Remove the user from the list if there's no messages left
+        # and clear the last notification time
         if not self.messages[user]:
             self.messages.pop(user)
+            self.lastNotification.pop(user)
         return reply
 
     def getAllMessages(self, user):
@@ -48,6 +57,14 @@ class MessageDatabase:
         for msg in messages:
             combine.append(messages[msg].replyFormat())
         return '\n'.join(combine)
+
+    def shouldNotifyMessage(self, user):
+        if self.hasMessage(user):
+            now = datetime.now()
+            if now - self.lastNotification[user] > self.NOTIFICATION_GAP():
+                self.lastNotification[user] = now
+                return True
+        return False
 
     def hasMessage(self, user):
         return user in self.messages
