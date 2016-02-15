@@ -13,7 +13,7 @@ Links = {
     'ou':'http://www.smogon.com/forums/threads/3538596/',
     'uu':'http://www.smogon.com/forums/threads/3538856/',
     'ru':'http://www.smogon.com/forums/threads/3538971/',
-    'nu':'http://www.smogon.com/forums/threads/3557854/',
+    'nu':'http://www.smogon.com/forums/threads/3563816/',
     'pu':'http://www.smogon.com/forums/threads/3523350/',
     'lc':'http://www.smogon.com/forums/threads/3505710/'
     },
