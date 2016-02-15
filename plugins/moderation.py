@@ -210,17 +210,21 @@ def shouldAct(msg, user, room, unixTime):
         return 'banword'
     if recentlyPunished(user, now):
         return False
-    if isStretching(msg):
-        return 'stretching'
-    if isCaps(msg):
-        return 'caps'
-    if isGroupMention(msg):
-        return False # Groupchats are less of a problem right now
-        return 'groupchat'
-    if containUrl(msg.lower()):
-        return False # Ignore urls for now
-        url = moderation.getUrl(message[4])
-        if badLink(url):
-            return 'badlink'
+# Disabled any moderating that isn't directly harmful to the rooms.
+# If moderating for stretching or caps is desired, uncomment the relevant
+# section of code. The recently punished test can stay to avoid forgetting
+# when re-enabling a function again.
+
+#    if isStretching(msg):
+#        return 'stretching'
+#    if isCaps(msg):
+#        return 'caps'
+
+#    if isGroupMention(msg):
+#        return 'groupchat'
+#    if containUrl(msg.lower()):
+#        url = moderation.getUrl(message[4])
+#        if badLink(url):
+#            return 'badlink'
     return False
 
