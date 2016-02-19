@@ -259,7 +259,6 @@ class PSBot(PokemonShowdownBot):
                 self.getRoom(room).endTour()
             elif 'forceend' in message[2]:
                 self.getRoom(room).endTour()
-                self.say(room, "Aww, now nobody will win :(")
             else:
                 if self.getRoom(room).tour:
                     self.getRoom(room).tour.onUpdate(message[2:])
