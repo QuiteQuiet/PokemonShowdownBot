@@ -24,6 +24,7 @@ infractionScore = {
     'caps': 1,
     'stretching': 1,
     'badlink': 2,
+    'harmful': 3,
     'flooding': 3,
     'banword': 3,
     'roomban': 10
@@ -34,6 +35,7 @@ actionReplies = {
     'caps': 'Would you mind not using caps so much, please.',
     'stretching': "Please don't stretch unnecessarily.",
     'badlink': 'The link has nothing to do with NU.',
+    'harmful': "Don't use spoiler: with all caps like that.",
     'flooding': "Don't spam, please :c",
     'banword': "You can't say that in here, so please don't.",
     'roomban': "You are banned from this room."
@@ -161,6 +163,16 @@ def isGroupMention(msg):
     if re.search(GROUP_REGEX, msg):
         return True
     return False
+
+def probablyHarmful(msg):
+    # Arguably using `spoiler:` and all caps is never something that will occur
+    # so rather than letting the other monitors take it, deal with it here.
+    # Just make sure the message is long enough to not be a mistake.
+    if 'spoiler:' in msg:
+        hidden = msg[msg.index('spoiler:') + len('spoiler:'):]
+        return isCaps(hidden) and len(hidden) > 20
+    return False
+
 def getAction(self, room, user, wrong, unixTime):
     # This assumes unixTime is a valid unix timestamp
     now = datetime.utcfromtimestamp(int(unixTime))
@@ -210,6 +222,8 @@ def shouldAct(msg, user, room, unixTime):
         return 'banword'
     if recentlyPunished(user, now):
         return False
+    if probablyHarmful(msg):
+        return 'harmful'
 # Disabled any moderating that isn't directly harmful to the rooms.
 # If moderating for stretching or caps is desired, uncomment the relevant
 # section of code. The recently punished test can stay to avoid forgetting
