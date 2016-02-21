@@ -57,6 +57,7 @@ def Command(self, cmd, room, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
     # Debug commands and program info
     if cmd == 'echo':
+        if not isMaster(self, user): return 'You do not have permisson to use this command. (Only for owner)', False
         return msg, True
     elif cmd in ['source', 'git']:
         return 'Source code can be found at: {url}'.format(url = URL()), False
