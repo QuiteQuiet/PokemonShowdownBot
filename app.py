@@ -111,7 +111,7 @@ class PSBot(PokemonShowdownBot):
         # Roomintros are also the last thing that is sent when joining a room
         # so when this show up, assume the room is loaded
         elif 'raw' == message[1]:
-            if message[2].startswith('<div class="infobox"><div class="infobox-limited">'):
+            if message[2].startswith('<div class="infobox infobox-roomintro"><div class="infobox-limited">'):
                 self.getRoom(room).doneLoading()
 
         # Joined new room
