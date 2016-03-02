@@ -44,6 +44,7 @@ from plugins.moderation import addBan, removeBan
 
 usageLink = r'http://www.smogon.com/stats/2016-01/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
+IgnoreBroadcastPermission = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta', 'tour']
 CanPmReplyCommands = ['usage', 'help']
 IgnoreEscaping = ['tour', 'oldgentour']
 Scoreboard = {}

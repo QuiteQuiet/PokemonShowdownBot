@@ -26,7 +26,7 @@ import json
 import time
 
 from robot import PokemonShowdownBot
-from commands import Command, GameCommands, CanPmReplyCommands, IgnoreEscaping
+from commands import Command, GameCommands, IgnoreBroadcastPermission, CanPmReplyCommands, IgnoreEscaping
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
 from plugins.messages import MessageDatabase
@@ -35,7 +35,6 @@ from plugins.workshop import Workshop
 class PSBot(PokemonShowdownBot):
     def __init__(self):
         self.do = Command
-        self.gameCommands = GameCommands
         self.usernotes = MessageDatabase()
         PokemonShowdownBot.__init__(self,
                                     'ws://sim.smogon.com:8000/showdown/websocket',
@@ -174,7 +173,7 @@ class PSBot(PokemonShowdownBot):
 
                 response, samePlace = '', True
                 # If the command was a chat game and permissions aren't met, kill the game (even if it just started)
-                if command in self.gameCommands:
+                if command in GameCommands:
                     if not room.allowGames:
                         response = 'This room does not support chatgames.'
                     if 'new' in message[4] and command in ['hangman']:
@@ -184,7 +183,7 @@ class PSBot(PokemonShowdownBot):
                     response, samePlace = self.do(self, command, room.title, message[4][len(command) + 1:].lstrip(), user)
                 if response == 'NoAnswer': return
 
-                if self.evalPermission(user) or command in self.gameCommands:
+                if self.evalPermission(user) or command in IgnoreBroadcastPermission:
                     if command not in IgnoreEscaping:
                         response = self.escapeText(response)
                     self.reply(room.title, user, response, samePlace)
@@ -216,7 +215,7 @@ class PSBot(PokemonShowdownBot):
                 params = message[4][len(command) + len(self.details['command']):].lstrip()
 
                 response, where = '', False
-                if command in self.gameCommands:
+                if command in GameCommands:
                     if params.startswith('new,'):
                         room = params[len('new,'):].split(',')[0].replace(' ','')
                         if not self.getRoom(room).allowGames:
