@@ -42,7 +42,7 @@ from plugins.workshop import Workshop
 from plugins.trivia.trivia import Trivia
 from plugins.moderation import addBan, removeBan
 
-usageLink = r'http://www.smogon.com/stats/2016-01/'
+usageLink = r'http://www.smogon.com/stats/2016-02/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
 IgnoreBroadcastPermission = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta', 'tour']
 CanPmReplyCommands = ['usage', 'help']
@@ -240,8 +240,10 @@ def Command(self, cmd, room, msg, user):
         curRoom = self.getRoom(room)
         if not curRoom.tour: return 'No tour is currently active, so this command is disabled.', True
         if not curRoom.tour.format.startswith('gen'): return "The current tour isn't a previous generation, so this command is disabled.", True
-        pastGens = {'gen1': 'RBY', 'gen2':'GSC', 'gen3':'RSE',  'gen4':'DPP', 'gen5':'BW'}
-        return "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/".format(gen = pastGens[curRoom.tour.format[0:4]]), True
+        pastGens = {'gen1': 'RBY', 'gen2':'GSC', 'gen3':'RSE',  'gen4':'DPP'}
+        warning = ''
+        if curRoom.tour.format[0:4] in pastGens: warning = "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n".format(gen = pastGens[curRoom.tour.format[0:4]])
+        return warning + "/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/", True
 
     # Offline messages
     elif cmd == 'tell':
