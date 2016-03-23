@@ -18,7 +18,6 @@ import yaml
 from time import sleep
 import datetime
 
-import prettyText
 from room import Room
 from plugins.battling.battleHandler import BattleHandler
 
@@ -54,7 +53,11 @@ class PokemonShowdownBot:
         self.bh = BattleHandler(self.ws, self.details['user'])
 
     def intro(self):
-        print(prettyText.intro)
+        print('+~~~~~~~~~~~~~~~~~~~~~~~~+')
+        print('|  Pokemon Showdown Bot  |')
+        print('|      Created by:       |')
+        print('|      Quite Quiet       |')
+        print('+~~~~~~~~~~~~~~~~~~~~~~~~+')
     def log(self, sort, msg, user):
         print('{sort}: {cmd} (user: {user})'.format(sort = sort, cmd = msg, user = user))
     def userIsSelf(self, user):
