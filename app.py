@@ -182,8 +182,6 @@ class PSBot(PokemonShowdownBot):
                 if command in GameCommands:
                     if not room.allowGames:
                         response = 'This room does not support chatgames.'
-                    if 'new' in message[4] and command in ['hangman']:
-                        response = "Please use Pm to start a hangman game."
 
                 if not response:
                     response, samePlace = self.do(self, command, room.title, message[4][len(command) + 1:].lstrip(), user)
@@ -220,18 +218,9 @@ class PSBot(PokemonShowdownBot):
                 self.log('Command', message[4], user['name'])
                 params = message[4][len(command) + len(self.details['command']):].lstrip()
 
-                response, where = '', False
+                response = ''
                 if command in GameCommands:
-                    if params.startswith('new,'):
-                        room = params[len('new,'):].split(',')[0].replace(' ','')
-                        if not self.getRoom(room).allowGames:
-                            response = 'This room does not support chat games'
-                        else:
-                            user['group'] = self.getRoom(room).users[user['name']]
-                            response, where = self.do(self, command, room, params, user)
-                            self.reply(room, user, response, where)
-                            return
-                    elif params.startswith('score'):
+                    if params.startswith('score'):
                         response, where = self.do(self, command, 'pm', params, user)
                     else:
                         response = "Don't try to play games in pm please"

@@ -37,14 +37,14 @@ from data.pokedex import Pokedex
 from data.types import Types
 from data.replies import Lines
 
-from plugins.games import Hangman, Anagram
+from plugins.games import Anagram
 from plugins.workshop import Workshop
 from plugins.trivia.trivia import Trivia
 from plugins.moderation import addBan, removeBan
 
 usageLink = r'http://www.smogon.com/stats/2016-02/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
-IgnoreBroadcastPermission = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta', 'tour']
+IgnoreBroadcastPermission = ['anagram', 'a', 'trivia', 'ta', 'tour']
 CanPmReplyCommands = ['usage', 'help']
 IgnoreEscaping = ['tour', 'oldgentour']
 Scoreboard = {}
@@ -357,43 +357,6 @@ def Command(self, cmd, room, msg, user):
             return 'Workshop session ended', True
 
     # Chat games go here
-    # Hangman
-    elif cmd == 'hangman':
-        msg = msg.strip().split(',')
-        if 'end' in msg[0] and canStartGame(self, user) and isGameType(self.details['rooms'][room].game, Hangman):
-            phrase = self.details['rooms'][room].game.getSolution()
-            self.details['rooms'][room].game = None
-            return 'The hangman game was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = phrase), True
-        elif 'new' in msg[0]: # ~hangman new,room,[phrase]
-            if canStartGame(self, user):
-                if self.details['rooms'][room].game:
-                    return 'A game is already running in this room', False
-                phrase = re.sub(r'[^a-zA-Z0-9 ]', '', re.sub(r'\s{2,}', ' ', msg[2].strip()))
-                if not phrase.strip():
-                    return 'You can only have letters, numbers or spaces in the phrase', False
-                if len(removeSpaces(phrase)) <= 1:
-                	  return 'The phrase must be at least two characters long', False
-                self.details['rooms'][room].game = Hangman(phrase)
-                return 'A new game of hangman has begun:\n' + self.details['rooms'][room].game.printCurGame(), True
-            else:
-                return 'You do not have permission to start a game in this room. (Requires %)', False
-        else:
-            return 'To start a new hangman game: ~hangman new,[room],[phrase]', True
-    elif cmd == 'hg':
-        if isGameType(self.details['rooms'][room].game, Hangman):
-            if len(removeSpaces(msg)) == 1:
-                return self.details['rooms'][room].game.guessLetter(msg.replace(' ','').lower()), True
-            else:
-                if not msg.lstrip():
-                    return "You can't guess nothing", True
-                if self.details['rooms'][room].game.guessPhrase(msg.lstrip()):
-                    solved = self.details['rooms'][room].game.getFormatedPhrase()
-                    self.details['rooms'][room].game = None
-                    return 'Congratulations {name}. You won!\nThe phrase was: {phrase}'.format(name = user['unform'], phrase = solved), True
-                else:
-                    return '{test} is wrong!'.format(test = msg.lstrip()), True
-        else:
-            return 'There is no hangman game in progress right now', True
     # Anagrams of Pokemon names
     elif cmd == 'anagram':
         if msg == 'new':
