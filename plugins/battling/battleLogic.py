@@ -88,7 +88,8 @@ def getCC1v1Move(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
     values = {}
     for m in moves:
-        m = m.replace('-','')
+        for fault in ['-', "'"]:
+            m = m.replace(fault,'')
         if m == 'recharge': return m
         # This begins a score system for the moves, naively trying to pick the best moves without calculating damage
         # Based on the move's base power
