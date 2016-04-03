@@ -20,8 +20,11 @@ class Room:
     def doneLoading(self):
         self.loading = False
 
-    def addUserlist(self, users):
+    def makeUserlist(self, userlist):
+        import re
+        users = ','.join([u[0]+re.sub(r'[^a-zA-z0-9,]', '',u[1:]).lower() for u in userlist.split(',') if userlist.split(',').index(u) > 0])
         self.users = {u[1:]:u[0] for u in users.split(',')}
+
     def addUser(self, user, auth):
         if user not in self.users:
             self.users[user] = auth

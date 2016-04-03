@@ -65,9 +65,37 @@ class PSBot(PokemonShowdownBot):
         for m in msg:
             self.parseMessage(m, room)
 
-    def parseMessage(self, msg, room):
+    def updateUser(self, name, result):
+        if self.details['user'] not in name: return
+        if not result == '1':
+            print('login failed, still guest')
+            print('crashing now; have a nice day :)')
+            exit()
+
+        if self.details['avatar'] >= 0:
+            self.send('|/avatar {num}'.format(num = self.details['avatar']))
+        print('{name}: Successfully logged in.'.format(name = self.details['user']))
+        for rooms in self.details['joinRooms']:
+            name = [n for n in rooms][0] # joinRoom entry is a list of dicts
+            self.joinRoom(name, rooms[name])
+
+    def handleJoin(self, room, message):
+        if self.userIsSelf(message[1:]):
+            self.details['rooms'][room.title].rank = message[0]
+            room.doneLoading()
+        user = re.sub(r'[^a-zA-z0-9]', '', message).lower()
+        if moderation.shouldBan(self, room.moderate, user, room.title):
+            self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
+            return
+        self.details['rooms'][room.title].addUser(user, message[0])
+        # If the user have a message waiting, tell them that in a pm
+        if self.usernotes.shouldNotifyMessage(user):
+            self.sendPm(user, self.usernotes.pendingMessages(user))
+
+    def parseMessage(self, msg, roomName):
         if not msg.startswith('|'): return
         message = msg.split('|')
+        room = self.getRoom(roomName)
 
         # Logging in
         if message[1] == 'challstr':
@@ -75,18 +103,7 @@ class PSBot(PokemonShowdownBot):
             self.login(message[3], message[2])
 
         elif message[1] == 'updateuser':
-            if self.details['user'] not in message[2]: return
-            if message[3] not in '1':
-                print('login failed, still guest')
-                print('crashing now; have a nice day :)')
-                exit()
-
-            if self.details['avatar'] >= 0:
-                self.send('|/avatar {num}'.format(num = self.details['avatar']))
-            print('{name}: Successfully logged in.'.format(name = self.details['user']))
-            for rooms in self.details['joinRooms']:
-                name = [n for n in rooms][0] # joinRoom entry is a list of dicts
-                self.joinRoom(name, rooms[name])
+            self.updateUser(message[2], message[3])
 
         # Challenges
         elif 'updatechallenges' in message[1]:
@@ -98,7 +115,7 @@ class PSBot(PokemonShowdownBot):
                 else:
                     self.sendPm(opp, 'Sorry, I only accept challenges in Challenge Cup 1v1, Random Battles or Battle Factory :(')
         elif 'updatesearch' in message[1]:
-            # This gets sent before `updatechallenges`does when recieving a battle, but it's
+            # This gets sent before `updatechallenges` does when recieving a battle, but it's
             # not useful for anything, so just return straight away
             return
 
@@ -111,50 +128,39 @@ class PSBot(PokemonShowdownBot):
         # so when this show up, assume the room is loaded
         elif 'raw' == message[1]:
             if message[2].startswith('<div class="infobox infobox-roomintro"><div class="infobox-limited">'):
-                self.getRoom(room).doneLoading()
+                room.doneLoading()
 
         # Joined new room
         elif 'users' in message[1]:
-            users = ','.join([u[0]+re.sub(r'[^a-zA-z0-9,]', '',u[1:]).lower() for u in message[2].split(',') if message[2].split(',').index(u) > 0])
-            self.getRoom(room).addUserlist(users)
+            room.makeUserlist(message[2])
             # If PS doesn't tell us we joined, this still give us our room rank
-            self.getRoom(room).rank = message[2][message[2].index(self.details['user']) - 1]
+            room.rank = message[2][message[2].index(self.details['user']) - 1]
 
         elif 'j' in message[1].lower():
-            if self.userIsSelf(message[2][1:]):
-                self.details['rooms'][room].rank = message[2][0]
-                self.getRoom(room).doneLoading()
-            user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
-            if self.getRoom(room).moderate and moderation.isBanned(user, room) and moderation.canBan(self, room):
-                self.takeAction(room, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
-                return
-            self.details['rooms'][room].addUser(user, message[2][0])
-            # If the user have a message waiting, tell them that in a pm
-            if self.usernotes.shouldNotifyMessage(user):
-                self.sendPm(user, self.usernotes.pendingMessages(user))
+            self.handleJoin(room, message[2])
+
         elif 'l' == message[1].lower() or 'leave' == message[1].lower():
             if self.userIsSelf(message[2][1:]):
                 # This is just a failsafe in case the bot is forcibly removed from a room.
                 # Any other memory release required is handeled by the room destruction
-                if room in self.details['rooms']:
-                    self.details['rooms'].pop(room)
+                if roomName in self.details['rooms']:
+                    self.details['rooms'].pop(roomName)
                 return
             user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
-            self.details['rooms'][room].removeUser(user)
+            room.removeUser(user)
         elif 'n' in message[1].lower() and len(message[1]) < 3:
             # Keep track of your own rank
             # When demoting / promoting a user the server sends a |N| message to update the userlist
             if message[2][1:] == self.details['user']:
-                self.getRoom(room).rank = message[2][0]
+                room.rank = message[2][0]
             newName = message[2][0] + re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             oldName = re.sub(r'[^a-zA-z0-9]', '', message[3]).lower()
-            self.details['rooms'][room].renamedUser(oldName, newName)
+            room.renamedUser(oldName, newName)
 
 
         # Chat messages
         elif 'c' in message[1].lower():
             user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[3]).lower(),'group':message[3][0], 'unform': message[3][1:]}
-            room = self.getRoom(room)
             if room.loading: return
             if user['name'] not in room.users: return
             if self.userIsSelf(user['unform']): return
@@ -239,9 +245,8 @@ class PSBot(PokemonShowdownBot):
 
         # Tournaments
         elif 'tournament' == message[1]:
-            if self.getRoom(room).loading: return
+            if room.loading: return
             if 'create' in message[2]:
-                room = self.getRoom(room)
                 if not room.tour:
                     room.createTour(self.ws, message[3])
                 # Tour was created, join it if in supported formats
@@ -249,18 +254,18 @@ class PSBot(PokemonShowdownBot):
                 if room.tour and room.tour.format in supportedFormats:
                     room.tour.joinTour()
             elif 'end' == message[2]:
-                if not self.getRoom(room).tour: return
-                winner, tier = self.getRoom(room).tour.getWinner(message[3])
+                if not room.tour: return
+                winner, tier = room.tour.getWinner(message[3])
                 if self.details['user'] in winner:
-                    self.say(room, 'I won the {form} tournament :o'.format(form = tier))
+                    self.say(room.title, 'I won the {form} tournament :o'.format(form = tier))
                 else:
-                    self.say(room, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))
-                self.getRoom(room).endTour()
+                    self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))
+                room.endTour()
             elif 'forceend' in message[2]:
-                self.getRoom(room).endTour()
+                room.endTour()
             else:
-                if self.getRoom(room).tour:
-                    self.getRoom(room).tour.onUpdate(message[2:])
+                if room.tour:
+                    room.tour.onUpdate(message[2:])
 
 
 psb = PSBot()

@@ -55,8 +55,8 @@ def MESSAGES_FOR_SPAM(): return 5
 def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * MESSAGES_FOR_SPAM()
 def SPAM_INTERVAL(): return timedelta(seconds = 6)
 
-def canPunish(self, room): return self.Groups[self.details['rooms'][room].rank] >= self.Groups['%']
-def canBan(self, room): return self.Groups[self.details['rooms'][room].rank] >= self.Groups['@']
+def canPunish(bot, room): return bot.Groups[bot.details['rooms'][room].rank] >= bot.Groups['%']
+def canBan(bot, room): return bot.Groups[bot.details['rooms'][room].rank] >= bot.Groups['@']
 
 # Bans
 def addBan(t, room, ban):
@@ -81,6 +81,9 @@ def removeBan(t, room, ban):
     banned[t][room].remove(ban)
     with open('plugins/bans.yaml', 'w') as yf:
         yaml.dump(banned, yf)
+
+def shouldBan(bot, allowed, user, room):
+    return allowed and isBanned(user, room) and canBan(bot, room)
 def isBanned(user, room):
     return user in banned['user'][room]
 

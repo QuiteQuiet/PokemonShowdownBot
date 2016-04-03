@@ -95,6 +95,7 @@ class PokemonShowdownBot:
         self.details['rooms'].pop(room, None)
         return True
     def getRoom(self, roomName):
+        if roomName not in self.details['rooms']: return Room('Empty', '')
         alias = {'nu':'neverused', 'tsb':'thestable'}
         if roomName in alias:
             roomName = alias[roomName]
