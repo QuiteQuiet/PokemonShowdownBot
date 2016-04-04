@@ -83,6 +83,20 @@ class PokemonShowdownBot:
             print('Assertion failed')
             return False
 
+    def updateUser(self, name, result):
+        if self.details['user'] not in name: return
+        if not result == '1':
+            print('login failed, still guest')
+            print('crashing now; have a nice day :)')
+            exit()
+
+        if self.details['avatar'] >= 0:
+            self.send('|/avatar {num}'.format(num = self.details['avatar']))
+        print('{name}: Successfully logged in.'.format(name = self.details['user']))
+        for rooms in self.details['joinRooms']:
+            name = [n for n in rooms][0] # joinRoom entry is a list of dicts
+            self.joinRoom(name, rooms[name])
+
     def joinRoom(self, room, data = None):
         self.send('|/join ' + room)
         self.details['rooms'][room] = Room(room, data)
@@ -144,7 +158,4 @@ class PokemonShowdownBot:
             print('Attempting to log in...')
             self.login(message[3], message[2])
         elif parts[1] == 'updateuser':
-            if self.details['user'] not in parts[2]: return
-            if parts[3] == '1':
-                print('Loged in...')
-
+            self.updateUser(parts[2], parts[3])

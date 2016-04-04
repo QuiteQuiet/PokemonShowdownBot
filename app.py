@@ -65,20 +65,6 @@ class PSBot(PokemonShowdownBot):
         for m in msg:
             self.parseMessage(m, room)
 
-    def updateUser(self, name, result):
-        if self.details['user'] not in name: return
-        if not result == '1':
-            print('login failed, still guest')
-            print('crashing now; have a nice day :)')
-            exit()
-
-        if self.details['avatar'] >= 0:
-            self.send('|/avatar {num}'.format(num = self.details['avatar']))
-        print('{name}: Successfully logged in.'.format(name = self.details['user']))
-        for rooms in self.details['joinRooms']:
-            name = [n for n in rooms][0] # joinRoom entry is a list of dicts
-            self.joinRoom(name, rooms[name])
-
     def handleJoin(self, room, message):
         if self.userIsSelf(message[1:]):
             self.details['rooms'][room.title].rank = message[0]
