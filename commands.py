@@ -42,7 +42,7 @@ from plugins.workshop import Workshop
 from plugins.trivia.trivia import Trivia
 from plugins.moderation import addBan, removeBan
 
-usageLink = r'http://www.smogon.com/stats/2016-02/'
+usageLink = r'http://www.smogon.com/stats/2016-03/'
 GameCommands = ['hangman', 'hg', 'anagram', 'a', 'trivia', 'ta']
 IgnoreBroadcastPermission = ['anagram', 'a', 'trivia', 'ta', 'tour']
 CanPmReplyCommands = ['usage', 'help']
