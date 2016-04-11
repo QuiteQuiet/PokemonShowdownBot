@@ -25,7 +25,7 @@ import re
 import json
 import time
 
-from robot import PokemonShowdownBot
+from robot import PokemonShowdownBot, Room
 from commands import Command, GameCommands, IgnoreBroadcastPermission, CanPmReplyCommands, IgnoreEscaping
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
@@ -170,7 +170,7 @@ class PSBot(PokemonShowdownBot):
                         response = 'This room does not support chatgames.'
 
                 if not response:
-                    response, samePlace = self.do(self, command, room.title, message[4][len(command) + 1:].lstrip(), user)
+                    response, samePlace = self.do(self, command, room, message[4][len(command) + 1:].lstrip(), user)
                 if response == 'NoAnswer': return
 
                 if self.evalPermission(user) or command in IgnoreBroadcastPermission:
@@ -207,11 +207,11 @@ class PSBot(PokemonShowdownBot):
                 response = ''
                 if command in GameCommands:
                     if params.startswith('score'):
-                        response, where = self.do(self, command, 'pm', params, user)
+                        response, where = self.do(self, command, Room('pm'), params, user)
                     else:
                         response = "Don't try to play games in pm please"
                 if not response:
-                    response, where = self.do(self, command, 'pm', params, user)
+                    response, where = self.do(self, command, Room('pm'), params, user)
 
                 if response:
                     self.sendPm(user['name'], response)

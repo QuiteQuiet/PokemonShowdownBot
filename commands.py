@@ -20,7 +20,7 @@
 #        optional parameters.
 #
 #   room: What room the command was used in. If the command was sent in a pm,
-#         room will contain: 'room'.
+#         room will contain: 'Pm'. See room.py for more details.
 #
 #   user: A user object like the one described in the app.py file
 
@@ -72,7 +72,7 @@ def Command(self, cmd, room, msg, user):
         return "BB-8 is the name of a robot in the seventh Star Wars movie :)", True
     elif cmd == 'leave':
         msg = removeSpaces(msg)
-        if not msg: msg = room
+        if not msg: msg = room.title
         if self.leaveRoom(msg):
             return 'Leaving room {r} succeeded'.format(r = msg), False
         return 'Could not leave room: {r}'.format(r = msg), False
@@ -133,26 +133,26 @@ def Command(self, cmd, room, msg, user):
                     return 'Too few/many parameters given. Command is ~moderate [room],True/False', False
                 if things[0] in self.details['rooms']:
                     if things[1] in ['True', 'true']:
-                        self.details['rooms'][things[0]].moderate = True
+                        self.getRoom(things[0]).moderate = True
                         return '{room} will now be moderated'.format(room = things[0]), False
                     elif things[1] in ['False', 'false']:
-                        self.details['rooms'][things[0]].moderate = False
+                        self.getRoom(things[0]).moderate = False
                         return '{room} will not be moderated anymore'.format(room = things[0]), False
                 return 'You cannot set moderation in a room without me in it.', False
             return 'You do not have permission to set this. (Requires #)', False
     # Autobans
     elif cmd in ['banuser', 'banphrase']:
         if canAddUser(self, user):
-            error = addBan(cmd[3:], room, msg)
+            error = addBan(cmd[3:], room.title, msg)
             if not error:
-                return 'Added {thing} to the banlist for room {room}'.format(thing = msg, room = room), True
+                return 'Added {thing} to the banlist for room {room}'.format(thing = msg, room = room.title), True
             return error, True
         return 'You do not have permission to do this. (Requires #)', False
     elif cmd in ['unbanuser', 'unbanphrase']:
         if canAddUser(self, user):
-            error = removeBan(cmd[5:], room, msg)
+            error = removeBan(cmd[5:], room.title, msg)
             if not error:
-                return 'Removed {thing} from the banlist for room {room}'.format(thing = msg, room = room), True
+                return 'Removed {thing} from the banlist for room {room}'.format(thing = msg, room = room.title), True
             return error, True
         return 'You do not have permission to do this. (Requires #)', False
 
@@ -163,12 +163,12 @@ def Command(self, cmd, room, msg, user):
             if len(things) == 2:
                 if things[0] in self.details['rooms']:
                     if things[1] in ['true','yes','y','True']:
-                        if not self.details['rooms'][things[0]].allowGames:
-                            self.details['rooms'][things[0]].allowGames = True
+                        if not self.getRoom(things[0]).allowGames:
+                            self.getRoom(things[0]).allowGames = True
                             return 'Chatgames are now allowed in {room}'.format(room = things[0]), True
                         return 'Chatgames are already allowed in {room}'.format(room = things[0]), True
                     elif things[1] in ['false', 'no', 'n',' False']:
-                        self.details['rooms'][things[0]].allowGames = False
+                        self.getRoom(things[0]).allowGames = False
                         return 'Chatgames are now not allowed in {room}'.format(room = things[0]), True
                     return '{param} is not a supported parameter'.format(param = things[1]), True
                 return 'Cannot allow chatgames without being in the room', True
@@ -177,15 +177,15 @@ def Command(self, cmd, room, msg, user):
 
     # Pipe tour commands for whitelisted people
     elif cmd == 'tour' or cmd == 'tournament':
-        if room == 'pm': return "You can't use this command in a pm.", False
-        if not isRoomWhitelisted(self, room, user): return 'You are not allowed to use this command. (Requires whitelisting by a Room Owner)', True
-        if not self.Groups[self.getRoom(room).rank] >= self.Groups['@']: return "I don't have the rank required to start a tour :(", True
+        if room.title == 'pm': return "You can't use this command in a pm.", False
+        if not isTourWhitelisted(self, room, user): return 'You are not allowed to use this command. (Requires whitelisting by a Room Owner)', True
+        if not self.Groups[room.rank] >= self.Groups['@']: return "I don't have the rank required to start a tour :(", True
         return '/tour {rest}'.format(rest = msg), True
     # Tournament whitelisting
     elif cmd == 'tourwl':
         if canAddUser(self, user):
             target = re.sub(r'[^a-zA-z0-9]', '', msg).lower()
-            if self.getRoom(room).addToWhitelist(target):
+            if room.addToWhitelist(target):
                 saveDetails(self)
                 return '{name} added to the whitelist in this room.'.format(name = msg), True
             return 'This user is already whitelisted in that room.', False
@@ -193,7 +193,7 @@ def Command(self, cmd, room, msg, user):
     elif cmd =='untourwl':
         if canAddUser(self, user):
             target = re.sub(r'[^a-zA-z0-9]', '', msg).lower()
-            if self.getRoom(room).delFromWhitelist(target):
+            if room.delFromWhitelist(target):
                 saveDetails(self)
                 return '{name} removed from the whitelist in this room.'.format(name = msg), True
             return 'This user is not whitelisted in that room.', False
@@ -213,12 +213,11 @@ def Command(self, cmd, room, msg, user):
         return usageLink, True
 
     elif cmd == 'oldgentour':
-        curRoom = self.getRoom(room)
-        if not curRoom.tour: return 'No tour is currently active, so this command is disabled.', True
-        if not curRoom.tour.format.startswith('gen'): return "The current tour isn't a previous generation, so this command is disabled.", True
+        if not room.tour: return 'No tour is currently active, so this command is disabled.', True
+        if not room.tour.format.startswith('gen'): return "The current tour isn't a previous generation, so this command is disabled.", True
         pastGens = {'gen1': 'RBY', 'gen2':'GSC', 'gen3':'RSE',  'gen4':'DPP'}
         warning = ''
-        if curRoom.tour.format[0:4] in pastGens: warning = "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n".format(gen = pastGens[curRoom.tour.format[0:4]])
+        if room.tour.format[0:4] in pastGens: warning = "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n".format(gen = pastGens[room.tour.format[0:4]])
         return warning + "/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/", True
 
     # Offline messages
@@ -299,12 +298,12 @@ def Command(self, cmd, room, msg, user):
     # Workshop is not a hangman game, but uses the allowed slot for a game anyway
     # Workshops also doesn't follow the chatgames rule, as they're not chat games
     elif cmd == 'workshop':
-        if not isGameType(self.details['rooms'][room].game, Workshop):
+        if not isGameType(room.game, Workshop):
             if msg.startswith('new') and canStartGame(self, user):
-                self.details['rooms'][room].game = Workshop(re.sub(r'[^a-zA-z0-9]', '', msg[len('new '):] if msg[len('new '):] else user['name']).lower())
+                room.game = Workshop(re.sub(r'[^a-zA-z0-9]', '', msg[len('new '):] if msg[len('new '):] else user['name']).lower())
                 return 'A new workshop session was created', True
             return 'No active workshop right now', True
-        workshop = self.details['rooms'][room].game
+        workshop = room.game
         if msg.startswith('add'):
             if not user['name'] == workshop.host and not canStartGame(self, user):
                 return 'Only the workshop host or a Room Moderator can add Pokemon', True
@@ -322,8 +321,8 @@ def Command(self, cmd, room, msg, user):
         elif msg == 'end':
             if not user['name'] == workshop.host and not canStartGame(self, user):
                 return 'Only the workshop host or a Room Moderator can end the workshop', True
-            self.sendPm(workshop.host, workshop.pasteLog(room, self.details['apikey']))
-            self.details['rooms'][room].game = None
+            self.sendPm(workshop.host, workshop.pasteLog(room.title, self.details['apikey']))
+            room.game = None
             return 'Workshop session ended', True
 
     # Chat games go here
@@ -331,20 +330,20 @@ def Command(self, cmd, room, msg, user):
     elif cmd == 'anagram':
         if msg == 'new':
             if canStartGame(self, user):
-                if self.details['rooms'][room].game:
+                if room.game:
                     return 'A game is already running somewhere', False
-                self.details['rooms'][room].game = Anagram()
-                return 'A new anagram has been created (guess with ~a):\n' + self.details['rooms'][room].game.getWord(), True
+                room.game = Anagram()
+                return 'A new anagram has been created (guess with ~a):\n' + room.game.getWord(), True
             return 'You do not have permission to start a game in this room. (Requires %)', False
         elif msg == 'hint':
-            if self.details['rooms'][room].game:
-                return 'The hint is: ' + self.details['rooms'][room].game.getHint(), True
+            if room.game:
+                return 'The hint is: ' + room.game.getHint(), True
             return 'There is no active anagram right now', False
         elif msg == 'end':
             if canStartGame(self, user):
-                if isGameType(self.details['rooms'][room].game, Anagram):
-                    solved = self.details['rooms'][room].game.getSolvedWord()
-                    self.details['rooms'][room].game = None
+                if isGameType(room.game, Anagram):
+                    solved = room.game.getSolvedWord()
+                    room.game = None
                     return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user['unform'], solved = solved), True
                 return 'There is no active anagram or a different game is active.', False
             return 'You do not have permission to end the anagram. (Requires %)', True
@@ -358,17 +357,16 @@ def Command(self, cmd, room, msg, user):
 
         else:
             if not msg:
-                if isGameType(self.details['rooms'][room].game, Anagram):
-                    return 'Current anagram: {word}'.format(word = self.details['rooms'][room].game.getWord()), True
+                if isGameType(room.game, Anagram):
+                    return 'Current anagram: {word}'.format(word = room.game.getWord()), True
                 return 'There is no active anagram right now', False
             return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
     elif cmd == 'a':
-        game = self.details['rooms'][room].game
-        if isGameType(game, Anagram):
-            if game.isCorrect(re.sub(r'[ -]', '', msg).lower()):
-                solved = game.getSolvedWord()
-                timeTaken = game.getSolveTimeStr()
-                self.details['rooms'][room].game = None
+        if isGameType(room.game, Anagram):
+            if room.game.isCorrect(re.sub(r'[ -]', '', msg).lower()):
+                solved = room.game.getSolvedWord()
+                timeTaken = room.game.getSolveTimeStr()
+                room.game = None
                 # Save score
                 Scoreboard[user['name']] = 1 if user['name'] not in Scoreboard else Scoreboard[user['name']] + 1
                 with open('plugins/scoreboard.yaml', 'w') as ym:
@@ -385,24 +383,23 @@ def Command(self, cmd, room, msg, user):
                 if len(params) > 1:
                     kind = params[1]
                 if canStartTrivia(self, user):
-                    self.details['rooms'][room].game = Trivia(self.ws, room, kind)
+                    room.game = Trivia(self.ws, room.title, kind)
                     return 'A new trivia session has started.', True
                 return 'You do not have permission to set up a trivia session', False
             elif params[0] in ['stop', 'end']:
                 # The trivia class will solve everything after doing this.
-                self.details['rooms'][room].game.endSession = True
-                self.details['rooms'][room].game = None
+                room.game.endSession = True
+                room.game = None
                 return 'The trivia session has been ended', True
         return '{msg} is not an valid parameter for trivia', False
     elif cmd == 'ta':
-        game = self.details['rooms'][room].game
-        if isGameType(game, Trivia):
+        if isGameType(room.game, Trivia):
             # Don't give information if wrong or right here, let Trivia deal with that
-            if game.tryAnswer(msg):
-                if not game.solver:
-                    game.wasSolved(user['unform'])
+            if room.game.tryAnswer(msg):
+                if not room.game.solver:
+                    room.game.wasSolved(user['unform'])
                 else:
-                    game.multiple = True
+                    room.game.multiple = True
             return 'NoAnswer', False
         return 'There is no ongoing trivia session.', True
 
@@ -439,8 +436,8 @@ def isMaster(self, user):
     return user['name'] == self.details['master']
 def isWhitelisted(self, user):
     return isMaster(self, user) or user['name'] in self.details['whitelist']
-def isRoomWhitelisted(self, room, user):
-    return canStartTrivia(self, user) or self.getRoom(room).isWhitelisted(user['name'])
+def isTourWhitelisted(self, room, user):
+    return canStartTrivia(self, user) or room.isWhitelisted(user['name'])
 def canSee(self, user):
     return isMaster(self, user) or self.Groups[user['group']] >= self.Groups['%']
 def canChange(self, user):
