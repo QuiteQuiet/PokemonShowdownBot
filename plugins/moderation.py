@@ -146,7 +146,6 @@ def isSpam(msg, user, room, now):
          return False
     timeDiff = now - times[timesLen - MESSAGES_FOR_SPAM()]
     if (
-      timesLen >= MESSAGES_FOR_SPAM() and
       timeDiff < SPAM_INTERVAL() and
       timeDiff > MIN_MESSAGE_TIME()
     ):
