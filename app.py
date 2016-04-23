@@ -67,13 +67,13 @@ class PSBot(PokemonShowdownBot):
 
     def handleJoin(self, room, message):
         if self.userIsSelf(message[1:]):
-            self.details['rooms'][room.title].rank = message[0]
+            room.rank = message[0]
             room.doneLoading()
         user = re.sub(r'[^a-zA-z0-9]', '', message).lower()
-        if moderation.shouldBan(self, room.moderate, user, room.title):
+        if moderation.shouldBan(self, user, room):
             self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
             return
-        self.details['rooms'][room.title].addUser(user, message[0])
+        room.addUser(user, message[0])
         # If the user have a message waiting, tell them that in a pm
         if self.usernotes.shouldNotifyMessage(user):
             self.sendPm(user, self.usernotes.pendingMessages(user))
@@ -151,10 +151,10 @@ class PSBot(PokemonShowdownBot):
             if user['name'] not in room.users: return
             if self.userIsSelf(user['unform']): return
 
-            if room.moderate and moderation.canPunish(self, room.title):
+            if room.moderate and self.canPunish(room):
                 anything = moderation.shouldAct(message[4], user, room, message[2])
                 if anything:
-                    action, reason = moderation.getAction(self, room.title, user, anything, message[2])
+                    action, reason = moderation.getAction(self, room, user, anything, message[2])
                     self.log('Action', action, user['name'])
                     self.takeAction(room.title, user['name'], action, reason)
 

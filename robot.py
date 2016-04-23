@@ -149,6 +149,12 @@ class PokemonShowdownBot:
     def takeAction(self, room, user, action, reason):
         self.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user, reason = reason))
 
+    # Rank checks
+    def canPunish(self, room):
+        return self.Groups[room.rank] >= self.Groups['%']
+    def canBan(self, room):
+        return self.Groups[room.rank] >= self.Groups['@']
+
     # Default onMessage if none is given (This only support logging in, nothing else)
     # To get any actual use from the bot, create a custom onMessage function.
     def onMessage(self, ws, message):

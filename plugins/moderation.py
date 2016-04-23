@@ -55,9 +55,6 @@ def MESSAGES_FOR_SPAM(): return 5
 def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * MESSAGES_FOR_SPAM()
 def SPAM_INTERVAL(): return timedelta(seconds = 6)
 
-def canPunish(bot, room): return bot.Groups[bot.details['rooms'][room].rank] >= bot.Groups['%']
-def canBan(bot, room): return bot.Groups[bot.details['rooms'][room].rank] >= bot.Groups['@']
-
 # Bans
 def addBan(t, room, ban):
     if room not in banned[t]:
@@ -82,8 +79,8 @@ def removeBan(t, room, ban):
     with open('plugins/bans.yaml', 'w') as yf:
         yaml.dump(banned, yf)
 
-def shouldBan(bot, allowed, user, room):
-    return allowed and isBanned(user, room) and canBan(bot, room)
+def shouldBan(bot, user, room):
+    return room.moderate and isBanned(user, room.title) and bot.canBan(room)
 def isBanned(user, room):
     return user in banned['user'][room]
 
@@ -175,7 +172,7 @@ def probablyHarmful(msg):
         return isCaps(hidden) and len(hidden) > 20
     return False
 
-def getAction(self, room, user, wrong, unixTime):
+def getAction(bot, room, user, wrong, unixTime):
     # This assumes unixTime is a valid unix timestamp
     now = datetime.utcfromtimestamp(int(unixTime))
     # Judge users based on their past behavior
@@ -194,14 +191,14 @@ def getAction(self, room, user, wrong, unixTime):
     # For minor things, this will lead to a lot of mutes before hourmuting happens
     elif score < 6:
         action = 'mute'
-    # Under 9 points and you're just an awfl user and rulebreaker
+    # Under 9 points and you're just an awful user and rulebreaker
     # Even minor action will get to hourmutes eventually
     elif score < 9:
         action = 'hourmute'
     # Just ban them then...
     else:
         action = 'roomban'
-    if action == 'roomban' and not canBan(self, room): # If the current rank doesn't support roomban, keep muting them
+    if action == 'roomban' and not bot.canBan(room): # If the current rank doesn't support roomban, keep muting them
         action = 'hourmute'
     punishedUsers[user['name']].lastAction = action
     return action, actionReplies[wrong]
