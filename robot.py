@@ -35,7 +35,7 @@ class PokemonShowdownBot:
             self.addBattleHandler()
 
     def onError(self, ws, error):
-        print(error)
+        print('Websocket Error:', error)
     def onClose(self, message):
         print('Websocket closed')
 
