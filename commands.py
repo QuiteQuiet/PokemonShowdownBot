@@ -255,13 +255,6 @@ def Command(self, cmd, room, msg, user):
     elif cmd in YoutubeLinks:
         return YoutubeLinks[cmd], True
     elif cmd == 'squid':
-        if msg:
-            if msg.isdecimal():
-                nr = float(msg)
-                if 0 < nr <= 10:
-                    return '\u304f\u30b3\u003a\u5f61' * int(nr), True
-                return 'Can only use whole numbers between 1 and 10', True
-            return 'Invalid parameter given. Accepting whole numbers between 1 and 10.', True
         return '\u304f\u30b3\u003a\u5f61', True
 #    elif cmd == 'joke':
 #        if randint(0, 1) and self.Groups[user['group']] >= self.Groups['+']:
