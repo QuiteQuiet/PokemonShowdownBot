@@ -32,7 +32,9 @@ class BattleHandler:
         print('Battle: {outcome}'.format(outcome = 'win' if won else 'loss'))
 
     def getSpecies(self, details):
-        return details.split(',')[0].replace('-*', '')
+        pokemon = details.split(',')[0].replace('-*', '')
+        if pokemon == 'Floette-Eternal': pokemon = 'Floette-Eternal-Flower'
+        return pokemon
 
     def parse(self, battle, message):
         if not message: return
@@ -55,7 +57,10 @@ class BattleHandler:
                             poke['stats'],poke['moves'],poke['baseAbility'],poke['item'], False, teamSlot))
                 teamSlot += 1
             if 'active' in request:
-                self.activeBattles[battle].myActiveData = request['active']
+                btl.myActiveData = request['active']
+                for pokemon in request['side']['pokemon']:
+                    if pokemon['active']:
+                        btl.me.setActive(btl.me.getPokemon(self.getSpecies(pokemon['details'])))
                 if 'canMegaEvo' in request['active'][0]:
                     for poke in btl.me.team:
                         if btl.me.team[poke].active:
