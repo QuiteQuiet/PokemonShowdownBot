@@ -139,9 +139,8 @@ class PSBot(PokemonShowdownBot):
             # When demoting / promoting a user the server sends a |N| message to update the userlist
             if message[2][1:] == self.details['user']:
                 room.rank = message[2][0]
-            newName = message[2][0] + re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
             oldName = re.sub(r'[^a-zA-z0-9]', '', message[3]).lower()
-            room.renamedUser(oldName, newName)
+            room.renamedUser(oldName, message[2])
 
 
         # Chat messages

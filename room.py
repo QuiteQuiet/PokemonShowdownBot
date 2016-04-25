@@ -1,6 +1,7 @@
 # Each PS room joined creates an object here.
 # Objects control settings on a room-per-room basis, meaning every room can
 # be treated differently.
+import re
 from plugins.tournaments import Tournament
 
 class Room:
@@ -21,19 +22,24 @@ class Room:
         self.loading = False
 
     def makeUserlist(self, userlist):
-        import re
-        users = ','.join([u[0]+re.sub(r'[^a-zA-z0-9,]', '',u[1:]).lower() for u in userlist.split(',') if userlist.split(',').index(u) > 0])
-        self.users = {u[1:]:u[0] for u in users.split(',')}
+        # User 0 is always yourself but adding yourself to the userlist
+        # is handled elsewhere
+        for user in userlist.split(',')[1:]:
+            self.addUser(user[1:], user[0])
 
-    def addUser(self, user, auth):
-        if user not in self.users:
-            self.users[user] = auth
+    def addUser(self, username, auth):
+        userid = self.toId(username)
+        if userid not in self.users:
+            self.users[userid] = {'rank': auth, 'username': username}
     def removeUser(self, user):
         if user in self.users:
             self.users.pop(user)
     def renamedUser(self, old, new):
         self.removeUser(old)
         self.addUser(new[1:], new[0])
+
+    def toId(self, thing):
+        return re.sub(r'[^a-zA-z0-9,]', '', thing).lower()
 
     def isWhitelisted(self, user):
         return user in self.tourwhitelist
