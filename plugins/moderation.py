@@ -151,11 +151,23 @@ def isSpam(msg, user, room, now):
     # 2: At least 300ms between every message
         return True
     return False
-def isStretching(msg):
+def isStretching(msg, users):
+    for user in users:
+        # If a username trigger the stretching, remove the username from the message
+        # to stop malicious usernames
+        if re.search(STRETCH_REGEX, user):
+            msg = msg.replace(user, '')
+        if re.search(STRETCH_REGEX, users[user]['username']):
+            msg = msg.replace(users[user]['username'], '')
+
     if re.search(STRETCH_REGEX, msg):
         return True
     return False
-def isCaps(msg):
+def isCaps(msg, users):
+    # To make sure no username triggers this, replace them with empty strings before
+    # doing the actual check
+    for user in users:
+        msg = msg.replace(users[user]['username'], '')
     capsCount = len(re.findall(r'[A-Z]', re.sub(r'[^A-Za-z]', '', msg)))
     return capsCount and len(re.sub(r' ','',msg)) > MIN_CAPS_LENGTH() and capsCount >= int(len(re.sub(r' ','',msg)) * CAPS_PROPORTION())
 def isGroupMention(msg):
@@ -163,13 +175,13 @@ def isGroupMention(msg):
         return True
     return False
 
-def probablyHarmful(msg):
+def probablyHarmful(msg, userlist):
     # Arguably using `spoiler:` and all caps is never something that will occur
     # so rather than letting the other monitors take it, deal with it here.
     # Just make sure the message is long enough to not be a mistake.
     if 'spoiler:' in msg:
         hidden = msg[msg.index('spoiler:') + len('spoiler:'):]
-        return isCaps(hidden) and len(hidden) > 20
+        return isCaps(hidden, userlist) and len(hidden) > 20
     return False
 
 def getAction(bot, room, user, wrong, unixTime):
@@ -221,16 +233,16 @@ def shouldAct(msg, user, room, unixTime):
         return 'banword'
     if recentlyPunished(user, now):
         return False
-    if probablyHarmful(msg):
+    if probablyHarmful(msg, room.users):
         return 'harmful'
 # Disabled any moderating that isn't directly harmful to the rooms.
 # If moderating for stretching or caps is desired, uncomment the relevant
 # section of code. The recently punished test can stay to avoid forgetting
 # when re-enabling a function again.
 
-#    if isStretching(msg):
+#    if isStretching(msg, room.users):
 #        return 'stretching'
-#    if isCaps(msg):
+#    if isCaps(msg, room.users):
 #        return 'caps'
 
 #    if isGroupMention(msg):
