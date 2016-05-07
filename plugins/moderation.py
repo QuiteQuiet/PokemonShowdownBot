@@ -260,7 +260,7 @@ def commands(bot, cmd, room, msg, user):
         things = bot.removeSpaces(msg).split(',')
         if not len(things) == 2:
             return 'Too few/many parameters given. Command is ~moderate [room],True/False', False
-        if things[0] in bot.details['rooms']:
+        if things[0] in bot.rooms:
             if things[1] in ['True', 'true']:
                 bot.getRoom(things[0]).moderate = True
                 return '{room} will now be moderated'.format(room = things[0]), False

@@ -50,11 +50,11 @@ class PSBot(PokemonShowdownBot):
         msg.pop(0)
 
         if room.startswith('battle-'):
-            if room not in self.details['rooms']:
+            if room not in self.rooms:
                 # Battle rooms don't need the same interface as chatrooms
-                self.details['rooms'][room] = True
+                self.rooms[room] = True
             if 'deinit' in msg[0]:
-                self.details['rooms'].pop(room)
+                self.rooms.pop(room)
             # Go to battle handler instead of regular rooms
             # (we don't allow commands in battle rooms anyway)
             for m in msg:
@@ -130,8 +130,8 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(message[2][1:]):
                 # This is just a failsafe in case the bot is forcibly removed from a room.
                 # Any other memory release required is handeled by the room destruction
-                if roomName in self.details['rooms']:
-                    self.details['rooms'].pop(roomName)
+                if roomName in self.rooms:
+                    self.rooms.pop(roomName)
                 return
             userid = self.toId(message[2])
             room.removeUser(userid)

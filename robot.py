@@ -31,6 +31,7 @@ class PokemonShowdownBot:
             self.details = yaml.load(yaml_file)
             self.name = self.details['user']
             self.id = self.toId(self.name)
+            self.rooms = {}
             self.commandchar = self.details['command']
             self.intro()
             self.splitMessage = onMessage if onMessage else self.onMessage
@@ -104,21 +105,21 @@ class PokemonShowdownBot:
 
     def joinRoom(self, room, data = None):
         self.send('|/join ' + room)
-        self.details['rooms'][room] = Room(room, data)
+        self.rooms[room] = Room(room, data)
     def leaveRoom(self, room):
         ''' Attempts to leave a PS room '''
-        if room not in self.details['rooms']:
+        if room not in self.rooms:
             print('Error! {name} not in {room}'.format(name = selfname, room = room))
             return False
         self.send('|/leave ' + room)
-        self.details['rooms'].pop(room, None)
+        self.rooms.pop(room, None)
         return True
     def getRoom(self, roomName):
-        if roomName not in self.details['rooms']: return Room('Empty')
+        if roomName not in self.rooms: return Room('Empty')
         alias = {'nu':'neverused', 'tsb':'thestable'}
         if roomName in alias:
             roomName = alias[roomName]
-        return self.details['rooms'][roomName]
+        return self.rooms[roomName]
 
     def say(self, room, msg):
         if '\n' in msg:

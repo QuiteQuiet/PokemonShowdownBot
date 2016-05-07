@@ -55,7 +55,7 @@ def commands(bot, cmd, room, msg, user):
         msg = bot.removeSpaces(msg)
         things = msg.split(',')
         if not len(things) == 2: return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
-        if things[0] not in bot.details['rooms']: return 'Cannot allow chatgames without being in the room', True
+        if things[0] not in bot.rooms: return 'Cannot allow chatgames without being in the room', True
         if things[1] in ['true','yes','y','True']:
             if bot.getRoom(things[0]).allowGames: return 'Chatgames are already allowed in {room}'.format(room = things[0]), True
             bot.getRoom(things[0]).allowGames = True

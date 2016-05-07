@@ -20,8 +20,6 @@
 
 from random import randint, sample
 import re
-import yaml
-import json
 import math # For funsies
 
 from data.tiers import tiers, formats
@@ -193,7 +191,7 @@ def acceptableWeakness(team):
 def saveDetails(self):
     details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
     details['joinRooms'] = []
-    for e in self.details['rooms']:
+    for e in self.rooms:
         details['joinRooms'].append({e:{'moderate':self.getRoom(e).moderate,
                                         'allow games':self.getRoom(e).allowGames,
                                         'tourwhitelist':self.getRoom(e).tourwhitelist}
