@@ -28,10 +28,6 @@ Chat Games
 ----------
 These commands are only allowed after relevant part enbling them through the allowgames command, and then it's only enabled for a single room. Only one of these can be played per room, so to play something else the first game has to end.
 
-#### Hangman ####
-- `hangman new, [room], [phrase]` : Use hangman new, [room], [phrase] to create a hangman game in [room], with the solution being [phrase]. Forcefully end an ongoing hangman game with hangman end.
-- `hg` : Only usable with the above command, hg [letter/phrase] is used to play games of hangman and accepts either a single letter or phrases as guesses.
-
 #### Anagram ####
 - `anagram new` : Generates a new anagram from a Pokémon or a move.
 - `anagram hint` : Display the hint for the current anagram
@@ -64,9 +60,6 @@ and as such require global or roomauth of some degree.
 - `broadcast` : Show the current required rank to broadcast command returns.
 - `setbroadcast` : Set the level required to broadcast. This is a global setting and not tied to single rooms.
 - `allowgames` [room], True/False : Enable or disable the chatgames in [room]
-- `whitelist` : Print the current whitelist that allow regular users the ability to broadcast commands.
-- `whitelistadd` [user]: Add a user to the whitelist.
-- `removewl [user]` : Remove a user from the whitelist.
 - `[un]banuser [user]` : Room[un]bans [user] from any room the bot moderate.
 - `[un]banphrase [phrase]` : [un]Bans [phrase] in every room the bot moderate.
 

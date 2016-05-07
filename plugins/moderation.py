@@ -120,9 +120,9 @@ def badLink(link):
         return True
     return False
 def recentlyPunished(user, now):
-    if user['name'] not in punishedUsers:
+    if user.id not in punishedUsers:
         return False
-    timeDiff = now - punishedUsers[user['name']].lastPunished
+    timeDiff = now - punishedUsers[user.id].lastPunished
     return timeDiff < timedelta(seconds = 3)
 def isBanword(msg, room):
     for ban in banned['phrase'][room]:
@@ -132,12 +132,12 @@ def isBanword(msg, room):
 def isSpam(msg, user, room, now):
     if room not in spamTracker:
         spamTracker[room] = {}
-    if user['name'] not in spamTracker[room]:
+    if user.id not in spamTracker[room]:
         # The first time this user have talked, so there's no way it's spam now
-        spamTracker[room][user['name']] = deque('', 50)
+        spamTracker[room][user.id] = deque('', 50)
         return False
-    spamTracker[room][user['name']].append(now)
-    times = spamTracker[room][user['name']]
+    spamTracker[room][user.id].append(now)
+    times = spamTracker[room][user.id]
     timesLen = len(times)
     if timesLen < MESSAGES_FOR_SPAM():
          return False
@@ -157,8 +157,8 @@ def isStretching(msg, users):
         # to stop malicious usernames
         if re.search(STRETCH_REGEX, user):
             msg = msg.replace(user, '')
-        if re.search(STRETCH_REGEX, users[user]['username']):
-            msg = msg.replace(users[user]['username'], '')
+        if re.search(STRETCH_REGEX, users[user].name):
+            msg = msg.replace(users[user].name, '')
 
     if re.search(STRETCH_REGEX, msg):
         return True
@@ -167,7 +167,7 @@ def isCaps(msg, users):
     # To make sure no username triggers this, replace them with empty strings before
     # doing the actual check
     for user in users:
-        msg = msg.replace(users[user]['username'], '')
+        msg = msg.replace(users[user].name, '')
     capsCount = len(re.findall(r'[A-Z]', re.sub(r'[^A-Za-z]', '', msg)))
     return capsCount and len(re.sub(r' ','',msg)) > MIN_CAPS_LENGTH() and capsCount >= int(len(re.sub(r' ','',msg)) * CAPS_PROPORTION())
 def isGroupMention(msg):
@@ -188,13 +188,13 @@ def getAction(bot, room, user, wrong, unixTime):
     # This assumes unixTime is a valid unix timestamp
     now = datetime.utcfromtimestamp(int(unixTime))
     # Judge users based on their past behavior
-    if user['name'] not in punishedUsers:
-        punishedUsers[user['name']] = PunishedUser(user['name'], infractionScore[wrong], now)
+    if user.id not in punishedUsers:
+        punishedUsers[user.id] = PunishedUser(user.id, infractionScore[wrong], now)
     else:
-        punishedUsers[user['name']].points += infractionScore[wrong]
-        punishedUsers[user['name']].lastPunished = now
+        punishedUsers[user.id].points += infractionScore[wrong]
+        punishedUsers[user.id].lastPunished = now
 
-    score =  punishedUsers[user['name']].points
+    score =  punishedUsers[user.id].points
     action = ''
     # Under 3 points are low and warning is enough
     if score < 3:
@@ -212,7 +212,7 @@ def getAction(bot, room, user, wrong, unixTime):
         action = 'roomban'
     if action == 'roomban' and not bot.canBan(room): # If the current rank doesn't support roomban, keep muting them
         action = 'hourmute'
-    punishedUsers[user['name']].lastAction = action
+    punishedUsers[user.id].lastAction = action
     return action, actionReplies[wrong]
 
 nextReset = datetime.now().date() + timedelta(days = 2)
@@ -253,3 +253,32 @@ def shouldAct(msg, user, room, unixTime):
 #            return 'badlink'
     return False
 
+def commands(bot, cmd, room, msg, user):
+    if cmd == 'moderate':
+        if not msg: return 'No parameters given. Command is ~moderate [room],True/False', False
+        if not user.hasRank('#'): return 'You do not have permission to set this. (Requires #)', False
+        things = bot.removeSpaces(msg).split(',')
+        if not len(things) == 2:
+            return 'Too few/many parameters given. Command is ~moderate [room],True/False', False
+        if things[0] in bot.details['rooms']:
+            if things[1] in ['True', 'true']:
+                bot.getRoom(things[0]).moderate = True
+                return '{room} will now be moderated'.format(room = things[0]), False
+            elif things[1] in ['False', 'false']:
+                bot.getRoom(things[0]).moderate = False
+                return '{room} will not be moderated anymore'.format(room = things[0]), False
+        return 'You cannot set moderation in a room without me in it.', False
+    # Autobans
+    elif cmd in ['banuser', 'banphrase']:
+        if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
+        error = addBan(cmd[3:], room.title, msg)
+        if not error:
+            return 'Added {thing} to the banlist for room {room}'.format(thing = msg, room = room.title), True
+        return error, True
+    elif cmd in ['unbanuser', 'unbanphrase']:
+        if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
+        error = removeBan(cmd[5:], room.title, msg)
+        if not error:
+            return 'Removed {thing} from the banlist for room {room}'.format(thing = msg, room = room.title), True
+        return error, True
+    return '', False

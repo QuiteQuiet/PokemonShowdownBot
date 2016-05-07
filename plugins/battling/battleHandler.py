@@ -95,6 +95,9 @@ class BattleHandler:
             if msg[2].startswith(btl.me.id):
                 lastActive = btl.me.active
                 btl.me.setActive(btl.me.getPokemon(self.getSpecies(msg[3])))
+                if not btl.me.active:
+                    print('Error: No new active Pokemon!!')
+                    print('Message:', msg)
                 btl.me.changeTeamSlot(lastActive, btl.me.active)
             else:
                 mon = self.getSpecies(msg[3])

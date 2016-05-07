@@ -2,13 +2,14 @@ from threading import Thread
 import time
 
 from plugins.trivia.questions import QuestionGenerator
+from plugins.games import GenericGame
 # This class will put itself in a pseudo-while loop that is non-blocking
 # to the rest of the program.
 class Question:
     def __init__(self, q, a):
         self.text = q
         self.ans = a
-class Trivia:
+class Trivia(GenericGame):
     def __init__(self, ws, room, kind):
         self.ws = ws
         self.room = room
@@ -42,7 +43,7 @@ class Trivia:
         self.question = Question(newQ['q'], newQ['a'])
         self.notify('Next question:')
         self.notify(self.question.text)
-        # Create the waiting thread that'll time out after 40 seconds
+        # Create the waiting thread that'll time out after 30 seconds
         self.thread = Thread(target = self.wait30Sec,
                              name = 'longWait',
                              daemon = True)
@@ -74,7 +75,7 @@ class Trivia:
         if guess.lower() == self.question.ans:
             self.solved = True
         return self.solved
-        
+
     def wasSolved(self, by):
         self.solver = by
     def clear(self):
@@ -83,3 +84,34 @@ class Trivia:
         self.solver = ''
     def status(self):
         return self.thread.name
+
+def commands(bot, cmd, room, msg, user):
+    if cmd == 'trivia':
+        if not msg: return '{msg} is not an valid parameter for trivia', False
+        if room.game: return 'There is already a game running in this room', True
+
+        params = bot.removeSpaces(msg).split(',')
+        if params[0] in ['start', 'begin']:
+            kind = 'first'
+            if len(params) > 1:
+                kind = params[1]
+            if user.hasRank('@'):
+                room.game = Trivia(bot.ws, room.title, kind)
+                return 'A new trivia session has started.', True
+            return 'You do not have permission to set up a trivia session', False
+        elif params[0] in ['stop', 'end']:
+            # The trivia class will solve everything after doing this.
+            room.game.endSession = True
+            room.game = None
+            return 'The trivia session has been ended', True
+
+    if cmd == 'ta':
+        if not room.game.isThisGame(Trivia): return 'There is no ongoing trivia session.', True
+        # Don't give information if wrong or right here, let Trivia deal with that
+        if room.game.tryAnswer(msg):
+            if not room.game.solver:
+                room.game.wasSolved(user['unform'])
+            else:
+                room.game.multiple = True
+        return 'NoAnswer', False
+    return '', False

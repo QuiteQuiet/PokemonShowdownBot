@@ -22,8 +22,6 @@ avatar: 0
 # tourwhitelist: If you want to make specific people able to start tournaments without being @, add them to this list
 joinRooms:
   - room: { moderate: False, allow games: False , tourwhitelist: []}
-# Whitelist for people other than MASTER to bypass allowance checks
-whitelist: []
 
 # Set if the bot will attempt to join any tornament that is started in the room, if the tiers it got accepts it. Default is False
 joinTours: False

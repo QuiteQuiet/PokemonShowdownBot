@@ -1,6 +1,8 @@
 import requests
 
-class Workshop:
+from plugins.games import GenericGame
+
+class Workshop(GenericGame):
     def __init__(self, host):
         self.host = host
         self.team = []
@@ -41,3 +43,31 @@ class Workshop:
             if 'Bad API request' in r.text:
                 return 'Something went wrong ({error})'.format(error = r.text)
             return r.text
+    def hasHostingRights(self, user):
+        return self.host == user.id or user.hasRank('@')
+
+def commands(bot, cmd, room, msg, user):
+    if cmd == 'workshop':
+        if not room.game.isThisGame(Workshop):
+            if msg.startswith('new') and user.hasRank('@'):
+                room.game = Workshop(bot.toId(msg[len('new '):]) if msg[len('new '):] else user.id)
+                return 'A new workshop session was created', True
+            return 'No active workshop right now', True
+        workshop = room.game
+        if msg.startswith('add'):
+            if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can add Pokemon', True
+            return workshop.addPokemon(msg[len('add '):]), True
+        elif msg.startswith('remove'):
+            if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can remove Pokemon', True
+            return workshop.removePokemon(msg[len('remove '):]), True
+        elif msg == 'clear':
+            if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can clear the team', True
+            return workshop.clearTeam(), True
+        elif msg == 'team':
+            return workshop.getTeam(), True
+        elif msg == 'end':
+            if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can end the workshop', True
+            self.sendPm(workshop.host, workshop.pasteLog(room.title, self.details['apikey']))
+            room.game = None
+            return 'Workshop session ended', True
+    return '', False

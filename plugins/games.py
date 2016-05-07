@@ -1,8 +1,7 @@
-# This file is an collection import to collect every future chatgame under the namespace
-# games.[the game]. Additional games should be imported in here and not directly referenced in
-# either commands.py or __init__.py.
-#
-# New games should be created as a complete class per game, to be imported as
-# from data.games import [your game], with the entry in this file following that of the
-# anagram example.
-from plugins.anagram import Anagram
+# Generic game class that can test for permissions and things for games.
+class GenericGame:
+    def __init__(self, ws, room):
+        self.ws = ws
+        self.room = room
+    def isThisGame(self, game):
+        return type(self) == game

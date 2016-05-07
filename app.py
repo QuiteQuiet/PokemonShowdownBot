@@ -10,22 +10,21 @@
 #
 # Extended notes:
 # user:
-#     user objects are dicts containing some information about the user who said anything.
-#     This information consists of user['name'], user['group'], and user['unform']. user['name'] is
+#     user objects are objects containing some information about the user who said anything.
+#     This information consists of user.id, user.rank, and user.name. user.id is
 #     a format-removed id of the speaker with only a-z lowercase and 0-9 present.
 #
-#     user['group'] contain the auth level of the user, as a single character string of
+#     user.rank contain the auth level of the user, as a single character string of
 #     either ' ', +, %, @, &, #, or ~. To compare groups against each other self.Groups have
-#     the information required when used like: self.Groups[user['group']] for a numeric value.
+#     the information required when used like: User.Groups[user.rank] for a numeric value.
 #
-#     Lastly, user['unform'] is the unaltered name as seen in the chatrooms, and can be used
+#     Lastly, user.name is the unaltered name as seen in the chatrooms, and can be used
 #     for things like replying, but shouldn't be used for comparisions.
 
-import re
 import json
 import time
 
-from robot import PokemonShowdownBot, Room
+from robot import PokemonShowdownBot, Room, User
 from commands import Command, GameCommands, IgnoreBroadcastPermission, CanPmReplyCommands, IgnoreEscaping
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
@@ -69,11 +68,12 @@ class PSBot(PokemonShowdownBot):
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
             room.doneLoading()
-        user = re.sub(r'[^a-zA-z0-9]', '', message).lower()
+        userid = self.toId(message)
+        user = User(userid, message[0], True if self.isOwner(userid) else False)
         if moderation.shouldBan(self, user, room):
             self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
             return
-        room.addUser(user, message[0])
+        room.addUser(user)
         # If the user have a message waiting, tell them that in a pm
         if self.usernotes.shouldNotifyMessage(user):
             self.sendPm(user, self.usernotes.pendingMessages(user))
@@ -85,7 +85,7 @@ class PSBot(PokemonShowdownBot):
 
         # Logging in
         if message[1] == 'challstr':
-            print('{name}: Attempting to login...'.format(name = self.details['user']))
+            print('{name}: Attempting to login...'.format(name = self.name))
             self.login(message[3], message[2])
 
         elif message[1] == 'updateuser':
@@ -118,9 +118,10 @@ class PSBot(PokemonShowdownBot):
 
         # Joined new room
         elif 'users' in message[1]:
-            room.makeUserlist(message[2])
+            for user in message[2].split(',')[1:]:
+                room.addUser(User(user[1:], user[0], True if self.isOwner(user[1:]) else False))
             # If PS doesn't tell us we joined, this still give us our room rank
-            room.rank = message[2][message[2].index(self.details['user']) - 1]
+            room.rank = message[2][message[2].index(self.name) - 1]
 
         elif 'j' in message[1].lower():
             self.handleJoin(room, message[2])
@@ -132,44 +133,43 @@ class PSBot(PokemonShowdownBot):
                 if roomName in self.details['rooms']:
                     self.details['rooms'].pop(roomName)
                 return
-            user = re.sub(r'[^a-zA-z0-9]', '', message[2]).lower()
-            room.removeUser(user)
+            userid = self.toId(message[2])
+            room.removeUser(userid)
         elif 'n' in message[1].lower() and len(message[1]) < 3:
             # Keep track of your own rank
             # When demoting / promoting a user the server sends a |N| message to update the userlist
-            if message[2][1:] == self.details['user']:
+            if self.userIsSelf(message[2][1:]):
                 room.rank = message[2][0]
-            oldName = re.sub(r'[^a-zA-z0-9]', '', message[3]).lower()
-            room.renamedUser(oldName, message[2])
+            oldName = self.toId(message[3])
+            room.renamedUser(oldName, User(message[2][1:], message[2][0]))
 
 
         # Chat messages
         elif 'c' in message[1].lower():
-            user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[3]).lower(),'group':message[3][0], 'unform': message[3][1:]}
             if room.loading: return
-            if user['name'] not in room.users: return
-            if self.userIsSelf(user['unform']): return
+            user = room.getUser(self.toId(message[3]))
+            if not user: return
+            if self.userIsSelf(user.id): return
 
             if room.moderate and self.canPunish(room):
                 anything = moderation.shouldAct(message[4], user, room, message[2])
                 if anything:
                     action, reason = moderation.getAction(self, room, user, anything, message[2])
-                    self.log('Action', action, user['name'])
-                    self.takeAction(room.title, user['name'], action, reason)
+                    self.log('Action', action, user.id)
+                    self.takeAction(room.title, user.id, action, reason)
 
 
-            if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():
+            if message[4].startswith(self.commandchar) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
-                self.log('Command', message[4], user['name'])
+                self.log('Command', message[4], user.id)
 
                 response, samePlace = '', True
                 # If the command was a chat game and permissions aren't met, kill the game (even if it just started)
-                if command in GameCommands:
-                    if not room.allowGames:
-                        response = 'This room does not support chatgames.'
-
-                if not response:
+                if not room.allowGames and command in GameCommands:
+                    response = 'This room does not support chatgames.'
+                else:
                     response, samePlace = self.do(self, command, room, message[4][len(command) + 1:].lstrip(), user)
+
                 if response == 'NoAnswer': return
 
                 if self.evalPermission(user) or command in IgnoreBroadcastPermission:
@@ -178,30 +178,29 @@ class PSBot(PokemonShowdownBot):
                     self.reply(room.title, user, response, samePlace)
 
                 elif command in CanPmReplyCommands:
-                    self.sendPm(user['name'], self.escapeText(response))
+                    self.sendPm(user.id, self.escapeText(response))
                 else:
-                    self.sendPm(user['name'], 'Please pm the commands for a response.')
+                    self.sendPm(user.id, 'Please pm the commands for a response.')
 
             if type(room.game) == Workshop:
-                room.game.logSession(room.title, user['group'] + user['unform'], message[4])
-
+                room.game.logSession(room.title, user.rank + user.name, message[4])
 
         elif 'pm' in message[1].lower():
-            user = {'name':re.sub(r'[^a-zA-z0-9]', '', message[2]).lower(),'group':message[2][0], 'unform': message[2][1:]}
-            if self.userIsSelf(user['unform']): return
+            user = User(message[2][1:], message[2][0], True if self.isOwner(self.toId(message[2])) else False)
+            if self.userIsSelf(user.id): return
 
             if message[4].startswith('/invite'):
                 if not message[4][8:] == 'lobby':
-                    if self.Groups[user['group']] >= 1:
+                    if user.hasRank('+'):
                         self.joinRoom(message[4][8:])
-                        self.log('Invite', message[4], user['name'])
+                        self.log('Invite', message[4], user.id)
                     else:
-                        self.sendPm(user['name'], 'Only global voices (+) and up can add me to rooms, sorry :(')
+                        self.sendPm(user.id, 'Only global voices (+) and up can add me to rooms, sorry :(')
 
-            if message[4].startswith(self.details['command']) and message[4][1:] and message[4][1].isalpha():
+            if message[4].startswith(self.commandchar) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
-                self.log('Command', message[4], user['name'])
-                params = message[4][len(command) + len(self.details['command']):].lstrip()
+                self.log('Command', message[4], user.id)
+                params = message[4][len(command) + len(self.commandchar):].lstrip()
 
                 response = ''
                 if command in GameCommands:
@@ -212,10 +211,7 @@ class PSBot(PokemonShowdownBot):
                 if not response:
                     response, where = self.do(self, command, Room('pm'), params, user)
 
-                if response:
-                    self.sendPm(user['name'], response)
-                else:
-                    self.sendPm(user['name'], '{cmd} is not a valid command.'.format(cmd = command))
+                self.sendPm(user.id, response)
 
         # Tournaments
         elif 'tournament' == message[1]:
@@ -230,7 +226,7 @@ class PSBot(PokemonShowdownBot):
             elif 'end' == message[2]:
                 if not room.tour: return
                 winner, tier = room.tour.getWinner(message[3])
-                if self.details['user'] in winner:
+                if self.name in winner:
                     self.say(room.title, 'I won the {form} tournament :o'.format(form = tier))
                 else:
                     self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))

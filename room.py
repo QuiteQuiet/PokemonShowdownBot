@@ -1,7 +1,6 @@
 # Each PS room joined creates an object here.
 # Objects control settings on a room-per-room basis, meaning every room can
 # be treated differently.
-import re
 from plugins.tournaments import Tournament
 
 class Room:
@@ -21,28 +20,22 @@ class Room:
     def doneLoading(self):
         self.loading = False
 
-    def makeUserlist(self, userlist):
-        # User 0 is always yourself but adding yourself to the userlist
-        # is handled elsewhere
-        for user in userlist.split(',')[1:]:
-            self.addUser(user[1:], user[0])
-
-    def addUser(self, username, auth):
-        userid = self.toId(username)
-        if userid not in self.users:
-            self.users[userid] = {'rank': auth, 'username': username}
-    def removeUser(self, user):
-        if user in self.users:
-            self.users.pop(user)
+    def addUser(self, user):
+        if user.id not in self.users:
+            self.users[user.id] = user
+    def removeUser(self, userid):
+        if userid in self.users:
+            return self.users.pop(userid)
     def renamedUser(self, old, new):
         self.removeUser(old)
-        self.addUser(new[1:], new[0])
-
-    def toId(self, thing):
-        return re.sub(r'[^a-zA-z0-9,]', '', thing).lower()
+        self.addUser(new)
+    def getUser(self, name):
+        if name in self.users:
+            return self.users[name]
+        return Fals
 
     def isWhitelisted(self, user):
-        return user in self.tourwhitelist
+        return user.hasRank('@') or user.id in self.tourwhitelist
     def addToWhitelist(self, user):
         if user in self.tourwhitelist: return False
         self.tourwhitelist.append(user)
@@ -55,3 +48,41 @@ class Room:
         self.tour = Tournament(ws, self.title, form)
     def endTour(self):
         self.tour = None
+
+def commands(bot, cmd, room, msg, user):
+    if cmd == 'allowgames':
+        if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
+        msg = bot.removeSpaces(msg)
+        things = msg.split(',')
+        if not len(things) == 2: return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
+        if things[0] not in bot.details['rooms']: return 'Cannot allow chatgames without being in the room', True
+        if things[1] in ['true','yes','y','True']:
+            if bot.getRoom(things[0]).allowGames: return 'Chatgames are already allowed in {room}'.format(room = things[0]), True
+            bot.getRoom(things[0]).allowGames = True
+            return 'Chatgames are now allowed in {room}'.format(room = things[0]), True
+
+        elif things[1] in ['false', 'no', 'n',' False']:
+            bot.getRoom(things[0]).allowGames = False
+            return 'Chatgames are no longer allowed in {room}'.format(room = things[0]), True
+        return '{param} is not a supported parameter'.format(param = things[1]), True
+
+    # Pipe tour commands for whitelisted people
+    if cmd == 'tour' or cmd == 'tournament':
+        if room.title == 'pm': return "You can't use this command in a pm.", False
+        if not room.isWhitelisted(user): return 'You are not allowed to use this command. (Requires whitelisting by a Room Owner)', True
+        if not bot.canStartTour(room): return "I don't have the rank required to start a tour :(", True
+        return '/tour {rest}'.format(rest = msg), True
+    # Tournament whitelisting
+    if cmd == 'tourwl':
+        if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
+        target = bot.toId(msg)
+        if not room.addToWhitelist(target): return 'This user is already whitelisted in that room.', False
+        saveDetails(bot)
+        return '{name} added to the whitelist in this room.'.format(name = msg), True
+    if cmd =='untourwl':
+        if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
+        target = bot.toId(msg)
+        if not room.delFromWhitelist(target): return 'This user is not whitelisted in that room.', False
+        saveDetails(bot)
+        return '{name} removed from the whitelist in this room.'.format(name = msg), True
+    return '', False

@@ -7,7 +7,7 @@ class Tournament:
         self.room = roomName
         self.format = tourFormat
         self.hasStarted = False
-        
+
 
     def sendTourCmd(self, cmd):
         self.ws.send('{room}|/tour {cmd}'.format(room = self.room, cmd = cmd))
@@ -33,3 +33,13 @@ class Tournament:
                 self.acceptChallenge()
             elif 'isStarted' in info:
                 self.hasStarted = info['isStarted']
+
+def commands(bot, cmd, room, msg, user):
+    if cmd == 'oldgentour':
+        if not room.tour: return 'No tour is currently active, so this command is disabled.', True
+        if not room.tour.format.startswith('gen'): return "The current tour isn't a previous generation, so this command is disabled.", True
+        pastGens = {'gen1': 'RBY', 'gen2':'GSC', 'gen3':'RSE',  'gen4':'DPP'}
+        warning = ''
+        if room.tour.format[0:4] in pastGens: warning = "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n".format(gen = pastGens[room.tour.format[0:4]])
+        return warning + "/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/", True
+    return '', False

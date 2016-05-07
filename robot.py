@@ -17,8 +17,10 @@ import json
 import yaml
 from time import sleep
 import datetime
+import re
 
 from room import Room
+from user import User
 from plugins.battling.battleHandler import BattleHandler
 
 class PokemonShowdownBot:
@@ -27,10 +29,13 @@ class PokemonShowdownBot:
     def __init__(self, url, onMessage = None):
         with open("details.yaml", 'r') as yaml_file:
             self.details = yaml.load(yaml_file)
-            self.Groups = {' ':0,'+':1,'★':1,'%':2,'@':3,'&':4,'#':5,'~':6}
+            self.name = self.details['user']
+            self.id = self.toId(self.name)
+            self.commandchar = self.details['command']
             self.intro()
             self.splitMessage = onMessage if onMessage else self.onMessage
             self.url = url
+            websocket.enableTrace(True)
             self.openWebsocket()
             self.addBattleHandler()
 
@@ -50,7 +55,7 @@ class PokemonShowdownBot:
         self.ws.on_open = self.onOpen
 
     def addBattleHandler(self):
-        self.bh = BattleHandler(self.ws, self.details['user'])
+        self.bh = BattleHandler(self.ws, self.name)
 
     def intro(self):
         print('+~~~~~~~~~~~~~~~~~~~~~~~~+')
@@ -61,14 +66,14 @@ class PokemonShowdownBot:
     def log(self, sort, msg, user):
         print('{sort}: {cmd} (user: {user})'.format(sort = sort, cmd = msg, user = user))
     def userIsSelf(self, user):
-        return self.details['user'] == user
+        return self.name == user
 
     def send(self, msg):
         self.ws.send(msg)
 
     def login(self, challenge, challengekeyid):
         payload = { 'act':'login',
-                    'name': self.details['user'],
+                    'name': self.name,
                     'pass': self.details['password'],
                     'challengekeyid': challengekeyid,
                     'challenge': challenge
@@ -77,14 +82,14 @@ class PokemonShowdownBot:
         assertion = json.loads(r.text[1:])['assertion']
 
         if assertion:
-            self.send(('|/trn '+ self.details['user']+',0,'+str(assertion)).encode('utf-8'))
+            self.send(('|/trn '+ self.name + ',0,'  + str(assertion)).encode('utf-8'))
             return True
         else:
             print('Assertion failed')
             return False
 
     def updateUser(self, name, result):
-        if self.details['user'] not in name: return
+        if self.name not in name: return
         if not result == '1':
             print('login failed, still guest')
             print('crashing now; have a nice day :)')
@@ -92,7 +97,7 @@ class PokemonShowdownBot:
 
         if self.details['avatar'] >= 0:
             self.send('|/avatar {num}'.format(num = self.details['avatar']))
-        print('{name}: Successfully logged in.'.format(name = self.details['user']))
+        print('{name}: Successfully logged in.'.format(name = self.name))
         for rooms in self.details['joinRooms']:
             name = [n for n in rooms][0] # joinRoom entry is a list of dicts
             self.joinRoom(name, rooms[name])
@@ -103,7 +108,7 @@ class PokemonShowdownBot:
     def leaveRoom(self, room):
         ''' Attempts to leave a PS room '''
         if room not in self.details['rooms']:
-            print('Error! {name} not in {room}'.format(name=self.details['user'], room=room))
+            print('Error! {name} not in {room}'.format(name = selfname, room = room))
             return False
         self.send('|/leave ' + room)
         self.details['rooms'].pop(room, None)
@@ -134,26 +139,41 @@ class PokemonShowdownBot:
         if samePlace:
             self.say(room, response)
         else:
-            self.sendPm(user['name'], response)
+            self.sendPm(user.id, response)
 
+# Helpful functions
+    def toId(self, thing):
+        return re.sub(r'[^a-zA-z0-9,]', '', thing).lower()
     def escapeText(self, line):
         if line[0] == '/':
             return '/' + line
         elif line[0] == '!':
             return ' ' + line
         return line
+    def removeSpaces(self, text):
+        return text.replace(' ','')
     def extractCommand(self, msg):
-        return msg[len(self.details['command']):].split(' ')[0].lower()
-    def evalPermission(self, user):
-        return self.Groups[user['group']] >= self.Groups[self.details['broadcastrank']] or self.details['master'] == user['name'] or user['name'] in self.details['whitelist']
+        return msg[len(self.commandchar):].split(' ')[0].lower()
+
     def takeAction(self, room, user, action, reason):
         self.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user, reason = reason))
 
     # Rank checks
     def canPunish(self, room):
-        return self.Groups[room.rank] >= self.Groups['%']
+        return User.Groups[room.rank] >= User.Groups['%']
     def canBan(self, room):
-        return self.Groups[room.rank] >= self.Groups['@']
+        return User.Groups[room.rank] >= User.Groups['@']
+    def canStartTour(self, room):
+        return User.Groups[room.rank] >= User.Groups['@']
+
+    # Generic permissions test for users
+    def isOwner(self, name):
+        return self.details['master'] == self.toId(name)
+    def evalPermission(self, user):
+        return User.Groups[user.rank] >= User.Groups[self.details['broadcastrank']] or self.details['master'] == user.id
+
+    def userHasPermission(self, user, rank):
+        return user.id == self.details['master'] or User.Groups[user.rank] >= User.Groups[rank]
 
     # Default onMessage if none is given (This only support logging in, nothing else)
     # To get any actual use from the bot, create a custom onMessage function.
