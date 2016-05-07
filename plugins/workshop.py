@@ -48,7 +48,7 @@ class Workshop(GenericGame):
 
 def commands(bot, cmd, room, msg, user):
     if cmd == 'workshop':
-        if not room.game.isThisGame(Workshop):
+        if not (room.game and room.game.isThisGame(Workshop)):
             if msg.startswith('new') and user.hasRank('@'):
                 room.game = Workshop(bot.toId(msg[len('new '):]) if msg[len('new '):] else user.id)
                 return 'A new workshop session was created', True

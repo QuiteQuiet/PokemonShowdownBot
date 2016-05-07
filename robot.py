@@ -36,7 +36,7 @@ class PokemonShowdownBot:
             self.intro()
             self.splitMessage = onMessage if onMessage else self.onMessage
             self.url = url
-            websocket.enableTrace(True)
+            #websocket.enableTrace(True)
             self.openWebsocket()
             self.addBattleHandler()
 

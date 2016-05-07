@@ -66,7 +66,7 @@ def commands(bot, cmd, room, msg, user):
             return 'There is no active anagram right now', False
         elif msg == 'end':
             if not user.hasRank('%'): return 'You do not have permission to end the anagram. (Requires %)', True
-            if not room.game.isThisGame(Anagram): return 'There is no active anagram or a different game is active.', False
+            if not (room.game and room.game.isThisGame(Anagram)): return 'There is no active anagram or a different game is active.', False
             solved = room.game.getSolvedWord()
             room.game = None
             return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user.name, solved = solved), True
@@ -78,12 +78,12 @@ def commands(bot, cmd, room, msg, user):
             return 'This user has won {number} anagram{plural}'.format(number = Scoreboard[name], plural = '' if not type(Scoreboard[name]) == str and Scoreboard[name] < 2  else 's'), True
         else:
             if msg: return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
-            if room.game.isThisGame(Anagram):
+            if room.game and room.game.isThisGame(Anagram):
                 return 'Current anagram: {word}'.format(word = room.game.getWord()), True
             return 'There is no active anagram right now', False
 
     if cmd == 'a':
-        if not room.game.isThisGame(Anagram): return 'There is no anagram active right now', True
+        if not (room.game and room.game.isThisGame(Anagram)): return 'There is no anagram active right now', True
         if room.game.isCorrect(re.sub(r'[ -]', '', msg).lower()):
             solved = room.game.getSolvedWord()
             timeTaken = room.game.getSolveTimeStr()

@@ -32,7 +32,7 @@ class Room:
     def getUser(self, name):
         if name in self.users:
             return self.users[name]
-        return Fals
+        return False
 
     def isWhitelisted(self, user):
         return user.hasRank('@') or user.id in self.tourwhitelist

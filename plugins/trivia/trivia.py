@@ -106,7 +106,7 @@ def commands(bot, cmd, room, msg, user):
             return 'The trivia session has been ended', True
 
     if cmd == 'ta':
-        if not room.game.isThisGame(Trivia): return 'There is no ongoing trivia session.', True
+        if not (room.game and room.game.isThisGame(Trivia)): return 'There is no ongoing trivia session.', True
         # Don't give information if wrong or right here, let Trivia deal with that
         if room.game.tryAnswer(msg):
             if not room.game.solver:
