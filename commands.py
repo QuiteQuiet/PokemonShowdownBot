@@ -28,12 +28,13 @@ from data.pokedex import Pokedex
 from data.types import Types
 from data.replies import Lines
 
+from user import User
 from room import commands as RoomCommands
 from plugins import PluginCommands
 
 ExternalCommands = [RoomCommands] + PluginCommands
 
-usageLink = r'http://www.smogon.com/stats/2016-03/'
+usageLink = r'http://www.smogon.com/stats/2016-04/'
 GameCommands = ['anagram', 'a', 'trivia', 'ta']
 IgnoreBroadcastPermission = ['anagram', 'a', 'trivia', 'ta', 'tour']
 CanPmReplyCommands = ['usage', 'help']
