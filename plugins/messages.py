@@ -25,7 +25,7 @@ class MessageDatabase:
         if to not in self.lastNotification: self.lastNotification[to] = datetime(2015, 1, 1)
         if sent in self.messages[to]: return False
 
-        self.messages[to][bot.toId(sent)] = Message(sent, msg)
+        self.messages[to][re.sub(r'[^a-zA-z0-9,]', '', sent).lower()] = Message(sent, msg)
         return True
 
     def getMessage(self, user):
