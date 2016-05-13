@@ -77,7 +77,7 @@ def commands(bot, cmd, room, msg, user):
         if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
         target = bot.toId(msg)
         if not room.addToWhitelist(target): return 'This user is already whitelisted in that room.', False
-        saveDetails(bot)
+        bot.saveDetails()
         return '{name} added to the whitelist in this room.'.format(name = msg), True
     if cmd =='untourwl':
         if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False

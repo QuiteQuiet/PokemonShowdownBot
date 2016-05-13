@@ -70,7 +70,7 @@ def Command(self, cmd, room, msg, user):
     # Please note that this command will remove every comment from details.yaml, if those exist.
     if cmd == 'savedetails':
         if user.hasRank('#'):
-            saveDetails(self)
+            self.saveDetails()
             return 'Details saved.', True
         return "You don't have permission to save settings. (Requires #)", False
 
@@ -189,14 +189,3 @@ def acceptableWeakness(team):
         if comp[t]['weak'] >= 2 and comp[t]['res'] <= 1:
             return False
     return True
-def saveDetails(self):
-    details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
-    details['joinRooms'] = []
-    for e in self.rooms:
-        details['joinRooms'].append({e:{'moderate':self.getRoom(e).moderate,
-                                        'allow games':self.getRoom(e).allowGames,
-                                        'tourwhitelist':self.getRoom(e).tourwhitelist}
-                                    })
-    details['rooms'] = {}
-    with open('details.yaml', 'w') as yf:
-        yaml.dump(details, yf, default_flow_style = False)
