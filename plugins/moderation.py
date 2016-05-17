@@ -80,7 +80,7 @@ def removeBan(t, room, ban):
         yaml.dump(banned, yf)
 
 def shouldBan(bot, user, room):
-    return room.moderate and isBanned(user, room.title) and bot.canBan(room)
+    return room.moderate and isBanned(user.id, room.title) and bot.canBan(room)
 def isBanned(user, room):
     return user in banned['user'][room]
 
