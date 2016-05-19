@@ -91,6 +91,9 @@ def getCC1v1Move(moves, pokemon, opponent):
         for fault in ['-', "'"]:
             m = m.replace(fault,'')
         if m == 'recharge': return m
+        for var in ['return', 'frustration']:
+            if m.startswith(var):
+                m = var
         # This begins a score system for the moves, naively trying to pick the best moves without calculating damage
         # Based on the move's base power
         values[m] = Moves[m]['basePower']
@@ -139,6 +142,9 @@ def calcScore(move, mon, opponents):
     ''' Calculates an arbitrary score for a move against an opponent to decide how good it is '''
     if 'hiddenpower' in  move:
         move = move[:-2]
+    for var in ['return', 'frustration']:
+            if move.startswith(var):
+                move = var
     move = move.replace("'",'')
     move = Moves[move]
     opp = Pokedex[opponents]
