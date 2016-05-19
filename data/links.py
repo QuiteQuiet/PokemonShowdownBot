@@ -1,5 +1,5 @@
 Links = {
-'viability': {
+'vr': {
     'uber':'http://www.smogon.com/forums/threads/3535106/',
     'ou':'http://www.smogon.com/forums/threads/3536420/',
     'uu':'http://www.smogon.com/forums/threads/3533364/',
