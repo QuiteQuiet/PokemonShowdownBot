@@ -50,7 +50,7 @@ def Command(self, cmd, room, msg, user):
     if cmd == 'credits':
         return 'Credits can be found: {url}'.format(url = URL()), True
     if cmd == 'owner':
-        return 'Owned by: {owner}'.format(owner = self.details['master']), True
+        return 'Owned by: {owner}'.format(owner = self.owner), True
     if cmd in ['commands', 'help']:
         return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True
     if cmd == 'explain':

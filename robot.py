@@ -29,6 +29,7 @@ class PokemonShowdownBot:
     def __init__(self, url, onMessage = None):
         with open("details.yaml", 'r') as yaml_file:
             self.details = yaml.load(yaml_file)
+            self.owner = self.toId(self.details['master'])
             self.name = self.details['user']
             self.id = self.toId(self.name)
             self.rooms = {}
@@ -109,7 +110,7 @@ class PokemonShowdownBot:
     def leaveRoom(self, room):
         ''' Attempts to leave a PS room '''
         if room not in self.rooms:
-            print('Error! {name} not in {room}'.format(name = selfname, room = room))
+            print('Error! {name} not in {room}'.format(name = self.name, room = room))
             return False
         self.send('|/leave ' + room)
         self.rooms.pop(room, None)
@@ -169,12 +170,12 @@ class PokemonShowdownBot:
 
     # Generic permissions test for users
     def isOwner(self, name):
-        return self.details['master'] == self.toId(name)
+        return self.owner == self.toId(name)
     def evalPermission(self, user):
-        return User.Groups[user.rank] >= User.Groups[self.details['broadcastrank']] or self.details['master'] == user.id
+        return User.Groups[user.rank] >= User.Groups[self.details['broadcastrank']] or self.isOwner(user.id)
 
     def userHasPermission(self, user, rank):
-        return user.id == self.details['master'] or User.Groups[user.rank] >= User.Groups[rank]
+        return self.isOwner(user.id) or User.Groups[user.rank] >= User.Groups[rank]
 
     def saveDetails(self):
         details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
