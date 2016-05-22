@@ -36,7 +36,10 @@ class Anagram(GenericGame):
         random.shuffle(anagram)
         return ''.join(anagram), pick
     def getHint(self):
-        return random.choice(self.hints)
+        if not self.hints: return 'No more hints avaliable'
+        hint = random.choice(self.hints)
+        self.hints.remove(hint)
+        return hint
     def getWord(self):
         return self.word
     def getSolvedWord(self):
