@@ -23,7 +23,7 @@ class Anagram(GenericGame):
         pokemon = list(Pokedex)
         moves = list(Moves)
         abilities = list(Abilities)
-        pick = random.sample(pokemon+moves+abilities, 1)[0]
+        pick = random.choice(pokemon+moves+abilities)
         if pick in Pokedex:
             self.hints.append("It's a pokemon!")
         elif pick in Moves:
@@ -36,7 +36,7 @@ class Anagram(GenericGame):
         random.shuffle(anagram)
         return ''.join(anagram), pick
     def getHint(self):
-        return random.sample(self.hints, 1)[0]
+        return random.choice(self.hints)
     def getWord(self):
         return self.word
     def getSolvedWord(self):
