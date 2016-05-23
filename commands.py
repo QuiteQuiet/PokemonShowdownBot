@@ -29,16 +29,15 @@ from data.types import Types
 from data.replies import Lines
 
 from user import User
-from room import commands as RoomCommands
-from plugins import PluginCommands
+from room import RoomCommands
+from plugins import PluginCommands, IgnoreEscaping, GameCommands, IgnoreBroadcastPermission
 
-ExternalCommands = [RoomCommands] + PluginCommands
+ExternalCommands = RoomCommands.copy()
+ExternalCommands.update(PluginCommands)
 
 usageLink = r'http://www.smogon.com/stats/2016-04/'
-GameCommands = ['anagram', 'a', 'trivia', 'ta']
-IgnoreBroadcastPermission = ['anagram', 'a', 'trivia', 'ta', 'tour']
 CanPmReplyCommands = ['usage', 'help']
-IgnoreEscaping = ['tour', 'oldgentour']
+IgnoreBroadcastPermission.append('tour')
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 
@@ -89,11 +88,9 @@ def Command(self, cmd, room, msg, user):
             return 'You are not allowed to set broadcast rank. (Requires #)', False
         return '{rank} is not a valid rank'.format(rank = msg), False
 
-    # External commands from plugins
-    reply, cond = '', None
-    for external in ExternalCommands:
-        reply, cond = external(self, cmd, room, msg, user)
-        if reply: return reply, cond
+    # External commands from plugins (and also room.py)
+    if cmd in ExternalCommands.keys():
+        return ExternalCommands[cmd](self, cmd, room, msg, user)
 
     # Informational commands
     if cmd in Links:

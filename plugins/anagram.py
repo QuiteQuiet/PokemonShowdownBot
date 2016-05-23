@@ -56,45 +56,43 @@ class Anagram(GenericGame):
         else:
             return '!'
 
-def commands(bot, cmd, room, msg, user):
-    if cmd == 'anagram':
-        if msg == 'new':
-            if not user.hasRank('%'): return 'You do not have permission to start a game in this room. (Requires %)', False
-            if room.game: return 'A game is already running somewhere', False
-            room.game = Anagram()
-            return 'A new anagram has been created (guess with ~a):\n' + room.game.getWord(), True
+def start(bot, cmd, room, msg, user):
+    if msg == 'new':
+        if not user.hasRank('%'): return 'You do not have permission to start a game in this room. (Requires %)', False
+        if room.game: return 'A game is already running somewhere', False
+        room.game = Anagram()
+        return 'A new anagram has been created (guess with ~a):\n' + room.game.getWord(), True
 
-        elif msg == 'hint':
-            if room.game: return 'The hint is: ' + room.game.getHint(), True
-            return 'There is no active anagram right now', False
-        elif msg == 'end':
-            if not user.hasRank('%'): return 'You do not have permission to end the anagram. (Requires %)', True
-            if not (room.game and room.game.isThisGame(Anagram)): return 'There is no active anagram or a different game is active.', False
-            solved = room.game.getSolvedWord()
-            room.game = None
-            return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user.name, solved = solved), True
+    elif msg == 'hint':
+        if room.game: return 'The hint is: ' + room.game.getHint(), True
+        return 'There is no active anagram right now', False
+    elif msg == 'end':
+        if not user.hasRank('%'): return 'You do not have permission to end the anagram. (Requires %)', True
+        if not (room.game and room.game.isThisGame(Anagram)): return 'There is no active anagram or a different game is active.', False
+        solved = room.game.getSolvedWord()
+        room.game = None
+        return 'The anagram was forcefully ended by {baduser}. (Killjoy)\nThe solution was: **{solved}**'.format(baduser = user.name, solved = solved), True
 
-        elif msg.lower().startswith('score'):
-            if msg.strip() == 'score': msg += ' {user}'.format(user = user.id)
-            name = bot.toId(msg[len('score '):])
-            if name not in Scoreboard: return "This user never won any anagrams", True
-            return 'This user has won {number} anagram{plural}'.format(number = Scoreboard[name], plural = '' if not type(Scoreboard[name]) == str and Scoreboard[name] < 2  else 's'), True
-        else:
-            if msg: return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
-            if room.game and room.game.isThisGame(Anagram):
-                return 'Current anagram: {word}'.format(word = room.game.getWord()), True
-            return 'There is no active anagram right now', False
+    elif msg.lower().startswith('score'):
+        if msg.strip() == 'score': msg += ' {user}'.format(user = user.id)
+        name = bot.toId(msg[len('score '):])
+        if name not in Scoreboard: return "This user never won any anagrams", True
+        return 'This user has won {number} anagram{plural}'.format(number = Scoreboard[name], plural = '' if not type(Scoreboard[name]) == str and Scoreboard[name] < 2  else 's'), True
+    else:
+        if msg: return '{param} is not a valid parameter for ~anagram. Make guesses with ~a'.format(param = msg), False
+        if room.game and room.game.isThisGame(Anagram):
+            return 'Current anagram: {word}'.format(word = room.game.getWord()), True
+        return 'There is no active anagram right now', False
 
-    if cmd == 'a':
-        if not (room.game and room.game.isThisGame(Anagram)): return 'There is no anagram active right now', True
-        if room.game.isCorrect(re.sub(r'[ -]', '', msg).lower()):
-            solved = room.game.getSolvedWord()
-            timeTaken = room.game.getSolveTimeStr()
-            room.game = None
-            # Save score
-            Scoreboard[user.id] = 1 if user.id not in Scoreboard else Scoreboard[user.id] + 1
-            with open('plugins/scoreboard.yaml', 'w') as ym:
-                yaml.dump(Scoreboard, ym)
-            return 'Congratulations, {name} got it{time}\nThe solution was: {solution}'.format(name = user.name, time = timeTaken, solution = solved), True
-        return '{test} is wrong!'.format(test = msg.lstrip()), True
-    return '', False
+def answer(bot, cmd, room, msg, user):
+    if not (room.game and room.game.isThisGame(Anagram)): return 'There is no anagram active right now', True
+    if room.game.isCorrect(re.sub(r'[ -]', '', msg).lower()):
+        solved = room.game.getSolvedWord()
+        timeTaken = room.game.getSolveTimeStr()
+        room.game = None
+        # Save score
+        Scoreboard[user.id] = 1 if user.id not in Scoreboard else Scoreboard[user.id] + 1
+        with open('plugins/scoreboard.yaml', 'w') as ym:
+            yaml.dump(Scoreboard, ym)
+        return 'Congratulations, {name} got it{time}\nThe solution was: {solution}'.format(name = user.name, time = timeTaken, solution = solved), True
+    return '{test} is wrong!'.format(test = msg.lstrip()), True

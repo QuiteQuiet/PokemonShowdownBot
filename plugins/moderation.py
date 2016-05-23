@@ -253,32 +253,33 @@ def shouldAct(msg, user, room, unixTime):
 #            return 'badlink'
     return False
 
-def commands(bot, cmd, room, msg, user):
-    if cmd == 'moderate':
-        if not msg: return 'No parameters given. Command is ~moderate [room],True/False', False
-        if not user.hasRank('#'): return 'You do not have permission to set this. (Requires #)', False
-        things = bot.removeSpaces(msg).split(',')
-        if not len(things) == 2:
-            return 'Too few/many parameters given. Command is ~moderate [room],True/False', False
-        if things[0] in bot.rooms:
-            if things[1] in ['True', 'true']:
-                bot.getRoom(things[0]).moderate = True
-                return '{room} will now be moderated'.format(room = things[0]), False
-            elif things[1] in ['False', 'false']:
-                bot.getRoom(things[0]).moderate = False
-                return '{room} will not be moderated anymore'.format(room = things[0]), False
-        return 'You cannot set moderation in a room without me in it.', False
-    # Autobans
-    elif cmd in ['banuser', 'banphrase']:
-        if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
-        error = addBan(cmd[3:], room.title, msg)
-        if not error:
-            return 'Added {thing} to the banlist for room {room}'.format(thing = msg, room = room.title), True
-        return error, True
-    elif cmd in ['unbanuser', 'unbanphrase']:
-        if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
-        error = removeBan(cmd[5:], room.title, msg)
-        if not error:
-            return 'Removed {thing} from the banlist for room {room}'.format(thing = msg, room = room.title), True
-        return error, True
-    return '', False
+
+# Commands
+def moderate(bot, cmd, room, msg, user):
+    if not msg: return 'No parameters given. Command is ~moderate [room],True/False', False
+    if not user.hasRank('#'): return 'You do not have permission to set this. (Requires #)', False
+    things = bot.removeSpaces(msg).split(',')
+    if not len(things) == 2:
+        return 'Too few/many parameters given. Command is ~moderate [room],True/False', False
+    if things[0] in bot.rooms:
+        if things[1] in ['True', 'true']:
+            bot.getRoom(things[0]).moderate = True
+            return '{room} will now be moderated'.format(room = things[0]), False
+        elif things[1] in ['False', 'false']:
+            bot.getRoom(things[0]).moderate = False
+            return '{room} will not be moderated anymore'.format(room = things[0]), False
+    return 'You cannot set moderation in a room without me in it.', False
+
+def banthing(bot, cmd, room, msg, user):
+    if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
+    error = addBan(cmd[3:], room.title, msg)
+    if not error:
+        return 'Added {thing} to the banlist for room {room}'.format(thing = msg, room = room.title), True
+    return error, True
+
+def unbanthing(bot, cmd, room, msg, user):
+    if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
+    error = removeBan(cmd[5:], room.title, msg)
+    if not error:
+        return 'Removed {thing} from the banlist for room {room}'.format(thing = msg, room = room.title), True
+    return error, True

@@ -4,10 +4,25 @@ from plugins import messages
 from plugins import workshop
 from plugins import anagram
 
-PluginCommands = [
-    moderation.commands,
-    tournaments.commands,
-    messages.commands,
-    workshop.commands,
-    anagram.commands
-]
+# This is where you pick what the name of the command actually is, then map it to a function.
+# Every command needs a function to work, with the parameters (bot, cmd, room, msg, user)
+# in that order.
+PluginCommands = {
+    'moderate'      : moderation.moderate,
+    'banuser'       : moderation.banthing,
+    'banphrase'     : moderation.banthing,
+    'unbanuser'     : moderation.unbanthing,
+    'unbanphrase'   : moderation.unbanthing,
+    'oldgentour'    : tournaments.oldgentour,
+    'tell'          : messages.tell,
+    'read'          : messages.read,
+    'untell'        : messages.untell,
+    'workshop'      : workshop.handler,
+    'ws'            : workshop.handler,
+    'anagram'       : anagram.start,
+    'a'             : anagram.answer
+}
+
+GameCommands = ['anagram', 'a', 'trivia', 'ta']
+IgnoreBroadcastPermission = ['anagram', 'a', 'trivia', 'ta']
+IgnoreEscaping = ['tour', 'oldgentour']

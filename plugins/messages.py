@@ -84,28 +84,30 @@ class MessageDatabase:
     def removeAllMessages(self, to):
         return self.messages.pop(to, None)
 
-def commands(bot, cmd, room, msg, user):
+# Commands
+def tell(bot, cmd, room, msg, user):
     notes = bot.usernotes
-    if cmd == 'tell':
-        if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
-        msg = msg.split(',')
-        to = bot.toId(msg[0])
-        if notes.alreadySentMessage(to, user.id): return 'You already have a message to this user waiting', False
-        if len(msg) < 2: return 'You forgot a message', True
-        if len(msg[1].lstrip()) > 150: return 'Message is too long. Max limit is 150 characters', False
-        notes.addMessage(to, user.name, msg[1].lstrip())
-        return "I'll be sure to tell {user} that.".format(user = to), True
-    # Getting the messages back
-    elif cmd == 'read':
-        if not notes.hasMessage(user.id): return 'You have no messages waiting', False
-        if not msg:
-            # If the user didn't speify any amount to return, give back a single message
-            return notes.getMessages(user.id, 1), False
-        if not msg.isdigit() and int(msg) < 1: return 'Please enter a whole, positive number', False
-        return notes.getMessages(user.id, int(msg)), False
-    elif cmd == 'untell':
-        if not msg: return 'You need to specify a user to remove', False
-        if not notes.hasMessage(msg): return 'This user has no waiting messages', False
-        if not notes.removeMessage(msg, user.id): return 'You have no message to this user waiting', False
-        return 'Message removed', True
-    return '', False
+    if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
+    msg = msg.split(',')
+    to = bot.toId(msg[0])
+    if notes.alreadySentMessage(to, user.id): return 'You already have a message to this user waiting', False
+    if len(msg) < 2: return 'You forgot a message', True
+    if len(msg[1].lstrip()) > 150: return 'Message is too long. Max limit is 150 characters', False
+    notes.addMessage(to, user.name, msg[1].lstrip())
+    return "I'll be sure to tell {user} that.".format(user = to), True
+
+def read(bot, cmd, room, msg, user):
+    notes = bot.usernotes
+    if not notes.hasMessage(user.id): return 'You have no messages waiting', False
+    if not msg:
+        # If the user didn't speify any amount to return, give back a single message
+        return notes.getMessages(user.id, 1), False
+    if not msg.isdigit() and int(msg) < 1: return 'Please enter a whole, positive number', False
+    return notes.getMessages(user.id, int(msg)), False
+
+def untell(bot, cmd, room, msg, user):
+    notes = bot.usernotes
+    if not msg: return 'You need to specify a user to remove', False
+    if not notes.hasMessage(msg): return 'This user has no waiting messages', False
+    if not notes.removeMessage(msg, user.id): return 'You have no message to this user waiting', False
+    return 'Message removed', True
