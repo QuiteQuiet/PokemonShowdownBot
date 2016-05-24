@@ -158,7 +158,7 @@ class PokemonShowdownBot:
         return msg[len(self.commandchar):].split(' ')[0].lower()
 
     def takeAction(self, room, user, action, reason):
-        self.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user, reason = reason))
+        self.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user.id, reason = reason))
 
     # Rank checks
     def canPunish(self, room):

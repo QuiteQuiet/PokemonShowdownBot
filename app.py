@@ -156,7 +156,7 @@ class PSBot(PokemonShowdownBot):
                 if anything:
                     action, reason = moderation.getAction(self, room, user, anything, message[2])
                     self.log('Action', action, user.id)
-                    self.takeAction(room.title, user.id, action, reason)
+                    self.takeAction(room.title, user, action, reason)
 
 
             if message[4].startswith(self.commandchar) and message[4][1:] and message[4][1].isalpha():
