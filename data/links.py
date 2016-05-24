@@ -58,7 +58,8 @@ Links = {
     }
 }
 YoutubeLinks = {
-    'kiyo':'metaphysical said use Adblock: http://www.youtube.com/user/gottagokiyo',
+    'kiyo':'Use Adblock: http://www.youtube.com/user/gottagokiyo',
     'raseri':'NUTL Content: http://www.youtube.com/user/SmogonRaseri',
+    'teddeh': "Some dude who said he's a girl: http://www.youtube.com/user/MrTeddehh",
     'disjunction':'This guy is bad: '
 }
