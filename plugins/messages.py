@@ -90,7 +90,7 @@ def tell(bot, cmd, room, msg, user):
     if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
     msg = msg.split(',')
     to = bot.toId(msg[0])
-    message = msg[1:].join(',').lstrip()
+    message = ','.join(msg[1:]).lstrip()
     if notes.alreadySentMessage(to, user.id): return 'You already have a message to this user waiting', False
     if not message: return 'You forgot a message', True
     if len(message) > 150: return 'Message is too long. Max limit is 150 characters', False
