@@ -90,10 +90,11 @@ def tell(bot, cmd, room, msg, user):
     if not msg: return 'You need to specify a user and a message to send in the format: [user], [message]', False
     msg = msg.split(',')
     to = bot.toId(msg[0])
+    message = msg[1:].join(',').lstrip()
     if notes.alreadySentMessage(to, user.id): return 'You already have a message to this user waiting', False
-    if len(msg) < 2: return 'You forgot a message', True
-    if len(msg[1].lstrip()) > 150: return 'Message is too long. Max limit is 150 characters', False
-    notes.addMessage(to, user.name, msg[1].lstrip())
+    if not message: return 'You forgot a message', True
+    if len(message) > 150: return 'Message is too long. Max limit is 150 characters', False
+    notes.addMessage(to, user.name, message)
     return "I'll be sure to tell {user} that.".format(user = to), True
 
 def read(bot, cmd, room, msg, user):
