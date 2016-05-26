@@ -158,6 +158,7 @@ class PokemonShowdownBot:
         return msg[len(self.commandchar):].split(' ')[0].lower()
 
     def takeAction(self, room, user, action, reason):
+        self.log('Action', action, user.id)
         self.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user.id, reason = reason))
 
     # Rank checks
@@ -181,9 +182,10 @@ class PokemonShowdownBot:
         details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
         details['joinRooms'] = []
         for e in self.rooms:
-            details['joinRooms'].append({e:{'moderate':self.getRoom(e).moderate,
-                                            'allow games':self.getRoom(e).allowGames,
-                                            'tourwhitelist':self.getRoom(e).tourwhitelist}
+            room = self.getRoom(e)
+            details['joinRooms'].append({e:{'moderate': room.moderate,
+                                            'allow games':room.allowGames,
+                                            'tourwhitelist': room.tourwhitelist}
                                         })
         details['rooms'] = {}
         with open('details.yaml', 'w') as yf:

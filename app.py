@@ -155,7 +155,6 @@ class PSBot(PokemonShowdownBot):
                 anything = moderation.shouldAct(message[4], user, room, message[2])
                 if anything:
                     action, reason = moderation.getAction(self, room, user, anything, message[2])
-                    self.log('Action', action, user.id)
                     self.takeAction(room.title, user, action, reason)
 
 
