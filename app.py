@@ -76,7 +76,7 @@ class PSBot(PokemonShowdownBot):
         room.addUser(user)
         # If the user have a message waiting, tell them that in a pm
         if self.usernotes.shouldNotifyMessage(user.id):
-            self.sendPm(user, self.usernotes.pendingMessages(user.id))
+            self.sendPm(user.id, self.usernotes.pendingMessages(user.id))
 
     def parseMessage(self, msg, roomName):
         if not msg.startswith('|'): return
