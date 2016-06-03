@@ -9,7 +9,7 @@ Standard commands
 
 - `commands` : Gives a link to this page.
 - `source` : Prints a link to this github repository.
-- `pick a,b,c,d...` : Randomly selects one of the entered options.
+- `pick a, b, c, d...` : Randomly selects one of the entered options.
 
 - `[tier]poke` : Randomly selects one Pokémon from the viable tier list from [tier]. Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 - `[tier]team` : Randomly generate a team that is usable in [tier]. Same restrictions as [tier]poke apply.
@@ -17,7 +17,7 @@ Standard commands
 - `pokemon` : Entering any existing pokemon (for example ~kyogre) gives a link to their respective Smogon analysis page.
 - `tier` : Similar to the above, entering any official Smogon tier (such as ~ou) brings up a link to the Smogon hub for that tier.
 
-- `~viability [tier]`, `~speedtiers [tier]`, `~np [tier]`, `~sample [tier]`, `~roles [tier]` :
+- `~vr [tier]`, `~speedtiers [tier]`, `~np [tier]`, `~sample [tier]`, `~roles [tier]` :
 - The above five commands bring up their respective forum resource that was requested (if one exists). Supported tiers are Uber, OU, UU, RU, NU, PU, and LC.
 
 - `tell [user], [message]` : This will save [message], and when [user] join any room the bot is in, they will get a PM notifying them they have a message waiting. Messages are not saved on a restart, and you can only have one message to each user waiting at any time.
@@ -50,6 +50,7 @@ Although not a chatgame, the workshop command use the same container as they do 
 - `workshop team` : Displays the current workshop team. (Requires Host or @)
 - `workshop clear` : Deletes the workshop team. (Requires Host or @)
 - `workshop end` : Ends the workshop session, deleting the team as well. (Requires Host or @)
+- `ws` is an alias for `workshop`, for lazy people.
 
 Extended commands
 -----------------
