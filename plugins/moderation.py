@@ -55,7 +55,6 @@ def MESSAGES_FOR_SPAM(): return 5
 def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * MESSAGES_FOR_SPAM()
 def SPAM_INTERVAL(): return timedelta(seconds = 6)
 
-# Bans
 def addBan(t, room, ban):
     if room not in banned[t]:
         banned[t][room] = []
@@ -84,14 +83,13 @@ def shouldBan(bot, user, room):
 def isBanned(user, room):
     return user in banned['user'][room]
 
-# User Punishment Class
 class PunishedUser:
     def __init__(self, name, score, now):
         self.name = name
         self.points = score
         self.lastPunished = now
         self.lastAction = ''
-# Everything else
+
 def getUrl(text):
     match = re.search(URL_REGEX, text.replace(' ',''))
     if match:
@@ -115,7 +113,8 @@ def badLink(link):
     if not any(u in link for u in whitelistedUrls):
         if not link.startswith('http://'): link = 'http://' + link
         if 'youtube.com' in link:
-            # check youtube links better than the others
+            # check youtube links better than the others because videos might still
+            # be inappropriate, even if YouTube isn't
             pass
         return True
     return False
@@ -133,8 +132,8 @@ def isSpam(msg, user, room, now):
     if room not in spamTracker:
         spamTracker[room] = {}
     if user.id not in spamTracker[room]:
-        # The first time this user have talked, so there's no way it's spam now
         spamTracker[room][user.id] = deque('', 50)
+        # The first time this user have talked, so there's no way it's spam now
         return False
     spamTracker[room][user.id].append(now)
     times = spamTracker[room][user.id]
@@ -187,7 +186,7 @@ def probablyHarmful(msg, userlist):
 def getAction(bot, room, user, wrong, unixTime):
     # This assumes unixTime is a valid unix timestamp
     now = datetime.utcfromtimestamp(int(unixTime))
-    # Judge users based on their past behavior
+
     if user.id not in punishedUsers:
         punishedUsers[user.id] = PunishedUser(user.id, infractionScore[wrong], now)
     else:
@@ -210,7 +209,8 @@ def getAction(bot, room, user, wrong, unixTime):
     # Just ban them then...
     else:
         action = 'roomban'
-    if action == 'roomban' and not bot.canBan(room): # If the current rank doesn't support roomban, keep muting them
+    # If the current rank doesn't support roomban, keep muting them
+    if action == 'roomban' and not bot.canBan(room):
         action = 'hourmute'
     punishedUsers[user.id].lastAction = action
     return action, actionReplies[wrong]

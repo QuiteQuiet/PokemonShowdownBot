@@ -37,7 +37,7 @@ class Trivia(GenericGame):
             time.sleep(1)
             secondsPassed += 1
         if self.endSession:
-            # This breaks the pseudo-while loop and kills the Trivia session
+            # This breaks the while loop and kills the Trivia session
             return
         newQ = self.generator.makeQuestion()
         self.question = Question(newQ['q'], newQ['a'])

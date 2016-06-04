@@ -68,20 +68,20 @@ def getSwitch(myTeam, myActive, opponent):
             scores[poke] += calcScore(move, myTeam[poke], opponent.species)
     m = max(scores.values())
     picks = [poke for poke,score in scores.items() if score == m]
-    pick = 0 # Default switch to the next member
+    pick = 0
     if len(picks) == 1:
         if myActive not in picks:
             pick = myTeam[picks[0]].teamSlot
     else:
         if myActive in picks:
             picks.remove(myActive)
-        pick = myTeam[picks[randint(0,len(picks)-1)]].teamSlot
+        pick = myTeam[picks[randint(0, len(picks) - 1)]].teamSlot
     if pick <= 1:
         notFaintedMons = []
         for mon in myTeam:
             if not myTeam[mon].status == 'fnt' and not myTeam[mon].teamSlot == 1:
                 notFaintedMons.append(myTeam[mon].teamSlot)
-        pick = notFaintedMons[randint(0,len(notFaintedMons)-1)]
+        pick = notFaintedMons[randint(0, len(notFaintedMons) - 1)]
     return pick
 
 def getCC1v1Move(moves, pokemon, opponent):
@@ -143,18 +143,18 @@ def calcScore(move, mon, opponents):
     if 'hiddenpower' in  move:
         move = move[:-2]
     for var in ['return', 'frustration']:
-            if move.startswith(var):
-                move = var
+        if move.startswith(var):
+            move = var
     move = move.replace("'",'')
     move = Moves[move]
     opp = Pokedex[opponents]
 
     score = move['basePower'] - (100 - move['accuracy'])
-    # Bias
+
     oBias = 'Physical' if mon.stats['atk'] > mon.stats['spa'] else 'Special'
     if mon.stats['atk'] == mon.stats['spa']:
         oBias = 'No bias'
-    dBias = 'Physical' if opp['baseStats']['atk'] > opp['baseStats']['spa'] else 'Special'
+    dBias = 'Physical' if opp['baseStats']['def'] > opp['baseStats']['spd'] else 'Special'
     if opp['baseStats']['atk'] == opp['baseStats']['spa']:
         dBias = 'No bias'
     if move['category'] == oBias:
@@ -173,5 +173,5 @@ def calcScore(move, mon, opponents):
         score *= 1.5
     if mon.ability in ['hugepower','purepower', 'adaptability']:
         score *= 2
-    # Ignore items
+    # Ignore items for now
     return score

@@ -6,7 +6,7 @@ from plugins.tournaments import Tournament
 class Room:
     def __init__(self, room, data = None):
         if not data:
-            # This is a hack to support both strings and dicts as input to the class
+            # This is to support both strings and dicts as input
             data = {'moderate':False, 'allow games':False, 'tourwhitelist':[]}
         self.users = {}
         self.loading = True

@@ -43,7 +43,7 @@ def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 
 def Command(self, cmd, room, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
-    # Debug commands and program info
+
     if cmd in ['source', 'git']:
         return 'Source code can be found at: {url}'.format(url = URL()), False
     if cmd == 'credits':
@@ -60,7 +60,6 @@ def Command(self, cmd, room, msg, user):
         if self.leaveRoom(msg):
             return 'Leaving room {r} succeeded'.format(r = msg), False
         return 'Could not leave room: {r}'.format(r = msg), False
-    # THIS COMMAND SHOULDN'T BE DOCUMENTED!
     if cmd == 'get':
         if user.isOwner():
             return str(eval(msg)), True
@@ -117,17 +116,20 @@ def Command(self, cmd, room, msg, user):
         return '{poke} was chosen: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(poke = pick, mon = pNoForm), True
     if cmd in [t.replace('poke','team') for t in tiers]:
         team = set()
+        hasMega = False
         attempts = 0
         while len(team) < 6 or not acceptableWeakness(team):
             poke = list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]
             # Test if share dex number with anything in the team
             if [p for p in team if Pokedex[poke]['dex'] == Pokedex[p]['dex']]:
                 continue
-            if [p for p in team if '-Mega' in p] and '-Mega' in poke:
+            if hasMega:
                 continue
             team |= {poke}
             if not acceptableWeakness(team):
                 team -= {poke}
+            elif '-Mega' in poke:
+                hasMega = True
             if len(team) >= 6:
                 break
             attempts += 1
@@ -138,7 +140,6 @@ def Command(self, cmd, room, msg, user):
                    team |= {list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]}
                 break
         return ' / '.join(list(team)), True
-    # Commands with awful conditions last
     if cmd in formats:
         return 'Format: http://www.smogon.com/dex/xy/formats/{tier}/'.format(tier = cmd), True
     # This command is here because it's an awful condition, so try it last :/

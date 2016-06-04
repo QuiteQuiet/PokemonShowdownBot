@@ -66,7 +66,6 @@ class BattleHandler:
                         if btl.me.team[poke].active:
                             btl.me.team[poke].canMega = True
 
-            # This doesn't work for fainting
             if 'forceSwitch' in request:
                 if request['forceSwitch'][0]:
                     self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
@@ -156,5 +155,3 @@ class BattleHandler:
         elif 'faint' == msg[1]:
             if not msg[2].startswith(btl.me.id):
                 btl.other.active.setCondition('0', 'fnt')
-
-

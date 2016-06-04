@@ -11,7 +11,7 @@ Scoreboard = {}
 with open('plugins/scoreboard.yaml', 'a+') as yf:
     yf.seek(0, 0)
     Scoreboard = yaml.load(yf)
-    if not Scoreboard: # Empty yaml file set Scoreboard to None, but an empty dict is better
+    if not Scoreboard: # Empty yaml file set Scoreboard to None, but a dict is expected
         Scoreboard = {}
 
 class Anagram(GenericGame):
@@ -48,11 +48,11 @@ class Anagram(GenericGame):
         return guess == self.solution
     def getSolveTimeStr(self):
         totalTime = datetime.datetime.now() - self.startTime
-        if totalTime.seconds < 60: # Less than 1 minute to solve
+        if totalTime.seconds < 60:
             return ' in {time} seconds!'.format(time = totalTime.seconds)
-        elif totalTime.seconds < 60*60: # Under 1 hour
-            minutes = totalTime.seconds//60
-            return ' in {mins} minutes and {sec} seconds!'.format(mins = minutes, sec = totalTime.seconds-(minutes*60))
+        elif totalTime.seconds < 60 * 60: # Under 1 hour
+            minutes = totalTime.seconds // 60
+            return ' in {mins} minutes and {sec} seconds!'.format(mins = minutes, sec = totalTime.seconds-(minutes * 60))
         else:
             return '!'
 

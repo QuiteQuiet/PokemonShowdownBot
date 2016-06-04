@@ -124,14 +124,12 @@ class PokemonShowdownBot:
 
     def say(self, room, msg):
         if '\n' in msg:
-            # DO NOT ABUSE THIS
             for m in msg.split('\n'):
                 self.send('{room}|{text}'.format(room = room, text = m))
         else:
             self.send('{room}|{text}'.format(room = room, text = msg))
     def sendPm(self, user, msg):
         if '\n' in msg:
-            # DO NOT ABUSE THIS
             for m in msg.split('\n'):
                 self.send('|/pm {usr}, {text}'.format(usr = user, text = m))
         else:
@@ -143,7 +141,7 @@ class PokemonShowdownBot:
         else:
             self.sendPm(user.id, response)
 
-# Helpful functions
+    # Helpful functions
     def toId(self, thing):
         return re.sub(r'[^a-zA-z0-9,]', '', thing).lower()
     def escapeText(self, line):

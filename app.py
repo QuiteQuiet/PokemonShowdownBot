@@ -56,7 +56,7 @@ class PSBot(PokemonShowdownBot):
             if 'deinit' in msg[0]:
                 self.rooms.pop(room)
             # Go to battle handler instead of regular rooms
-            # (we don't allow commands in battle rooms anyway)
+            # (I don't allow commands in battle rooms anyway)
             for m in msg:
                 self.bh.parse(room, m)
             return
@@ -109,7 +109,7 @@ class PSBot(PokemonShowdownBot):
         elif 'unlink' == message[1] or 'uhtml' in message[1] or 'html' == message[1]:
             return
 
-        # As long as the room have a roomintro (whih even groupchats do now)
+        # As long as the room have a roomintro (which even groupchats do now)
         # Roomintros are also the last thing that is sent when joining a room
         # so when this show up, assume the room is loaded
         elif 'raw' == message[1]:
@@ -163,7 +163,6 @@ class PSBot(PokemonShowdownBot):
                 self.log('Command', message[4], user.id)
 
                 response, samePlace = '', True
-                # If the command was a chat game and permissions aren't met, kill the game (even if it just started)
                 if not room.allowGames and command in GameCommands:
                     response = 'This room does not support chatgames.'
                 else:
@@ -244,13 +243,10 @@ while restartCount < 100:
     psb.ws.run_forever()
     # If we get here, the socket is closed and disconnected
     # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
-    # (At least, that's the theory)
     time.sleep(30)
     print('30 seconds since last disconnect. Retrying connection...')
     psb.openWebsocket()
     psb.addBattleHandler()
-    # We have websocket.run_forever earlier, so just loop around here
-    # but count the total number of restarts we managed for debug purposes.
     restartCount += 1
     print('Restart Count:', restartCount)
 
