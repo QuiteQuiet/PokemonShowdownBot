@@ -116,10 +116,10 @@ class PokemonShowdownBot:
         self.rooms.pop(room, None)
         return True
     def getRoom(self, roomName):
-        if roomName not in self.rooms: return Room('Empty')
         alias = {'nu':'neverused', 'tsb':'thestable'}
         if roomName in alias:
             roomName = alias[roomName]
+        if roomName not in self.rooms: return Room('Empty')
         return self.rooms[roomName]
 
     def say(self, room, msg):
