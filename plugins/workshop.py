@@ -47,11 +47,13 @@ class Workshop(GenericGame):
         return self.host == user.id or user.hasRank('@')
 
 def handler(bot, cmd, room, msg, user):
-    if not (room.game and room.game.isThisGame(Workshop)):
-        if msg.startswith('new') and user.hasRank('@'):
-            room.game = Workshop(bot.toId(msg[len('new '):]) if msg[len('new '):] else user.id)
-            return 'A new workshop session was created', True
-        return 'No active workshop right now', True
+    if msg.startswith('new'):
+        if not user.hasRank('@'): return "You don't have permission to start workshops (Requires @)", False
+        if room.game: return 'A room game is already in progress', True
+        room.game = Workshop(bot.toId(msg[len('new '):]) if msg[len('new '):] else user.id)
+        return 'A new workshop session was created', True
+
+    if not (room.game and room.game.isThisGame(Workshop)): return 'No Workshop in progress right now', True
     workshop = room.game
     if msg.startswith('add'):
         if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can add Pokemon', True
