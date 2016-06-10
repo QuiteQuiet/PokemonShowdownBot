@@ -57,10 +57,10 @@ def handler(bot, cmd, room, msg, user):
     workshop = room.game
     if msg.startswith('add'):
         if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can add Pokemon', True
-        return workshop.addPokemon(msg[len('add '):]), True
+        return workshop.addPokemon(msg[4:].strip()), True
     elif msg.startswith('remove'):
         if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can remove Pokemon', True
-        return workshop.removePokemon(msg[len('remove '):]), True
+        return workshop.removePokemon(msg[7:].strip()), True
     elif msg == 'clear':
         if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can clear the team', True
         return workshop.clearTeam(), True
@@ -68,6 +68,7 @@ def handler(bot, cmd, room, msg, user):
         return workshop.getTeam(), True
     elif msg == 'end':
         if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can end the workshop', True
-        bot.sendPm(workshop.host, workshop.pasteLog(room.title, bot.details['apikey']))
+        bot.sendPm(user.id, workshop.pasteLog(room.title, bot.details['apikey']))
         room.game = None
         return 'Workshop session ended', True
+    return 'Unrecognized command: {cmd}'.format(cmd = msg if msg else 'nothing'), True
