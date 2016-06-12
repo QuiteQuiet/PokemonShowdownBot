@@ -94,6 +94,7 @@ def tell(bot, cmd, room, msg, user):
     if notes.alreadySentMessage(to, user.id): return 'You already have a message to this user waiting', False
     if not message: return 'You forgot a message', True
     if len(message) > 150: return 'Message is too long. Max limit is 150 characters', False
+    if len(to) >= 20: return "Username is too long. This user doesn't exist", False
     notes.addMessage(to, user.name, message)
     return "I'll be sure to tell {user} that.".format(user = to), True
 
