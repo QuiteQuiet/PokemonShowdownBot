@@ -274,12 +274,16 @@ def banthing(bot, cmd, room, msg, user):
     if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
     error = addBan(cmd[3:], room.title, msg)
     if not error:
-        return 'Added {thing} to the banlist for room {room}'.format(thing = msg, room = room.title), True
+        modnote = '/modnote {user} added {thing} to the blacklist'.format(thing = msg, user = user.name)
+        ban = ''
+        if msg in room.userlist:
+            ban = '\n/roomban {user}, Was added to blacklist'.format(user = msg)
+        return 'Added {thing} to the banlist\n{note}{act}'.format(thing = msg, user = user.name, note = modnote, act = ban), True
     return error, True
 
 def unbanthing(bot, cmd, room, msg, user):
     if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
     error = removeBan(cmd[5:], room.title, msg)
     if not error:
-        return 'Removed {thing} from the banlist for room {room}'.format(thing = msg, room = room.title), True
+        return 'Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} to the blacklist'.format(thing = msg, room = room.title, user = user.name), True
     return error, True
