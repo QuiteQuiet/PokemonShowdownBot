@@ -70,7 +70,7 @@ def tour(bot, cmd, room, msg, user):
     if room.title == 'pm': return "You can't use this command in a pm.", False
     if not room.isWhitelisted(user): return 'You are not allowed to use this command. (Requires whitelisting by a Room Owner)', True
     if not bot.canStartTour(room): return "I don't have the rank required to start a tour :(", True
-    return '/tour {rest}'.format(rest = msg), True
+    return '/tour {rest}\n/modnote command used by: {user} '.format(rest = msg, user = user.name), True
 def tourwl(bot, cmd, room, msg, user):
     if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
     target = bot.toId(msg)
