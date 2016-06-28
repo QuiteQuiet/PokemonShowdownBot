@@ -68,8 +68,7 @@ class PSBot(PokemonShowdownBot):
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
             room.doneLoading()
-        userid = self.toId(message)
-        user = User(userid, message[0], self.isOwner(userid))
+        user = User(message, message[0], self.isOwner(message))
         if moderation.shouldBan(self, user, room):
             self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
             return
@@ -119,7 +118,7 @@ class PSBot(PokemonShowdownBot):
         # Joined new room
         elif 'users' in message[1]:
             for user in message[2].split(',')[1:]:
-                room.addUser(User(user[1:], user[0], self.isOwner(user[1:])))
+                room.addUser(User(user[1:], user[0], self.isOwner(user)))
             # If PS doesn't tell us we joined, this still give us our room rank
             room.rank = message[2][message[2].index(self.name) - 1]
 
@@ -141,7 +140,7 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(message[2][1:]):
                 room.rank = message[2][0]
             oldName = self.toId(message[3])
-            room.renamedUser(oldName, User(message[2][1:], message[2][0]), self.isOwner(self.toId(message[2])))
+            room.renamedUser(oldName, User(message[2][1:], message[2][0]), self.isOwner(message[2]))
 
 
         # Chat messages
@@ -184,7 +183,7 @@ class PSBot(PokemonShowdownBot):
                 room.game.logSession(room.title, user.rank + user.name, message[4])
 
         elif 'pm' in message[1].lower():
-            user = User(message[2][1:], message[2][0], self.isOwner(self.toId(message[2])))
+            user = User(message[2][1:], message[2][0], self.isOwner(message[2]))
             if self.userIsSelf(user.id): return
 
             if message[4].startswith('/invite'):
