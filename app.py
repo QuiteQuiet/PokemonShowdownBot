@@ -140,7 +140,7 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(message[2][1:]):
                 room.rank = message[2][0]
             oldName = self.toId(message[3])
-            room.renamedUser(oldName, User(message[2][1:], message[2][0]), self.isOwner(message[2]))
+            room.renamedUser(oldName, User(message[2][1:], message[2][0], self.isOwner(message[2])))
 
 
         # Chat messages
