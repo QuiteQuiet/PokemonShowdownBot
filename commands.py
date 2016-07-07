@@ -35,7 +35,7 @@ from plugins import PluginCommands, IgnoreEscaping, GameCommands, IgnoreBroadcas
 ExternalCommands = RoomCommands.copy()
 ExternalCommands.update(PluginCommands)
 
-usageLink = r'http://www.smogon.com/stats/2016-05/'
+usageLink = r'http://www.smogon.com/stats/2016-06/'
 CanPmReplyCommands = ['usage', 'help']
 IgnoreBroadcastPermission.append('tour')
 
