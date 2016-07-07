@@ -214,15 +214,12 @@ class PSBot(PokemonShowdownBot):
         elif 'tournament' == message[1]:
             if room.loading: return
             if 'create' in message[2]:
-                if not room.tour:
-                    room.createTour(self.ws, message[3])
+                room.createTour(self.ws, message[3])
                 # Tour was created, join it if in supported formats
-                if not self.details['joinTours']: return
-                if room.tour and room.tour.format in supportedFormats:
+                if self.details['joinTours'] and room.tour.format in supportedFormats:
                     room.tour.joinTour()
             elif 'end' == message[2]:
-                if not room.tour: return
-                winner, tier = room.tour.getWinner(message[3])
+                winner, tier = room.getTourWinner(message[3])
                 if self.name in winner:
                     self.say(room.title, 'I won the {form} tournament :o'.format(form = tier))
                 else:
@@ -231,8 +228,9 @@ class PSBot(PokemonShowdownBot):
             elif 'forceend' in message[2]:
                 room.endTour()
             else:
-                if room.tour:
-                    room.tour.onUpdate(message[2:])
+                # This is for general tournament updates
+                if not room.tour: return
+                room.tour.onUpdate(message[2:])
 
 
 psb = PSBot()

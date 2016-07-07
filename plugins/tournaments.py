@@ -15,9 +15,6 @@ class Tournament:
         self.sendTourCmd('join')
     def leaveTour(self):
         self.sendTourCmd('leave')
-    def getWinner(self, msg):
-        things = json.loads(msg)
-        return things['results'][0], things['format']
 
     def sendChallenge(self, opponent):
         self.sendTourCmd('challenge {opp}'.format(opp = opponent))

@@ -1,6 +1,7 @@
 # Each PS room joined creates an object here.
 # Objects control settings on a room-per-room basis, meaning every room can
 # be treated differently.
+import json
 from plugins.tournaments import Tournament
 
 class Room:
@@ -45,6 +46,9 @@ class Room:
         return True
     def createTour(self, ws, form):
         self.tour = Tournament(ws, self.title, form)
+    def getTourWinner(self, msg):
+        things = json.loads(msg)
+        return things['results'][0], things['format']
     def endTour(self):
         self.tour = None
 
