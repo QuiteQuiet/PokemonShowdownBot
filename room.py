@@ -3,6 +3,7 @@
 # be treated differently.
 import json
 from plugins.tournaments import Tournament
+import robot as r
 
 class Room:
     def __init__(self, room, data = None):
@@ -54,38 +55,42 @@ class Room:
 
 # Commands
 def allowgames(bot, cmd, room, msg, user):
-    if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
+    reply = ReplyObject()
+    if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
     msg = bot.removeSpaces(msg)
     things = msg.split(',')
-    if not len(things) == 2: return 'Too few/many parameters. Command is ~allowgames [room],True/False', False
-    if things[0] not in bot.rooms: return 'Cannot allow chatgames without being in the room', True
+    if not len(things) == 2: return reply.response('Too few/many parameters. Command is ~allowgames [room],True/False')
+    if things[0] not in bot.rooms: return reply.response('Cannot allow chatgames without being in the room')
     if things[1] in ['true','yes','y','True']:
-        if bot.getRoom(things[0]).allowGames: return 'Chatgames are already allowed in {room}'.format(room = things[0]), True
+        if bot.getRoom(things[0]).allowGames: return reply.response('Chatgames are already allowed in {room}'.format(room = things[0]))
         bot.getRoom(things[0]).allowGames = True
-        return 'Chatgames are now allowed in {room}'.format(room = things[0]), True
+        return reply.response('Chatgames are now allowed in {room}'.format(room = things[0]))
 
     elif things[1] in ['false', 'no', 'n',' False']:
         bot.getRoom(things[0]).allowGames = False
-        return 'Chatgames are no longer allowed in {room}'.format(room = things[0]), True
-    return '{param} is not a supported parameter'.format(param = things[1]), True
+        return reply.response('Chatgames are no longer allowed in {room}'.format(room = things[0]))
+    return reply.response('{param} is not a supported parameter'.format(param = things[1]))
 
 def tour(bot, cmd, room, msg, user):
-    if room.title == 'pm': return "You can't use this command in a pm.", False
-    if not room.isWhitelisted(user): return 'You are not allowed to use this command. (Requires whitelisting by a Room Owner)', True
-    if not bot.canStartTour(room): return "I don't have the rank required to start a tour :(", True
-    return '/tour {rest}\n/modnote From {user}'.format(rest = msg, user = user.name), True
+    reply = r.ReplyObject('', True, True, True)
+    if room.title == 'pm': return reply.response("You can't use this command in a pm.")
+    if not room.isWhitelisted(user): return reply.response('You are not allowed to use this command. (Requires whitelisting by a Room Owner)')
+    if not bot.canStartTour(room): return reply.response("I don't have the rank required to start a tour :(")
+    return reply.response('/tour {rest}\n/modnote From {user}'.format(rest = msg, user = user.name))
 def tourwl(bot, cmd, room, msg, user):
-    if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
+    reply = r.ReplyObject('', True)
+    if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
     target = bot.toId(msg)
-    if not room.addToWhitelist(target): return 'This user is already whitelisted in that room.', False
+    if not room.addToWhitelist(target): return reply.response('This user is already whitelisted in that room.')
     bot.saveDetails()
-    return '{name} added to the whitelist in this room.'.format(name = msg), True
+    return reply.response('{name} added to the whitelist in this room.'.format(name = msg))
 def untourwl(bot, cmd, room, msg, user):
-    if not user.hasRank('#'): return 'You do not have permission to change this. (Requires #)', False
+    reply = r.ReplyObject('', True)
+    if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
     target = bot.toId(msg)
-    if not room.delFromWhitelist(target): return 'This user is not whitelisted in that room.', False
+    if not room.delFromWhitelist(target): return reply.response('This user is not whitelisted in that room.')
     bot.saveDetails()
-    return '{name} removed from the whitelist in this room.'.format(name = msg), True
+    return reply.response('{name} removed from the whitelist in this room.'.format(name = msg))
 
 RoomCommands = {
     'allowgames'    : allowgames,

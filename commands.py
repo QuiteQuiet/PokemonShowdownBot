@@ -28,16 +28,15 @@ from data.pokedex import Pokedex
 from data.types import Types
 from data.replies import Lines
 
+from robot import ReplyObject
 from user import User
 from room import RoomCommands
-from plugins import PluginCommands, IgnoreEscaping, GameCommands, IgnoreBroadcastPermission
+from plugins import PluginCommands
 
 ExternalCommands = RoomCommands.copy()
 ExternalCommands.update(PluginCommands)
 
 usageLink = r'http://www.smogon.com/stats/2016-06/'
-CanPmReplyCommands = ['usage', 'help']
-IgnoreBroadcastPermission.append('tour')
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 
@@ -45,47 +44,47 @@ def Command(self, cmd, room, msg, user):
     ''' Returns the reply if the command exists, and False if it doesn't '''
 
     if cmd in ['source', 'git']:
-        return 'Source code can be found at: {url}'.format(url = URL()), False
+        return ReplyObject('Source code can be found at: {url}'.format(url = URL()))
     if cmd == 'credits':
-        return 'Credits can be found: {url}'.format(url = URL()), True
+        return ReplyObject('Credits can be found: {url}'.format(url = URL()), True)
     if cmd == 'owner':
-        return 'Owned by: {owner}'.format(owner = self.owner), True
+        return ReplyObject('Owned by: {owner}'.format(owner = self.owner), True)
     if cmd in ['commands', 'help']:
-        return 'Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True
+        return ReplyObject('Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True, False, False, False, True)
     if cmd == 'explain':
-        return "BB-8 is the name of a robot in the seventh Star Wars movie :)", True
+        return ReplyObject("BB-8 is the name of a robot in the seventh Star Wars movie :)", True)
     if cmd == 'leave':
         msg = self.removeSpaces(msg)
         if not msg: msg = room.title
         if self.leaveRoom(msg):
-            return 'Leaving room {r} succeeded'.format(r = msg), False
-        return 'Could not leave room: {r}'.format(r = msg), False
+            return ReplyObject('Leaving room {r} succeeded'.format(r = msg))
+        return ReplyObject('Could not leave room: {r}'.format(r = msg))
     if cmd == 'get':
         if user.isOwner():
-            return str(eval(msg)), True
-        return 'You do not have permisson to use this command. (Only for owner)', False
+            return ReplyObject(str(eval(msg)), True)
+        return ReplyObject('You do not have permisson to use this command. (Only for owner)')
     # Save current self.details to details.yaml (moves rooms to joinRooms)
     # Please note that this command will remove every comment from details.yaml, if those exist.
     if cmd == 'savedetails':
         if user.hasRank('#'):
             self.saveDetails()
-            return 'Details saved.', True
-        return "You don't have permission to save settings. (Requires #)", False
+            return ReplyObject('Details saved.', True)
+        return ReplyObject("You don't have permission to save settings. (Requires #)")
 
     # Permissions
     if cmd == 'broadcast':
-        return 'Rank required to broadcast: {rank}'.format(rank = self.details['broadcastrank']), True
+        return ReplyObject('Rank required to broadcast: {rank}'.format(rank = self.details['broadcastrank']), True)
     if cmd == 'setbroadcast':
         msg = self.removeSpaces(msg)
         if msg in User.Groups or msg in ['off', 'no', 'false']:
             if user.hasRank('#'):
                 if msg in ['off', 'no', 'false']: msg = ' '
                 if self.details['broadcastrank'] == msg:
-                    return 'Broadcast rank is already {rank}'.format(rank = msg), True
+                    return ReplyObject('Broadcast rank is already {rank}'.format(rank = msg), True)
                 self.details['broadcastrank'] = msg
-                return 'Broadcast rank set to {rank}. (This is not saved on reboot)'.format(rank = msg), True
-            return 'You are not allowed to set broadcast rank. (Requires #)', False
-        return '{rank} is not a valid rank'.format(rank = msg), False
+                return ReplyObject('Broadcast rank set to {rank}. (This is not saved on reboot)'.format(rank = msg), True)
+            return ReplyObject('You are not allowed to set broadcast rank. (Requires #)')
+        return ReplyObject('{rank} is not a valid rank'.format(rank = msg))
 
     # External commands from plugins (and also room.py)
     if cmd in ExternalCommands.keys():
@@ -95,25 +94,25 @@ def Command(self, cmd, room, msg, user):
     if cmd in Links:
         msg = msg.lower()
         if msg in Links[cmd]:
-            return Links[cmd][msg], True
-        return '{tier} is not a supported format for {command}'.format(tier = msg, command = cmd), True
+            return ReplyObject(Links[cmd][msg], True)
+        return ReplyObject('{tier} is not a supported format for {command}'.format(tier = msg, command = cmd), True)
     if cmd == 'usage':
-        return usageLink, True
+        return ReplyObject(usageLink, True, False, False, False, True)
     # Fun stuff
     if cmd == 'pick':
         options = msg.split(',')
-        return options[randint(0,(len(options)-1))], True
+        return ReplyObject(options[randint(0,(len(options)-1))], True)
     if cmd == 'ask':
-        return Lines[randint(0, len(Lines)-1)], True
+        return ReplyObject(Lines[randint(0, len(Lines)-1)], True)
 
     if cmd == 'squid':
-        return '\u304f\u30b3\u003a\u5f61', True
+        return ReplyObject('\u304f\u30b3\u003a\u5f61', True)
     if cmd in YoutubeLinks:
-        return YoutubeLinks[cmd], True
+        return ReplyObject(YoutubeLinks[cmd], True)
     if cmd in tiers:
         pick = list(tiers[cmd])[randint(0,len(tiers[cmd])-1)]
         pNoForm = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', pick).lower()
-        return '{poke} was chosen: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(poke = pick, mon = pNoForm), True
+        return ReplyObject('{poke} was chosen: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(poke = pick, mon = pNoForm), True)
     if cmd in [t.replace('poke','team') for t in tiers]:
         team = set()
         hasMega = False
@@ -139,9 +138,9 @@ def Command(self, cmd, room, msg, user):
                 while len(team) < 6:
                    team |= {list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]}
                 break
-        return ' / '.join(list(team)), True
+        return ReplyObject(' / '.join(list(team)), True)
     if cmd in formats:
-        return 'Format: http://www.smogon.com/dex/xy/formats/{tier}/'.format(tier = cmd), True
+        return ReplyObject('Format: http://www.smogon.com/dex/xy/formats/{tier}/'.format(tier = cmd), True)
     # This command is here because it's an awful condition, so try it last :/
     if [p for p in Pokedex if re.sub('-(?:mega(?:-(x|y))?|primal|xl|l)','', cmd, flags=re.I) in p.replace(' ','').lower()]:
         cmd = re.sub('-(?:mega(?:-(x|y))?|primal)','', cmd)
@@ -155,13 +154,13 @@ def Command(self, cmd, room, msg, user):
                        'mr.mime':'mr_mime',
                        'mimejr.':'mime_jr'}
         if cmd.lower() not in (self.removeSpaces(p).lower() for p in Pokedex):
-            return '{cmd} is not a valid command'.format(cmd = cmd),True
+            return ReplyObject('{cmd} is not a valid command'.format(cmd = cmd), True)
         if cmd in substitutes:
             cmd = substitutes[cmd]
-        return 'Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True
+        return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/xy/pokemon/{mon}/">{mon} analysis</a>'.format(mon = cmd), True, True)
 
 
-    return '{command} is not a valid command.'.format(command = cmd), False
+    return ReplyObject('{command} is not a valid command.'.format(command = cmd))
 
 def acceptableWeakness(team):
     if not team: return False

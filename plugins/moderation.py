@@ -1,3 +1,5 @@
+import robot as r
+
 import re
 from collections import deque
 from datetime import datetime, timedelta
@@ -256,34 +258,37 @@ def shouldAct(msg, user, room, unixTime):
 
 # Commands
 def moderate(bot, cmd, room, msg, user):
-    if not msg: return 'No parameters given. Command is ~moderate [room],True/False', False
-    if not user.hasRank('#'): return 'You do not have permission to set this. (Requires #)', False
+    reply = r.ReplyObject('', True)
+    if not msg: return reply.response('No parameters given. Command is ~moderate [room],True/False')
+    if not user.hasRank('#'): return reply.response('You do not have permission to set this. (Requires #)')
     things = bot.removeSpaces(msg).split(',')
     if not len(things) == 2:
-        return 'Too few/many parameters given. Command is ~moderate [room],True/False', False
+        return reply.response('Too few/many parameters given. Command is ~moderate [room],True/False')
     if things[0] in bot.rooms:
         if things[1] in ['True', 'true']:
             bot.getRoom(things[0]).moderate = True
-            return '{room} will now be moderated'.format(room = things[0]), False
+            return reply.response('{room} will now be moderated'.format(room = things[0]))
         elif things[1] in ['False', 'false']:
             bot.getRoom(things[0]).moderate = False
-            return '{room} will not be moderated anymore'.format(room = things[0]), False
-    return 'You cannot set moderation in a room without me in it.', False
+            return reply.response('{room} will not be moderated anymore'.format(room = things[0]))
+    return reply.response('You cannot set moderation in a room without me in it.')
 
 def banthing(bot, cmd, room, msg, user):
-    if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
+    reply = r.ReplyObject('', True, True)
+    if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
     error = addBan(cmd[3:], room.title, msg)
     if not error:
         modnote = '/modnote {user} added {thing} to the blacklist'.format(thing = msg, user = user.name)
         ban = ''
         if msg in room.userlist:
             ban = '\n/roomban {user}, Was added to blacklist'.format(user = msg)
-        return 'Added {thing} to the banlist\n{note}{act}'.format(thing = msg, user = user.name, note = modnote, act = ban), True
-    return error, True
+        return reply.response('Added {thing} to the banlist\n{note}{act}'.format(thing = msg, user = user.name, note = modnote, act = ban))
+    return reply.response(error)
 
 def unbanthing(bot, cmd, room, msg, user):
-    if not user.hasRank('#'): return 'You do not have permission to do this. (Requires #)', False
+    reply = r.ReplyObject('', True, True)
+    if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
     error = removeBan(cmd[5:], room.title, msg)
     if not error:
-        return 'Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} to the blacklist'.format(thing = msg, room = room.title, user = user.name), True
-    return error, True
+        return reply.response('Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} to the blacklist'.format(thing = msg, room = room.title, user = user.name))
+    return reply.response(error)

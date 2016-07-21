@@ -22,7 +22,3 @@ PluginCommands = {
     'anagram'       : anagram.start,
     'a'             : anagram.answer
 }
-
-GameCommands = ['anagram', 'a', 'trivia', 'ta']
-IgnoreBroadcastPermission = ['anagram', 'a', 'trivia', 'ta']
-IgnoreEscaping = ['tour', 'oldgentour']

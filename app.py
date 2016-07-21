@@ -25,7 +25,7 @@ import json
 import time
 
 from robot import PokemonShowdownBot, Room, User
-from commands import Command, GameCommands, IgnoreBroadcastPermission, CanPmReplyCommands, IgnoreEscaping
+from commands import Command
 from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
 from plugins.messages import MessageDatabase
@@ -161,23 +161,18 @@ class PSBot(PokemonShowdownBot):
                 command = self.extractCommand(message[4])
                 self.log('Command', message[4], user.id)
 
-                response, samePlace = '', True
-                if not room.allowGames and command in GameCommands:
-                    response = 'This room does not support chatgames.'
+                res = self.do(self, command, room, message[4][len(command) + 1:].lstrip(), user)
+                if res.text == 'NoAnswer': return
+
+                if self.evalPermission(user) or res.ignoreBroadcastPermission:
+                    if not res.ignoreEscaping:
+                        res.text = self.escapeText(res.text)
+                    self.reply(room.title, user, res.text, res.samePlace)
+
+                elif res.canPmReply:
+                    self.sendPm(user.id, self.escapeText(res.text))
                 else:
-                    response, samePlace = self.do(self, command, room, message[4][len(command) + 1:].lstrip(), user)
-
-                if response == 'NoAnswer': return
-
-                if self.evalPermission(user) or command in IgnoreBroadcastPermission:
-                    if command not in IgnoreEscaping:
-                        response = self.escapeText(response)
-                    self.reply(room.title, user, response, samePlace)
-
-                elif command in CanPmReplyCommands:
-                    self.sendPm(user.id, self.escapeText(response))
-                else:
-                    self.sendPm(user.id, 'Please pm the commands for a response.')
+                    self.sendPm(user.id, 'Please pm the command for a response.')
 
             if type(room.game) == Workshop:
                 room.game.logSession(room.title, user.rank + user.name, message[4])
@@ -199,16 +194,9 @@ class PSBot(PokemonShowdownBot):
                 self.log('Command', message[4], user.id)
                 params = message[4][len(command) + len(self.commandchar):].lstrip()
 
-                response = ''
-                if command in GameCommands:
-                    if params.startswith('score'):
-                        response, where = self.do(self, command, Room('pm'), params, user)
-                    else:
-                        response = "Don't try to play games in pm please"
-                if not response:
-                    response, where = self.do(self, command, Room('pm'), params, user)
+                response = self.do(self, command, Room('pm'), params, user)
 
-                self.sendPm(user.id, response)
+                self.sendPm(user.id, response.text)
 
         # Tournaments
         elif 'tournament' == message[1]:

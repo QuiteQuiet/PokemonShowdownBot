@@ -199,3 +199,16 @@ class PokemonShowdownBot:
             self.login(message[3], message[2])
         elif parts[1] == 'updateuser':
             self.updateUser(parts[2], parts[3])
+
+# Reply class for commands
+class ReplyObject:
+    def __init__(self, res = '', reply = False, escape = False, broadcast = False, game = False, pmreply = False):
+        self.text = res
+        self.samePlace = reply
+        self.ignoreEscaping = escape
+        self.ignoreBroadcastPermission = broadcast
+        self.gameCommand = game
+        self.canPmReply = pmreply
+    def response(self, text):
+        self.text = text
+        return self

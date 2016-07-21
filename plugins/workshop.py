@@ -1,5 +1,6 @@
 import requests
 
+import robot as r
 from plugins.games import GenericGame
 
 class Workshop(GenericGame):
@@ -47,28 +48,29 @@ class Workshop(GenericGame):
         return self.host == user.id or user.hasRank('@')
 
 def handler(bot, cmd, room, msg, user):
+    reply = r.ReplyObject('', True)
     if msg.startswith('new'):
-        if not user.hasRank('@'): return "You don't have permission to start workshops (Requires @)", False
-        if room.game: return 'A room game is already in progress', True
+        if not user.hasRank('@'): return reply.response("You don't have permission to start workshops (Requires @)")
+        if room.game: return reply.response('A room game is already in progress')
         room.game = Workshop(bot.toId(msg[len('new '):]) if msg[len('new '):] else user.id)
-        return 'A new workshop session was created', True
+        return reply.response('A new workshop session was created')
 
-    if not (room.game and room.game.isThisGame(Workshop)): return 'No Workshop in progress right now', True
+    if not (room.game and room.game.isThisGame(Workshop)): return reply.response('No Workshop in progress right now')
     workshop = room.game
     if msg.startswith('add'):
-        if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can add Pokemon', True
-        return workshop.addPokemon(msg[4:].strip()), True
+        if not workshop.hasHostingRights(user): return reply.response('Only the workshop host or a Room Moderator can add Pokemon')
+        return reply.response(workshop.addPokemon(msg[4:].strip()))
     elif msg.startswith('remove'):
-        if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can remove Pokemon', True
-        return workshop.removePokemon(msg[7:].strip()), True
+        if not workshop.hasHostingRights(user): return reply.response('Only the workshop host or a Room Moderator can remove Pokemon')
+        return reply.response(workshop.removePokemon(msg[7:].strip()))
     elif msg == 'clear':
-        if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can clear the team', True
-        return workshop.clearTeam(), True
+        if not workshop.hasHostingRights(user): return reply.response('Only the workshop host or a Room Moderator can clear the team')
+        return reply.response(workshop.clearTeam())
     elif msg == 'team':
-        return workshop.getTeam(), True
+        return reply.response(workshop.getTeam())
     elif msg == 'end':
-        if not workshop.hasHostingRights(user): return 'Only the workshop host or a Room Moderator can end the workshop', True
+        if not workshop.hasHostingRights(user): return reply.response('Only the workshop host or a Room Moderator can end the workshop')
         bot.sendPm(user.id, workshop.pasteLog(room.title, bot.details['apikey']))
         room.game = None
-        return 'Workshop session ended', True
-    return 'Unrecognized command: {cmd}'.format(cmd = msg if msg else 'nothing'), True
+        return reply.response('Workshop session ended')
+    return reply.response('Unrecognized command: {cmd}'.format(cmd = msg if msg else 'nothing'))
