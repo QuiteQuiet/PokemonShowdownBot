@@ -157,7 +157,7 @@ def Command(self, cmd, room, msg, user):
             return ReplyObject('{cmd} is not a valid command'.format(cmd = cmd), True)
         if cmd in substitutes:
             cmd = substitutes[cmd]
-        return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/xy/pokemon/{mon}/">{mon} analysis</a>'.format(mon = cmd), True, True)
+        return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/xy/pokemon/{mon}/">{capital} analysis</a>'.format(mon = cmd, capital = cmd.title()), True, True)
 
 
     return ReplyObject('{command} is not a valid command.'.format(command = cmd))
