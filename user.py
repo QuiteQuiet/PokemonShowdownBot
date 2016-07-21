@@ -1,6 +1,6 @@
 import re
 class User:
-    Groups = {' ':0,'+':1,'★':1,'%':2,'@':3,'&':4,'#':5,'~':6}
+    Groups = {' ':0,'+':1,'★':1,'%':2,'*':3,'@':3,'&':4,'#':5,'~':6}
     def __init__(self, name, rank, owner = False):
         self.name = name
         self.id = re.sub(r'[^a-zA-z0-9]', '', name).lower()
