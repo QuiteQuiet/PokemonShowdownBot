@@ -15,7 +15,7 @@
 #     a format-removed id of the speaker with only a-z lowercase and 0-9 present.
 #
 #     user.rank contain the auth level of the user, as a single character string of
-#     either ' ', +, %, @, &, #, or ~. To compare groups against each other self.Groups have
+#     either ' ', +, %, @, *, &, #, or ~. To compare groups against each other self.Groups have
 #     the information required when used like: User.Groups[user.rank] for a numeric value.
 #
 #     Lastly, user.name is the unaltered name as seen in the chatrooms, and can be used

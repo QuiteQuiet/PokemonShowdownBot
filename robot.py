@@ -161,20 +161,20 @@ class PokemonShowdownBot:
 
     # Rank checks
     def canPunish(self, room):
-        return User.Groups[room.rank] >= User.Groups['%']
+        return User.compareRanks(room.rank, '%')
     def canBan(self, room):
-        return User.Groups[room.rank] >= User.Groups['@']
+        return User.compareRanks(room.rank, '@')
     def canStartTour(self, room):
-        return User.Groups[room.rank] >= User.Groups['@']
+        return User.compareRanks(room.rank, '@')
 
     # Generic permissions test for users
     def isOwner(self, name):
         return self.owner == self.toId(name)
     def evalPermission(self, user):
-        return User.Groups[user.rank] >= User.Groups[self.details['broadcastrank']] or self.isOwner(user.id)
+        return User.compareRanks(user.rank, self.details['broadcastrank']) or self.isOwner(user.id)
 
     def userHasPermission(self, user, rank):
-        return self.isOwner(user.id) or User.Groups[user.rank] >= User.Groups[rank]
+        return self.isOwner(user.id) or User.compareRanks(user.rank, rank)
 
     def saveDetails(self):
         details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
