@@ -55,7 +55,7 @@ class Room:
 
 # Commands
 def allowgames(bot, cmd, room, msg, user):
-    reply = ReplyObject()
+    reply = r.ReplyObject()
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
     msg = bot.removeSpaces(msg)
     things = msg.split(',')
