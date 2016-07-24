@@ -91,7 +91,7 @@ def commands(bot, cmd, room, msg, user):
     if room.title == 'pm': return reply.response("Don't try to play games in pm please")
     if cmd == 'trivia':
         if not msg: return reply.response('{msg} is not an valid parameter for trivia')
-        if room.game: return reply.response('There is already a game running in this room')
+        if room.activity: return reply.response('There is already a game running in this room')
 
         params = bot.removeSpaces(msg).split(',')
         if params[0] in ['start', 'begin']:
@@ -100,22 +100,22 @@ def commands(bot, cmd, room, msg, user):
             if len(params) > 1:
                 kind = params[1]
             if user.hasRank('@'):
-                room.game = Trivia(bot.ws, room.title, kind)
+                room.activity = Trivia(bot.ws, room.title, kind)
                 return reply.response('A new trivia session has started.')
             return reply.response('You do not have permission to set up a trivia session')
         elif params[0] in ['stop', 'end']:
             # The trivia class will solve everything after doing this.
-            room.game.endSession = True
-            room.game = None
+            room.activity.endSession = True
+            room.activity = None
             return reply.response('The trivia session has been ended')
 
     if cmd == 'ta':
-        if not (room.game and room.game.isThisGame(Trivia)): return reply.response('There is no ongoing trivia session.')
+        if not (room.activity and room.activity.isThisGame(Trivia)): return reply.response('There is no ongoing trivia session.')
         # Don't give information if wrong or right here, let Trivia deal with that
-        if room.game.tryAnswer(msg):
-            if not room.game.solver:
-                room.game.wasSolved(user['unform'])
+        if room.activity.tryAnswer(msg):
+            if not room.activity.solver:
+                room.activity.wasSolved(user['unform'])
             else:
-                room.game.multiple = True
+                room.activity.multiple = True
         return reply.response('NoAnswer')
     return reply.response('')

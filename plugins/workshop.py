@@ -51,12 +51,12 @@ def handler(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', True)
     if msg.startswith('new'):
         if not user.hasRank('@'): return reply.response("You don't have permission to start workshops (Requires @)")
-        if room.game: return reply.response('A room game is already in progress')
-        room.game = Workshop(bot.toId(msg[len('new '):]) if msg[len('new '):] else user.id)
+        if room.activity: return reply.response('A room.activity is already in progress')
+        room.activity = Workshop(bot.toId(msg[len('new '):]) if msg[len('new '):] else user.id)
         return reply.response('A new workshop session was created')
 
-    if not (room.game and room.game.isThisGame(Workshop)): return reply.response('No Workshop in progress right now')
-    workshop = room.game
+    if not (room.activity and room.activity.isThisGame(Workshop)): return reply.response('No Workshop in progress right now')
+    workshop = room.activity
     if msg.startswith('add'):
         if not workshop.hasHostingRights(user): return reply.response('Only the workshop host or a Room Moderator can add Pokemon')
         return reply.response(workshop.addPokemon(msg[4:].strip()))
@@ -71,6 +71,6 @@ def handler(bot, cmd, room, msg, user):
     elif msg == 'end':
         if not workshop.hasHostingRights(user): return reply.response('Only the workshop host or a Room Moderator can end the workshop')
         bot.sendPm(user.id, workshop.pasteLog(room.title, bot.details['apikey']))
-        room.game = None
+        room.activity = None
         return reply.response('Workshop session ended')
     return reply.response('Unrecognized command: {cmd}'.format(cmd = msg if msg else 'nothing'))

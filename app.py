@@ -174,8 +174,8 @@ class PSBot(PokemonShowdownBot):
                 else:
                     self.sendPm(user.id, 'Please pm the command for a response.')
 
-            if type(room.game) == Workshop:
-                room.game.logSession(room.title, user.rank + user.name, message[4])
+            if type(room.activity) == Workshop:
+                room.activity.logSession(room.title, user.rank + user.name, message[4])
 
         elif 'pm' in message[1].lower():
             user = User(message[2][1:], message[2][0], self.isOwner(message[2]))

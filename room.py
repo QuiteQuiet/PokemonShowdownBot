@@ -17,7 +17,7 @@ class Room:
         self.moderate = data['moderate']
         self.allowGames = data['allow games']
         self.tour = None
-        self.game = None
+        self.activity = None
         self.tourwhitelist = data['tourwhitelist']
     def doneLoading(self):
         self.loading = False
