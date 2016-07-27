@@ -104,7 +104,8 @@ def Command(self, cmd, room, msg, user):
         return ReplyObject(options[randint(0,(len(options)-1))], True)
     if cmd == 'ask':
         return ReplyObject(Lines[randint(0, len(Lines)-1)], True)
-
+    if cmd == 'seen':
+        return ReplyObject("This is not a command because I value other users' privacy.", True)
     if cmd == 'squid':
         return ReplyObject('\u304f\u30b3\u003a\u5f61', True)
     if cmd in YoutubeLinks:
