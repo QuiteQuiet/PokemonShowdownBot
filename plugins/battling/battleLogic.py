@@ -136,6 +136,7 @@ def getLead(team, opposing):
         options = [poke for poke,score in scores.items() if score == m]
         return team[options[randint(0,len(options)-1)]].teamSlot
     except ValueError:
+        print('WARNING: Failed to pick proper lead, using random.')
         return randint(1,6)
 
 def calcScore(move, mon, opponents):
