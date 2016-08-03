@@ -290,5 +290,5 @@ def unbanthing(bot, cmd, room, msg, user):
     if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
     error = removeBan(cmd[5:], room.title, msg)
     if not error:
-        return reply.response('Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} to the blacklist'.format(thing = msg, room = room.title, user = user.name))
+        return reply.response('Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} from the blacklist'.format(thing = msg, room = room.title, user = user.name))
     return reply.response(error)
