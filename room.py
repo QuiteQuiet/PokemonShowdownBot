@@ -57,19 +57,17 @@ class Room:
 def allowgames(bot, cmd, room, msg, user):
     reply = r.ReplyObject()
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
+    if room.title == 'pm': return reply.response("You can't use this command in a pm.")
     msg = bot.removeSpaces(msg)
-    things = msg.split(',')
-    if not len(things) == 2: return reply.response('Too few/many parameters. Command is ~allowgames [room],True/False')
-    if things[0] not in bot.rooms: return reply.response('Cannot allow chatgames without being in the room')
-    if things[1] in ['true','yes','y','True']:
-        if bot.getRoom(things[0]).allowGames: return reply.response('Chatgames are already allowed in {room}'.format(room = things[0]))
-        bot.getRoom(things[0]).allowGames = True
-        return reply.response('Chatgames are now allowed in {room}'.format(room = things[0]))
+    if msg in ['true','yes','y','True']:
+        if room.allowGames: return reply.response('Chatgames are already allowed in this room.')
+        room.allowGames = True
+        return reply.response('Chatgames are now allowed in this room.')
 
-    elif things[1] in ['false', 'no', 'n',' False']:
-        bot.getRoom(things[0]).allowGames = False
-        return reply.response('Chatgames are no longer allowed in {room}'.format(room = things[0]))
-    return reply.response('{param} is not a supported parameter'.format(param = things[1]))
+    elif msg in ['false', 'no', 'n',' False']:
+        room.allowGames = False
+        return reply.response('Chatgames are no longer allowed in this room.')
+    return reply.response('{param} is not a supported parameter'.format(param = msg))
 
 def tour(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', True, True, True)
