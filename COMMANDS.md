@@ -60,7 +60,7 @@ and as such require global or roomauth of some degree.
 
 - `broadcast` : Show the current required rank to broadcast command returns.
 - `setbroadcast` : Set the level required to broadcast. This is a global setting and not tied to single rooms.
-- `allowgames` [room], True/False : Enable or disable the chatgames in [room]
+- `allowgames` True/False : Enable or disable the chatgames in the current room.
 - `[un]banuser [user]` : Room[un]bans [user] from any room the bot moderate.
 - `[un]banphrase [phrase]` : [un]Bans [phrase] in every room the bot moderate.
 
