@@ -180,6 +180,7 @@ class PokemonShowdownBot:
         details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
         details['joinRooms'] = []
         for e in self.rooms:
+            if e.startswith('groupchat'): continue
             room = self.getRoom(e)
             details['joinRooms'].append({e:{'moderate': room.moderate,
                                             'allow games':room.allowGames,
