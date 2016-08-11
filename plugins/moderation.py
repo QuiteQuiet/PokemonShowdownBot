@@ -135,18 +135,13 @@ def isSpam(msg, user, room, now):
         spamTracker[room] = {}
     if user.id not in spamTracker[room]:
         spamTracker[room][user.id] = deque('', 50)
-        # The first time this user have talked, so there's no way it's spam now
-        return False
     spamTracker[room][user.id].append(now)
     times = spamTracker[room][user.id]
     timesLen = len(times)
     if timesLen < MESSAGES_FOR_SPAM():
          return False
-    timeDiff = now - times[timesLen - MESSAGES_FOR_SPAM()]
-    if (
-      timeDiff < SPAM_INTERVAL() and
-      timeDiff > MIN_MESSAGE_TIME()
-    ):
+    timeDiff = now - times[timesLen - (MESSAGES_FOR_SPAM() + 1)]
+    if timeDiff < SPAM_INTERVAL() and timeDiff > MIN_MESSAGE_TIME():
     # For it to be spam, the following conditions has to be met:
     # 1: At least 5 messages in the last 6 seconds
     # 2: At least 300ms between every message
