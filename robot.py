@@ -38,8 +38,7 @@ class PokemonShowdownBot:
             self.splitMessage = onMessage if onMessage else self.onMessage
             self.url = url
             #websocket.enableTrace(True)
-            self.openWebsocket()
-            self.addBattleHandler()
+            self.openConnection()
 
     def onError(self, ws, error):
         print('Websocket Error:', error)
@@ -49,15 +48,17 @@ class PokemonShowdownBot:
     def onOpen(self, message):
         print('Websocket opened')
 
-    def openWebsocket(self):
+    def openConnection(self):
         self.ws = websocket.WebSocketApp(self.url,
                                          on_message = self.splitMessage,
                                          on_error = self.onError,
                                          on_close = self.onClose)
         self.ws.on_open = self.onOpen
-
-    def addBattleHandler(self):
         self.bh = BattleHandler(self.ws, self.name)
+
+    def closeConnection(self):
+        self.ws.close()
+        self.ws = None
 
     def intro(self):
         print('+~~~~~~~~~~~~~~~~~~~~~~~~+')

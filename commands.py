@@ -61,7 +61,13 @@ def Command(self, cmd, room, msg, user):
         return ReplyObject('Could not leave room: {r}'.format(r = msg))
     if cmd == 'get':
         if user.isOwner():
-            return ReplyObject(str(eval(msg)), True)
+            res = str(eval(msg))
+            return ReplyObject(res if not res == None else '', True)
+        return ReplyObject('You do not have permisson to use this command. (Only for owner)')
+    if cmd == 'forcerestart':
+        if user.isOwner():
+            # Figure out how to do this
+            self.closeConnection()
         return ReplyObject('You do not have permisson to use this command. (Only for owner)')
     # Save current self.details to details.yaml (moves rooms to joinRooms)
     # Please note that this command will remove every comment from details.yaml, if those exist.
