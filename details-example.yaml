@@ -28,6 +28,3 @@ joinTours: False
 
 # OPTIONAL: For workshops, set this to an api key given from Pastebin to automatically paste the workshop log
 apikey: '0'
-
-# Do nothing with the one below, itshould be empty
-rooms: {}

@@ -71,6 +71,12 @@ def Command(self, cmd, room, msg, user):
             return ReplyObject('Details saved.', True)
         return ReplyObject("You don't have permission to save settings. (Requires #)")
 
+    if cmd == 'newautojoin':
+        if user.hasRank('#'):
+            # Join the room before adding it to list of autojoined rooms
+            self.joinRoom(msg)
+            self.saveDetails(True)
+        return ReplyObject("You don't have permission to save settings. (Requires #)")
     # Permissions
     if cmd == 'broadcast':
         return ReplyObject('Rank required to broadcast: {rank}'.format(rank = self.details['broadcastrank']), True)
@@ -101,9 +107,9 @@ def Command(self, cmd, room, msg, user):
     # Fun stuff
     if cmd == 'pick':
         options = msg.split(',')
-        return ReplyObject(options[randint(0,(len(options)-1))], True)
+        return ReplyObject(options[randint(0,(len(options) - 1))], True)
     if cmd == 'ask':
-        return ReplyObject(Lines[randint(0, len(Lines)-1)], True)
+        return ReplyObject(Lines[randint(0, len(Lines) - 1)], True)
     if cmd == 'seen':
         return ReplyObject("This is not a command because I value other users' privacy.", True)
     if cmd == 'squid':
@@ -119,7 +125,7 @@ def Command(self, cmd, room, msg, user):
         hasMega = False
         attempts = 0
         while len(team) < 6 or not acceptableWeakness(team):
-            poke = list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]
+            poke = list(tiers[cmd.replace('team','poke')])[randint(0, len(tiers[cmd.replace('team','poke')]) - 1)]
             # Test if share dex number with anything in the team
             if [p for p in team if Pokedex[poke]['dex'] == Pokedex[p]['dex']]:
                 continue
@@ -137,7 +143,7 @@ def Command(self, cmd, room, msg, user):
                 # Prevents locking up if a pokemon turns the team to an impossible genration
                 # Since the team is probably bad anyway, just finish it and exit
                 while len(team) < 6:
-                   team |= {list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')])-1)]}
+                   team |= {list(tiers[cmd.replace('team','poke')])[randint(0,len(tiers[cmd.replace('team','poke')]) - 1)]}
                 break
         return ReplyObject(' / '.join(list(team)), True)
     if cmd in formats:

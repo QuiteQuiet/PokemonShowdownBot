@@ -105,6 +105,7 @@ class PokemonShowdownBot:
             self.joinRoom(name, rooms[name])
 
     def joinRoom(self, room, data = None):
+        if room in self.rooms: return
         self.send('|/join ' + room)
         self.rooms[room] = Room(room, data)
     def leaveRoom(self, room):
@@ -116,10 +117,10 @@ class PokemonShowdownBot:
         self.rooms.pop(room, None)
         return True
     def getRoom(self, roomName):
-        alias = {'nu':'neverused', 'tsb':'thestable'}
+        alias = {'nu':'neverused'}
         if roomName in alias:
             roomName = alias[roomName]
-        if roomName not in self.rooms: return Room('Empty')
+        if roomName not in self.rooms: return Room('empty')
         return self.rooms[roomName]
 
     def say(self, room, msg):
@@ -176,17 +177,17 @@ class PokemonShowdownBot:
     def userHasPermission(self, user, rank):
         return self.isOwner(user.id) or User.compareRanks(user.rank, rank)
 
-    def saveDetails(self):
+    def saveDetails(self, newAutojoin = False):
         details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
         details['joinRooms'] = []
         for e in self.rooms:
             if e.startswith('groupchat'): continue
+            if not newAutojoin and e not in details['joinRooms']: continue
             room = self.getRoom(e)
             details['joinRooms'].append({e:{'moderate': room.moderate,
                                             'allow games':room.allowGames,
                                             'tourwhitelist': room.tourwhitelist}
                                         })
-        details['rooms'] = {}
         with open('details.yaml', 'w') as yf:
             yaml.dump(details, yf, default_flow_style = False)
 
