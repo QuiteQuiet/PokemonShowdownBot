@@ -150,6 +150,7 @@ class PSBot(PokemonShowdownBot):
             if not user: return
             if self.userIsSelf(user.id): return
 
+            room.logChat(user, message[2])
             if room.moderate and self.canPunish(room):
                 anything = moderation.shouldAct(message[4], user, room, message[2])
                 if anything:

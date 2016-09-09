@@ -2,6 +2,7 @@
 # Objects control settings on a room-per-room basis, meaning every room can
 # be treated differently.
 import json
+from collections import deque
 from plugins.tournaments import Tournament
 import robot as r
 
@@ -17,6 +18,7 @@ class Room:
         self.tour = None
         self.activity = None
         self.tourwhitelist = data['tourwhitelist']
+        self.chatlog = deque({'': -1}, 20)
     def doneLoading(self):
         self.loading = False
 
@@ -32,6 +34,9 @@ class Room:
     def getUser(self, name):
         if name in self.users:
             return self.users[name]
+
+    def logChat(self, user, message):
+        self.chatlog.append({user.id: len(message)})
 
     def isWhitelisted(self, user):
         return user.hasRank('@') or user.id in self.tourwhitelist
