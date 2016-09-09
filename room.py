@@ -6,7 +6,8 @@ from plugins.tournaments import Tournament
 import robot as r
 
 class Room:
-    def __init__(self, room, data = {'moderate':False, 'allow games':False, 'tourwhitelist':[]}):
+    def __init__(self, room, data = None):
+        if not data: data = {'moderate':False, 'allow games':False, 'tourwhitelist':[]}
         self.users = {}
         self.loading = True
         self.title = room
