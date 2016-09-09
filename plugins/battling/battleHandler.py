@@ -39,11 +39,15 @@ class BattleHandler:
     def parse(self, battle, message):
         if not message: return
         if battle in self.activeBattles and 'init' in message: return
+
         msg = message.split('|')
         btl = self.activeBattles[battle] if battle in self.activeBattles else None
+
+        if not btl: return
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
             self.respond(battle, '/timer')
+
         elif 'request' == msg[1]:
             # This is where all the battle picking happen
             request = json.loads(msg[2])
