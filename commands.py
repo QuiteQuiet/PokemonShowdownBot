@@ -36,7 +36,7 @@ from plugins import PluginCommands
 ExternalCommands = RoomCommands.copy()
 ExternalCommands.update(PluginCommands)
 
-usageLink = r'http://www.smogon.com/stats/2016-06/'
+usageLink = r'http://www.smogon.com/stats/2016-08/'
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 
