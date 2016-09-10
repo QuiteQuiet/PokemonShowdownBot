@@ -68,6 +68,7 @@ def Command(self, cmd, room, msg, user):
         if user.isOwner():
             # Figure out how to do this
             self.closeConnection()
+            return ReplyObject('')
         return ReplyObject('You do not have permisson to use this command. (Only for owner)')
     # Save current self.details to details.yaml (moves rooms to joinRooms)
     # Please note that this command will remove every comment from details.yaml, if those exist.

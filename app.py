@@ -163,7 +163,7 @@ class PSBot(PokemonShowdownBot):
                 self.log('Command', message[4], user.id)
 
                 res = self.do(self, command, room, message[4][len(command) + 1:].lstrip(), user)
-                if res.text == 'NoAnswer': return
+                if not res.text or res.text == 'NoAnswer': return
 
                 if self.evalPermission(user) or res.ignoreBroadcastPermission:
                     if not res.ignoreEscaping:
@@ -197,6 +197,7 @@ class PSBot(PokemonShowdownBot):
 
                 response = self.do(self, command, Room('pm'), params, user)
 
+                if not response.text or response.text == 'NoAnswer': return
                 self.sendPm(user.id, response.text)
 
         # Tournaments
