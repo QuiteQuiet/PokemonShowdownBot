@@ -65,7 +65,7 @@ def Command(self, cmd, room, msg, user):
             return ReplyObject(res if not res == None else '', True)
         return ReplyObject('You do not have permisson to use this command. (Only for owner)')
     if cmd == 'forcerestart':
-        if user.isOwner():
+        if user.hasRank('#'):
             # Figure out how to do this
             self.closeConnection()
             return ReplyObject('')
