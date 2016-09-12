@@ -122,7 +122,8 @@ class PokemonShowdownBot:
         alias = {'nu':'neverused'}
         if roomName in alias:
             roomName = alias[roomName]
-        if roomName not in self.rooms: return Room('empty')
+        if roomName not in self.rooms:
+            self.rooms[roomName] = Room(roomName)
         return self.rooms[roomName]
 
     def say(self, room, msg):

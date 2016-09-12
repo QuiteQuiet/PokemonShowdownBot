@@ -80,7 +80,7 @@ class PSBot(PokemonShowdownBot):
     def parseMessage(self, msg, roomName):
         if not msg.startswith('|'): return
         message = msg.split('|')
-        room = self.getRoom(roomName)
+        room = Room('Empty') if not roomName else self.getRoom(roomName)
 
         # Logging in
         if message[1] == 'challstr':
@@ -107,6 +107,10 @@ class PSBot(PokemonShowdownBot):
         # This is a safeguard for l and n in case that a moderation action happen
         elif 'unlink' == message[1] or 'uhtml' in message[1] or 'html' == message[1]:
             return
+
+        # Room was left in some way other than through ~leave
+        elif 'deinit' == message[1]:
+            self.rooms.pop(roomName)
 
         # As long as the room have a roomintro (which even groupchats do now)
         # Roomintros are also the last thing that is sent when joining a room
