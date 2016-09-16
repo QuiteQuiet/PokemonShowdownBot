@@ -64,13 +64,18 @@ class PSBot(PokemonShowdownBot):
         for m in msg:
             self.parseMessage(m, room)
 
+    def testRoombaned(self, room, user):
+        if moderation.shouldBan(self, user, room):
+            self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
+            return True
+        return False
+
     def handleJoin(self, room, message):
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
             room.doneLoading()
         user = User(message, message[0], self.isOwner(message))
-        if moderation.shouldBan(self, user, room):
-            self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
+        if self.testRoombaned(room, user):
             return
         room.addUser(user)
         # If the user have a message waiting, tell them that in a pm
@@ -143,8 +148,9 @@ class PSBot(PokemonShowdownBot):
             # When demoting / promoting a user the server sends a |N| message to update the userlist
             if self.userIsSelf(message[2][1:]):
                 room.rank = message[2][0]
-            oldName = self.toId(message[3])
-            room.renamedUser(oldName, User(message[2][1:], message[2][0], self.isOwner(message[2])))
+            newUser = User(message[2][1:], message[2][0], self.isOwner(message[2]))
+            room.renamedUser(self.toId(message[3]), newUser)
+            self.testRoombaned(room, newUser)
 
 
         # Chat messages
