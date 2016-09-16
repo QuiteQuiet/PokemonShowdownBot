@@ -47,7 +47,7 @@ class BattleHandler:
             self.activeBattles[battle] = Battle(battle)
             self.respond(battle, '/timer')
 
-        if not btl or not btl.me: return
+        if not btl or btl.spectating: return
         if 'request' == msg[1]:
             # This is where all the battle picking happen
             request = json.loads(msg[2])
@@ -86,6 +86,7 @@ class BattleHandler:
             if len(msg) < 4: return
             if msg[3] == self.botName:
                 btl.setMe(msg[3], msg[2])
+                btl.spectating = False
             else:
                 btl.setOther(msg[3], msg[2])
         elif 'teampreview' == msg[1]:

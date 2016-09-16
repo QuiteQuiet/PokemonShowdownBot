@@ -50,6 +50,7 @@ class Battle:
         self.me = Player()
         self.other = Player()
         self.field = {}
+        self.spectating = True
 
     def setMe(self, me, pId):
         self.me.name = me
