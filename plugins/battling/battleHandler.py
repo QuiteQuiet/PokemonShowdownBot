@@ -26,9 +26,9 @@ class BattleHandler:
         self.send('{room}|{msg}'.format(room = battle, msg = msg))
     def handleOutcome(self, battle, won):
         if won:
-            self.respond(battle, 'O-oh, I won? Sorry :(')
+            self.respond(battle, 'O-oh, I won?')
         else:
-            self.respond(battle, "It's okay, I didn't think I'd win anyway :>")
+            self.respond(battle, 'I guess that was expected...')
         print('Battle: {outcome}'.format(outcome = 'win' if won else 'loss'))
 
     def getSpecies(self, details):
