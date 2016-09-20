@@ -47,7 +47,7 @@ class BattleHandler:
             self.activeBattles[battle] = Battle(battle)
             self.respond(battle, '/timer')
 
-        if not btl or btl.spectating: return
+        if not btl or (btl.spectating and not 'player' == msg[1]): return
         if 'request' == msg[1]:
             # This is where all the battle picking happen
             request = json.loads(msg[2])
