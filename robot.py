@@ -102,9 +102,8 @@ class PokemonShowdownBot:
         if self.details['avatar'] >= 0:
             self.send('|/avatar {num}'.format(num = self.details['avatar']))
         print('{name}: Successfully logged in.'.format(name = self.name))
-        for rooms in self.details['joinRooms']:
-            name = [n for n in rooms][0] # joinRoom entry is a list of dicts
-            self.joinRoom(name, rooms[name])
+        for room in self.details['joinRooms']:
+            self.joinRoom(room, self.details['joinRooms'][room])
 
     def joinRoom(self, room, data = None):
         if room in self.rooms: return
@@ -182,17 +181,17 @@ class PokemonShowdownBot:
 
     def saveDetails(self, newAutojoin = False):
         details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
-        details['joinRooms'] = []
+        details['joinRooms'] = {}
         for e in self.rooms:
             if e.startswith('groupchat'): continue
-            if not newAutojoin and e not in details['joinRooms']: continue
+            if not newAutojoin and e not in self.details['joinRooms']: continue
             room = self.getRoom(e)
-            details['joinRooms'].append({e:{'moderate': room.moderate,
-                                            'allow games':room.allowGames,
-                                            'tourwhitelist': room.tourwhitelist}
-                                        })
+            details['joinRooms'][e] = {'moderate': room.moderate,
+                                        'allow games':room.allowGames,
+                                        'tourwhitelist': room.tourwhitelist
+                                        }
         with open('details.yaml', 'w') as yf:
-            yaml.dump(details, yf, default_flow_style = False)
+            yaml.dump(details, yf, default_flow_style = False, explicit_start = True)
 
     # Default onMessage if none is given (This only support logging in, nothing else)
     # To get any actual use from the bot, create a custom onMessage function.
