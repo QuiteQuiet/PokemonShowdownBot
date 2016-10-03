@@ -83,6 +83,7 @@ def Command(self, cmd, room, msg, user):
             # Join the room before adding it to list of autojoined rooms
             self.joinRoom(msg)
             self.saveDetails(True)
+            return ReplyObject("New autojoin ({room}) added.".format(room = msg))
         return ReplyObject("You don't have permission to save settings. (Requires #)")
     # Permissions
     if cmd == 'broadcast':
