@@ -41,12 +41,12 @@ class BattleHandler:
         if battle in self.activeBattles and 'init' in message: return
 
         msg = message.split('|')
-        btl = self.activeBattles[battle] if battle in self.activeBattles else None
 
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
             self.respond(battle, '/timer')
 
+        btl = self.activeBattles[battle] if battle in self.activeBattles else None
         if not btl or btl.spectating: return
         if 'request' == msg[1]:
             # This is where all the battle picking happen
