@@ -47,7 +47,7 @@ with open('plugins/bans.yaml', 'a+') as yf:
         yf.seek(0, 0)
         bans = yaml.load(yf)
         if not bans:
-            bans = {'user':[],'phrase':[]}
+            bans = {} # {'user': [], 'phrase': []}
         banned = bans
 
 # Constants
@@ -58,32 +58,33 @@ def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * MESSAGES_FOR_SPAM
 def SPAM_INTERVAL(): return timedelta(seconds = 6)
 
 def addBan(t, room, ban):
-    if room not in banned[t]:
-        banned[t][room] = []
+    if room not in banned:
+        banned[room] = {'user': [], 'phrase': []}
     if t == 'user':
         ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
-        if ban in banned['user'][room]:
+        if ban in banned[room]['user']:
             return 'User already banned in this room'
-    elif t == 'phrase' and ban in banned['phrase'][room]:
+    elif t == 'phrase' and ban in banned[room]['phrase']:
             return 'Phrase already banned'
-    banned[t][room].append(ban)
+    banned[room][t].append(ban)
     with open('plugins/bans.yaml', 'w') as yf:
         yaml.dump(banned, yf)
 
 def removeBan(t, room, ban):
+    if room not in banned: return
     ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
-    if t == 'user' and ban not in banned['user'][room]:
+    if t == 'user' and ban not in banned[room]['user']:
             return 'User not banned'
-    elif t == 'phrase' and ban not in banned['phrase'][room]:
+    elif t == 'phrase' and ban not in banned[room]['phrase']:
             return 'Phrase not banned'
-    banned[t][room].remove(ban)
+    banned[room][t].remove(ban)
     with open('plugins/bans.yaml', 'w') as yf:
         yaml.dump(banned, yf)
 
 def shouldBan(bot, user, room):
     return room.moderate and isBanned(user.id, room.title) and bot.canBan(room)
 def isBanned(user, room):
-    return user in banned['user'][room]
+    return user in banned[room]['user']
 
 class PunishedUser:
     def __init__(self, name, score, now):
@@ -126,7 +127,7 @@ def recentlyPunished(user, now):
     timeDiff = now - punishedUsers[user.id].lastPunished
     return timeDiff < timedelta(seconds = 3)
 def isBanword(msg, room):
-    for ban in banned['phrase'][room]:
+    for ban in banned[room]['phrase']:
         if ban.lower() in msg:
             return True
     return False
@@ -215,6 +216,9 @@ def getAction(bot, room, user, wrong, unixTime):
 nextReset = datetime.now().date() + timedelta(days = 2)
 def shouldAct(msg, user, room, unixTime):
     global nextReset
+
+    # If the room isn't present in bans.yaml we need to add it at least temporary
+    if room.title not in banned: banned[room.title] = {'user': [], 'phrase': []}
 
     now = datetime.utcfromtimestamp(int(unixTime))
     # Clear the punishment scores every two days
