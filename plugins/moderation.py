@@ -56,6 +56,7 @@ def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * MESSAGES_FOR_SPAM
 def SPAM_INTERVAL(): return timedelta(seconds = 6)
 
 def addBan(t, room, ban):
+    global banned
     if room not in banned:
         banned[room] = {'user': [], 'phrase': []}
     if t == 'user':
@@ -69,6 +70,7 @@ def addBan(t, room, ban):
         yaml.dump(banned, yf)
 
 def removeBan(t, room, ban):
+    global banned
     if room not in banned: return
     ban = re.sub(r'[^a-zA-z0-9]', '', ban).lower()
     if t == 'user' and ban not in banned[room]['user']:
@@ -82,6 +84,7 @@ def removeBan(t, room, ban):
 def shouldBan(bot, user, room):
     return room.moderate and isBanned(user.id, room.title) and bot.canBan(room)
 def isBanned(user, room):
+    global banned
     return user in banned[room]['user']
 
 class PunishedUser:
@@ -125,6 +128,7 @@ def recentlyPunished(user, now):
     timeDiff = now - punishedUsers[user.id].lastPunished
     return timeDiff < timedelta(seconds = 3)
 def isBanword(msg, room):
+    global banned
     for ban in banned[room]['phrase']:
         if ban.lower() in msg:
             return True
@@ -204,7 +208,7 @@ def getAction(bot, room, user, wrong, unixTime):
 
 nextReset = datetime.now().date() + timedelta(days = 2)
 def shouldAct(msg, user, room, unixTime):
-    global nextReset
+    global nextReset, banned
 
     # If the room isn't present in bans.yaml we need to add it at least temporary
     if room.title not in banned: banned[room.title] = {'user': [], 'phrase': []}
