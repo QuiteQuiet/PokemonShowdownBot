@@ -267,6 +267,7 @@ def moderate(bot, cmd, room, msg, user):
 def banthing(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', True, True)
     if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
+    if room.isPm: return reply.response("You can't ban things in PMs")
     error = addBan(cmd[3:], room.title, msg)
     if not error:
         modnote = '/modnote {user} added {thing} to the blacklist'.format(thing = msg, user = user.name)
@@ -279,6 +280,7 @@ def banthing(bot, cmd, room, msg, user):
 def unbanthing(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', True, True)
     if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
+    if room.isPm: return reply.response("You can't unban things in PMs")
     error = removeBan(cmd[5:], room.title, msg)
     if not error:
         return reply.response('Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} from the blacklist'.format(thing = msg, room = room.title, user = user.name))

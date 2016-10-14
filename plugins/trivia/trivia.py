@@ -88,7 +88,7 @@ class Trivia(GenericGame):
 
 def commands(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', True, False, False, True, True)
-    if room.title == 'pm': return reply.response("Don't try to play games in pm please")
+    if room.isPM: return reply.response("Don't try to play games in pm please")
     if cmd == 'trivia':
         if not msg: return reply.response('{msg} is not an valid parameter for trivia')
         if room.activity: return reply.response('There is already a game running in this room')

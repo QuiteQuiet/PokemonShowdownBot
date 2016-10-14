@@ -60,7 +60,7 @@ class Anagram(GenericGame):
 
 def start(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', True, False, False, True, True)
-    if room.title == 'pm' and not cmd.startswith('score'): return reply.response("Don't try to play games in pm please")
+    if room.isPM and not cmd.startswith('score'): return reply.response("Don't try to play games in pm please")
     if msg == 'new':
         if not user.hasRank('%'): return reply.response('You do not have permission to start a game in this room. (Requires %)')
         if room.activity: return reply.response('A game is already running somewhere')
