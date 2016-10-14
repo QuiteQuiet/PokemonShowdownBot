@@ -267,7 +267,7 @@ def banthing(bot, cmd, room, msg, user):
     if not error:
         modnote = '/modnote {user} added {thing} to the blacklist'.format(thing = msg, user = user.name)
         ban = ''
-        if msg in room.userlist:
+        if msg in room.users:
             ban = '\n/roomban {user}, Was added to blacklist'.format(user = msg)
         return reply.response('Added {thing} to the banlist\n{note}{act}'.format(thing = msg, user = user.name, note = modnote, act = ban))
     return reply.response(error)
