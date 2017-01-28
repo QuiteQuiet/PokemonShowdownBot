@@ -84,7 +84,7 @@ class PSBot(PokemonShowdownBot):
 
     def parseMessage(self, msg, roomName):
         if not msg.startswith('|'): return
-        message = msg.split('|')
+        message = self.escapeMessage(msg).split('|')
         room = Room('Empty') if not roomName else self.getRoom(roomName)
 
         # Logging in

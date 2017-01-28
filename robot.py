@@ -157,6 +157,10 @@ class PokemonShowdownBot:
         return text.replace(' ','')
     def extractCommand(self, msg):
         return msg[len(self.commandchar):].split(' ')[0].lower()
+    def escapeMessage(self, message):
+        for harmful in ['\u202e']:
+            message = message.replace(harmful, harmful.encode('unicode_escape').decode('ascii'))
+        return message
 
     def takeAction(self, room, user, action, reason):
         self.log('Action', action, user.id)
