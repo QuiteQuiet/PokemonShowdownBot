@@ -156,7 +156,7 @@ def calcScore(move, mon, opponents):
     if mon.stats['atk'] == mon.stats['spa']:
         oBias = 'No bias'
     dBias = 'Physical' if opp['baseStats']['def'] > opp['baseStats']['spd'] else 'Special'
-    if opp['baseStats']['atk'] == opp['baseStats']['spa']:
+    if opp['baseStats']['def'] == opp['baseStats']['spd']:
         dBias = 'No bias'
     if move['category'] == oBias:
         score += 10

@@ -57,8 +57,12 @@ class PSBot(PokemonShowdownBot):
                 self.rooms.pop(room)
             # Go to battle handler instead of regular rooms
             # (I don't allow commands in battle rooms anyway)
-            for m in msg:
-                self.bh.parse(room, m)
+            try:
+                for m in msg:
+                    self.bh.parse(room, m)
+            except AttributeError as e:
+                print('AttributeError: {}'.format(e))
+                print('MESSAGE THAT CAUSED IT:\n{}'.format(msg))
             return
 
         for m in msg:

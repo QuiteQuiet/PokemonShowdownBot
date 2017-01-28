@@ -6,7 +6,7 @@ from data.pokedex import Pokedex
 from plugins.battling.battle import Battle, Pokemon
 from plugins.battling.battleLogic import getAction, getSwitch, getLead
 
-supportedFormats = ['challengecup1v1', 'battlefactory', 'randombattle']
+supportedFormats = ['challengecup1v1', 'hackmonscup', 'battlefactory', 'randombattle']
 
 # This currently only work in singles and not doubles / triples
 class BattleHandler:
@@ -101,9 +101,6 @@ class BattleHandler:
             if msg[2].startswith(btl.me.id):
                 lastActive = btl.me.active
                 btl.me.setActive(btl.me.getPokemon(self.getSpecies(msg[3])))
-                if not btl.me.active:
-                    print('Error: No new active Pokemon!!')
-                    print('Message:', msg)
                 btl.me.changeTeamSlot(lastActive, btl.me.active)
             else:
                 mon = self.getSpecies(msg[3])
