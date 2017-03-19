@@ -1,6 +1,6 @@
 import re
 class User:
-    Groups = {' ':0,'+':1,'★':1,'%':2,'@':3,'*':3.1,'&':4,'#':5,'~':6}
+    Groups = {' ':0,'+':1,'☆':1,'%':2,'@':3,'*':3.1,'&':4,'#':5,'~':6}
     @staticmethod
     def compareRanks(rank1, rank2):
         try:
