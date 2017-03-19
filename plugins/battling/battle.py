@@ -59,5 +59,6 @@ class Battle:
         self.other.name = other
         self.other.id = pId
     def setFieldCond(self, cond):
+        # TODO: do this
         pass
 
