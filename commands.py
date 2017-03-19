@@ -36,7 +36,7 @@ from plugins import PluginCommands
 ExternalCommands = RoomCommands.copy()
 ExternalCommands.update(PluginCommands)
 
-usageLink = r'http://www.smogon.com/stats/2016-10/'
+usageLink = r'http://www.smogon.com/stats/2017-02/'
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 
@@ -101,8 +101,11 @@ def Command(self, cmd, room, msg, user):
         return ReplyObject('{rank} is not a valid rank'.format(rank = msg if not msg == ' ' else 'none'))
 
     # External commands from plugins (and also room.py)
-    if cmd in ExternalCommands.keys():
+    try:
         return ExternalCommands[cmd](self, cmd, room, msg, user)
+    except:
+        # Do nothing, it's expected some commands doesn't exist
+        pass
 
     # Informational commands
     if cmd in Links:
