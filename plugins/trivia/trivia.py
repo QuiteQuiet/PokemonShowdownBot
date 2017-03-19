@@ -114,7 +114,7 @@ def commands(bot, cmd, room, msg, user):
         # Don't give information if wrong or right here, let Trivia deal with that
         if room.activity.tryAnswer(msg):
             if not room.activity.solver:
-                room.activity.wasSolved(user['unform'])
+                room.activity.wasSolved(user.name)
             else:
                 room.activity.multiple = True
         return reply.response('NoAnswer')
