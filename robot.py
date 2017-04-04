@@ -23,10 +23,15 @@ from room import Room
 from user import User
 from plugins.battling.battleHandler import BattleHandler
 
+# Module global for automatically update help with the correct symbol in plugins.
+# This will be change from default on creation of every instance of PokemonShowdownBot!
+guidechar = ' '
+
 class PokemonShowdownBot:
     ''' Controls the most basic aspects of connecting to Pokemon Showdown as well as commands '''
 
     def __init__(self, url, onMessage = None):
+        global guidechar
         with open("details.yaml", 'r') as yaml_file:
             self.details = yaml.load(yaml_file)
             self.owner = self.toId(self.details['master'])
@@ -39,6 +44,7 @@ class PokemonShowdownBot:
             self.url = url
             #websocket.enableTrace(True)
             self.openConnection()
+        guidechar = self.commandchar
 
     def onError(self, ws, error):
         print('Websocket Error:', error)

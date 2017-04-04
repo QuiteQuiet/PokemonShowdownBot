@@ -20,7 +20,7 @@ class MessageDatabase:
         self.lastNotification = {}
     def pendingMessages(self, user):
         cnt = len(self.messages[user])
-        return 'You have {nr} message{s} waiting for you.\nUse ~read [number] to get [number] of messages shown to you'.format(nr = cnt, s = 's' if cnt > 1 else '')
+        return 'You have {nr} message{s} waiting for you.\nUse {c}read [number] to get [number] of messages shown to you'.format(nr = cnt, s = 's' if cnt > 1 else '', c = r.guidechar)
     def addMessage(self, to, sent, msg):
         if to not in self.messages: self.messages[to] = {}
         # Set last notification to something far in the past so it triggers the first time always
