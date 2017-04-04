@@ -100,7 +100,10 @@ def tell(bot, cmd, room, msg, user):
     if len(to) >= 20: return reply.response("Username is too long. This user doesn't exist")
     notes.addMessage(to, user.name, message)
     reply.samePlace = True
-    return reply.response("I'll be sure to tell {user} that.".format(user = to))
+    responseText = "I'll be sure to tell {user} that.".format(user = msg[0])
+    if to == user.id:
+        responseText = "You sent yourself a message. Was this intended? It will work, but why?"
+    return reply.response(responseText)
 
 def read(bot, cmd, room, msg, user):
     reply = r.ReplyObject()
