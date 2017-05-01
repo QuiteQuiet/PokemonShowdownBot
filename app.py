@@ -36,7 +36,7 @@ class PSBot(PokemonShowdownBot):
         self.do = Command
         self.usernotes = MessageDatabase()
         PokemonShowdownBot.__init__(self,
-                                    'ws://sim.smogon.com:8000/showdown/websocket',
+                                    'ws://sim.psim.us:8000/showdown/websocket',
                                     self.splitMessage)
 
     def splitMessage(self, ws, message):
