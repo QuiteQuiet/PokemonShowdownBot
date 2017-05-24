@@ -6,7 +6,7 @@ from data.pokedex import Pokedex
 from plugins.battling.battle import Battle, Pokemon
 from plugins.battling.battleLogic import getAction, getSwitch, getLead
 
-supportedFormats = ['challengecup1v1', 'hackmonscup', 'battlefactory', 'randombattle']
+supportedFormats = ['gen7challengecup1v1', 'gen7hackmonscup', 'battlefactory', 'gen7randombattle']
 
 # This currently only work in singles and not doubles / triples
 class BattleHandler:
@@ -38,13 +38,14 @@ class BattleHandler:
 
     def parse(self, battle, message):
         if not message: return
+        if not message.startswith('|'): return
         if battle in self.activeBattles and 'init' in message: return
 
         msg = message.split('|')
 
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
-            self.respond(battle, '/timer')
+            self.respond(battle, '/timer on')
 
         btl = self.activeBattles[battle] if battle in self.activeBattles else None
         if not btl or btl.spectating: return
@@ -81,7 +82,7 @@ class BattleHandler:
                 moves = ['','','','']
                 hasMega = True if 'hasMega' in Pokedex[species] else False
                 btl.other.updateTeam(
-                    Pokemon(species, msg[3], '100/100', False, stats, moves, Pokedex[species]['abilities'][0], '', hasMega, len(self.activeBattles[battle].other.team)+1))
+                    Pokemon(species, msg[3], '100/100', False, stats, moves, Pokedex[species]['abilities']['0'], '', hasMega, len(self.activeBattles[battle].other.team)+1))
         elif 'player' == msg[1]:
             if len(msg) < 4: return
             if msg[3] == self.botName:

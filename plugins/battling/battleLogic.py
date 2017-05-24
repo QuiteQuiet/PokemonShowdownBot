@@ -112,13 +112,13 @@ def getCC1v1Move(moves, pokemon, opponent):
             eff = Types[ Pokedex[opponent.species]['types'][0] ][Moves[m]['type']]
         values[m] *= eff
         # Abilities that give immunities
-        if Moves[m]['type'] == 'Water' and Pokedex[opponent.species]['abilities'][0] in waterImmune:
+        if Moves[m]['type'] == 'Water' and Pokedex[opponent.species]['abilities']['0'] in waterImmune:
             values[m] = 0
-        if Moves[m]['type'] == 'Fire' and Pokedex[opponent.species]['abilities'][0] in fireImmune:
+        if Moves[m]['type'] == 'Fire' and Pokedex[opponent.species]['abilities']['0'] in fireImmune:
             values[m] = 0
-        if Moves[m]['type'] == 'Grass' and Pokedex[opponent.species]['abilities'][0] in grassImmune:
+        if Moves[m]['type'] == 'Grass' and Pokedex[opponent.species]['abilities']['0'] in grassImmune:
             values[m] = 0
-        if Moves[m]['type'] == 'Ground' and Pokedex[opponent.species]['abilities'][0] in groundImmune or opponent.item == 'airballon':
+        if Moves[m]['type'] == 'Ground' and Pokedex[opponent.species]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
             values[m] = 0
     options = [m for m,v in values.items() if v == max(values.values())]
     return options[randint(0, len(options)-1)]
