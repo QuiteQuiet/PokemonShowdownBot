@@ -60,7 +60,7 @@ def getAction(battle, playing):
     else:
         moves = [m['move'].replace(' ','').lower() for m in moveData if not m['disabled']]
     if playing == 'gen7challengecup1v1':
-        return getCC1v1Move(moves, active, battle.other.active), 'move'
+        return getMove(moves, active, battle.other.active), 'move'
     else:
         act = pickAction(battle.me, battle.other.active)
         if act == 'switch':

@@ -7512,7 +7512,7 @@ Pokedex = {
 		"evoMove": "AncientPower",
 		"eggGroups": ["Field"],
 	},
-	"Porygonz": {
+	"Porygon-Z": {
 		"num": 474,
 		"species": "Porygon-Z",
 		"types": ["Normal"],
