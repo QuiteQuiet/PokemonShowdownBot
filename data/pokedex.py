@@ -353,7 +353,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["rattataalola"],
 	},
-	"Rattataalola": {
+	"Rattata-Alola": {
 		"num": 19,
 		"species": "Rattata-Alola",
 		"baseSpecies": "Rattata",
@@ -382,7 +382,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["raticatealola"],
 	},
-	"Raticatealola": {
+	"Raticate-Alola": {
 		"num": 20,
 		"species": "Raticate-Alola",
 		"baseSpecies": "Raticate",
@@ -463,7 +463,7 @@ Pokedex = {
 		"eggGroups": ["Field", "Fairy"],
 		"otherFormes": ["pikachucosplay", "pikachurockstar", "pikachubelle", "pikachupopstar", "pikachuphd", "pikachulibre", "pikachuoriginal", "pikachuhoenn", "pikachusinnoh", "pikachuunova", "pikachukalos", "pikachualola"],
 	},
-	"Pikachucosplay": {
+	"Pikachu-Cosplay": {
 		"num": 25,
 		"species": "Pikachu-Cosplay",
 		"baseSpecies": "Pikachu",
@@ -478,7 +478,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachurockstar": {
+	"Pikachu-Rock-Star": {
 		"num": 25,
 		"species": "Pikachu-Rock-Star",
 		"baseSpecies": "Pikachu",
@@ -493,7 +493,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachubelle": {
+	"Pikachu-Belle": {
 		"num": 25,
 		"species": "Pikachu-Belle",
 		"baseSpecies": "Pikachu",
@@ -508,7 +508,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachupopstar": {
+	"Pikachu-Pop-Star": {
 		"num": 25,
 		"species": "Pikachu-Pop-Star",
 		"baseSpecies": "Pikachu",
@@ -523,7 +523,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachuphd": {
+	"Pikachu-PhD": {
 		"num": 25,
 		"species": "Pikachu-PhD",
 		"baseSpecies": "Pikachu",
@@ -538,7 +538,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachulibre": {
+	"Pikachu-Libre": {
 		"num": 25,
 		"species": "Pikachu-Libre",
 		"baseSpecies": "Pikachu",
@@ -553,7 +553,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachuoriginal": {
+	"Pikachu-Original": {
 		"num": 25,
 		"species": "Pikachu-Original",
 		"baseSpecies": "Pikachu",
@@ -568,7 +568,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachuhoenn": {
+	"Pikachu-Hoenn": {
 		"num": 25,
 		"species": "Pikachu-Hoenn",
 		"baseSpecies": "Pikachu",
@@ -583,7 +583,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachusinnoh": {
+	"Pikachu-Sinnoh": {
 		"num": 25,
 		"species": "Pikachu-Sinnoh",
 		"baseSpecies": "Pikachu",
@@ -598,7 +598,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachuunova": {
+	"Pikachu-Unova": {
 		"num": 25,
 		"species": "Pikachu-Unova",
 		"baseSpecies": "Pikachu",
@@ -613,7 +613,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachukalos": {
+	"Pikachu-Kalos": {
 		"num": 25,
 		"species": "Pikachu-Kalos",
 		"baseSpecies": "Pikachu",
@@ -628,7 +628,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Pikachualola": {
+	"Pikachu-Alola": {
 		"num": 25,
 		"species": "Pikachu-Alola",
 		"baseSpecies": "Pikachu",
@@ -657,7 +657,7 @@ Pokedex = {
 		"eggGroups": ["Field", "Fairy"],
 		"otherFormes": ["raichualola"],
 	},
-	"Raichualola": {
+	"Raichu-Alola": {
 		"num": 26,
 		"species": "Raichu-Alola",
 		"baseSpecies": "Raichu",
@@ -686,7 +686,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["sandshrewalola"],
 	},
-	"Sandshrewalola": {
+	"Sandshrew-Alola": {
 		"num": 27,
 		"species": "Sandshrew-Alola",
 		"baseSpecies": "Sandshrew",
@@ -715,7 +715,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["sandslashalola"],
 	},
-	"Sandslashalola": {
+	"Sandslash-Alola": {
 		"num": 28,
 		"species": "Sandslash-Alola",
 		"baseSpecies": "Sandslash",
@@ -731,7 +731,7 @@ Pokedex = {
 		"evoLevel": 1,
 		"eggGroups": ["Field"],
 	},
-	"Nidoranf": {
+	"Nidoran-F": {
 		"num": 29,
 		"species": "Nidoran-F",
 		"types": ["Poison"],
@@ -773,7 +773,7 @@ Pokedex = {
 		"evoLevel": 16,
 		"eggGroups": ["Undiscovered"],
 	},
-	"Nidoranm": {
+	"Nidoran-M": {
 		"num": 32,
 		"species": "Nidoran-M",
 		"types": ["Poison"],
@@ -858,7 +858,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["vulpixalola"],
 	},
-	"Vulpixalola": {
+	"Vulpix-Alola": {
 		"num": 37,
 		"species": "Vulpix-Alola",
 		"baseSpecies": "Vulpix",
@@ -889,7 +889,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["ninetalesalola"],
 	},
-	"Ninetalesalola": {
+	"Ninetales-Alola": {
 		"num": 38,
 		"species": "Ninetales-Alola",
 		"baseSpecies": "Ninetales",
@@ -1063,7 +1063,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["diglettalola"],
 	},
-	"Diglettalola": {
+	"Diglett-Alola": {
 		"num": 50,
 		"species": "Diglett-Alola",
 		"baseSpecies": "Diglett",
@@ -1092,7 +1092,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["dugtrioalola"],
 	},
-	"Dugtrioalola": {
+	"Dugtrio-Alola": {
 		"num": 51,
 		"species": "Dugtrio-Alola",
 		"baseSpecies": "Dugtrio",
@@ -1121,7 +1121,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["meowthalola"],
 	},
-	"Meowthalola": {
+	"Meowth-Alola": {
 		"num": 52,
 		"species": "Meowth-Alola",
 		"baseSpecies": "Meowth",
@@ -1150,9 +1150,9 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["persianalola"],
 	},
-	"Persianalola": {
+	"Persian-Alola": {
 		"num": 53,
-		"species": "Persian-Alola",
+		"species": "Persian--Alola",
 		"baseSpecies": "Persian",
 		"forme": "Alola",
 		"formeLetter": "A",
@@ -1460,7 +1460,7 @@ Pokedex = {
 		"eggGroups": ["Mineral"],
 		"otherFormes": ["geodudealola"],
 	},
-	"Geodudealola": {
+	"Geodude-Alola": {
 		"num": 74,
 		"species": "Geodude-Alola",
 		"baseSpecies": "Geodude",
@@ -1490,7 +1490,7 @@ Pokedex = {
 		"eggGroups": ["Mineral"],
 		"otherFormes": ["graveleralola"],
 	},
-	"Graveleralola": {
+	"Graveler-Alola": {
 		"num": 75,
 		"species": "Graveler-Alola",
 		"baseSpecies": "Graveler",
@@ -1521,7 +1521,7 @@ Pokedex = {
 		"eggGroups": ["Mineral"],
 		"otherFormes": ["golemalola"],
 	},
-	"Golemalola": {
+	"Golem-Alola": {
 		"num": 76,
 		"species": "Golem-Alola",
 		"baseSpecies": "Golem",
@@ -1705,7 +1705,7 @@ Pokedex = {
 		"eggGroups": ["Amorphous"],
 		"otherFormes": ["grimeralola"],
 	},
-	"Grimeralola": {
+	"Grimer-Alola": {
 		"num": 88,
 		"species": "Grimer-Alola",
 		"baseSpecies": "Grimer",
@@ -1734,7 +1734,7 @@ Pokedex = {
 		"eggGroups": ["Amorphous"],
 		"otherFormes": ["mukalola"],
 	},
-	"Mukalola": {
+	"Muk-Alola": {
 		"num": 89,
 		"species": "Muk-Alola",
 		"baseSpecies": "Muk",
@@ -1945,7 +1945,7 @@ Pokedex = {
 		"eggGroups": ["Grass"],
 		"otherFormes": ["exeggutoralola"],
 	},
-	"Exeggutoralola": {
+	"Exeggutor-Alola": {
 		"num": 103,
 		"species": "Exeggutor-Alola",
 		"baseSpecies": "Exeggutor",
@@ -1987,7 +1987,7 @@ Pokedex = {
 		"eggGroups": ["Monster"],
 		"otherFormes": ["marowakalola"],
 	},
-	"Marowakalola": {
+	"Marowak-Alola": {
 		"num": 105,
 		"species": "Marowak-Alola",
 		"baseSpecies": "Marowak",
@@ -2228,7 +2228,7 @@ Pokedex = {
 		"evoLevel": 1,
 		"eggGroups": ["Water 3"],
 	},
-	"Mrmime": {
+	"Mr. Mime": {
 		"num": 122,
 		"species": "Mr. Mime",
 		"types": ["Psychic", "Fairy"],
@@ -3864,7 +3864,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["pokestarsmeargle"],
 	},
-	"Pokestarsmeargle": {
+	"Pokestar-Smeargle": {
 		"num": 235,
 		"species": "Pokestar Smeargle",
 		"types": ["Normal"],
@@ -5566,7 +5566,7 @@ Pokedex = {
 		"eggGroups": ["Fairy", "Amorphous"],
 		"otherFormes": ["castformsunny", "castformrainy", "castformsnowy"],
 	},
-	"Castformsunny": {
+	"Castform-Sunny": {
 		"num": 351,
 		"species": "Castform-Sunny",
 		"baseSpecies": "Castform",
@@ -5580,7 +5580,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Fairy", "Amorphous"],
 	},
-	"Castformrainy": {
+	"Castform-Rainy": {
 		"num": 351,
 		"species": "Castform-Rainy",
 		"baseSpecies": "Castform",
@@ -5594,7 +5594,7 @@ Pokedex = {
 		"color": "Blue",
 		"eggGroups": ["Fairy", "Amorphous"],
 	},
-	"Castformsnowy": {
+	"Castform-Snowy": {
 		"num": 351,
 		"species": "Castform-Snowy",
 		"baseSpecies": "Castform",
@@ -6210,7 +6210,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["deoxysattack", "deoxysdefense", "deoxysspeed"],
 	},
-	"Deoxysattack": {
+	"Deoxys-Attack": {
 		"num": 386,
 		"species": "Deoxys-Attack",
 		"baseSpecies": "Deoxys",
@@ -6225,7 +6225,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Deoxysdefense": {
+	"Deoxys-Defense": {
 		"num": 386,
 		"species": "Deoxys-Defense",
 		"baseSpecies": "Deoxys",
@@ -6240,7 +6240,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Deoxysspeed": {
+	"Deoxys-Speed": {
 		"num": 386,
 		"species": "Deoxys-Speed",
 		"baseSpecies": "Deoxys",
@@ -6618,7 +6618,7 @@ Pokedex = {
 		"eggGroups": ["Bug"],
 		"otherFormes": ["wormadamsandy", "wormadamtrash"],
 	},
-	"Wormadamsandy": {
+	"Wormadam-Sandy": {
 		"num": 413,
 		"species": "Wormadam-Sandy",
 		"baseSpecies": "Wormadam",
@@ -6635,7 +6635,7 @@ Pokedex = {
 		"evoLevel": 20,
 		"eggGroups": ["Bug"],
 	},
-	"Wormadamtrash": {
+	"Wormadam-Trash": {
 		"num": 413,
 		"species": "Wormadam-Trash",
 		"baseSpecies": "Wormadam",
@@ -6756,7 +6756,7 @@ Pokedex = {
 		"eggGroups": ["Fairy", "Grass"],
 		"otherFormes": ["cherrimsunshine"],
 	},
-	"Cherrimsunshine": {
+	"Cherrim-Sunshine": {
 		"num": 421,
 		"species": "Cherrim-Sunshine",
 		"baseSpecies": "Cherrim",
@@ -7010,7 +7010,7 @@ Pokedex = {
 		"evos": ["sudowoodo"],
 		"eggGroups": ["Undiscovered"],
 	},
-	"Mimejr": {
+	"Mime Jr.": {
 		"num": 439,
 		"species": "Mime Jr.",
 		"types": ["Psychic", "Fairy"],
@@ -7610,7 +7610,7 @@ Pokedex = {
 		"eggGroups": ["Amorphous"],
 		"otherFormes": ["rotomheat", "rotomwash", "rotomfrost", "rotomfan", "rotommow"],
 	},
-	"Rotomheat": {
+	"Rotom-Heat": {
 		"num": 479,
 		"species": "Rotom-Heat",
 		"baseSpecies": "Rotom",
@@ -7625,7 +7625,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Amorphous"],
 	},
-	"Rotomwash": {
+	"Rotom-Wash": {
 		"num": 479,
 		"species": "Rotom-Wash",
 		"baseSpecies": "Rotom",
@@ -7640,7 +7640,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Amorphous"],
 	},
-	"Rotomfrost": {
+	"Rotom-Frost": {
 		"num": 479,
 		"species": "Rotom-Frost",
 		"baseSpecies": "Rotom",
@@ -7655,7 +7655,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Amorphous"],
 	},
-	"Rotomfan": {
+	"Rotom-Fan": {
 		"num": 479,
 		"species": "Rotom-Fan",
 		"baseSpecies": "Rotom",
@@ -7670,7 +7670,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Amorphous"],
 	},
-	"Rotommow": {
+	"Rotom-Mow": {
 		"num": 479,
 		"species": "Rotom-Mow",
 		"baseSpecies": "Rotom",
@@ -7782,7 +7782,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["giratinaorigin"],
 	},
-	"Giratinaorigin": {
+	"Giratina-Origin": {
 		"num": 487,
 		"species": "Giratina-Origin",
 		"baseSpecies": "Giratina",
@@ -7859,7 +7859,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["shayminsky"],
 	},
-	"Shayminsky": {
+	"Shaymin-Sky": {
 		"num": 492,
 		"species": "Shaymin-Sky",
 		"baseSpecies": "Shaymin",
@@ -8904,7 +8904,7 @@ Pokedex = {
 		"eggGroups": ["Water 2"],
 		"otherFormes": ["basculinbluestriped"],
 	},
-	"Basculinbluestriped": {
+	"Basculin-Blue-Striped": {
 		"num": 550,
 		"species": "Basculin-Blue-Striped",
 		"baseSpecies": "Basculin",
@@ -8984,7 +8984,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["darmanitanzen"],
 	},
-	"Darmanitanzen": {
+	"Darmanitan-Zen": {
 		"num": 555,
 		"species": "Darmanitan-Zen",
 		"baseSpecies": "Darmanitan",
@@ -10097,7 +10097,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["tornadustherian"],
 	},
-	"Tornadustherian": {
+	"Tornadus-Therian": {
 		"num": 641,
 		"species": "Tornadus-Therian",
 		"baseSpecies": "Tornadus",
@@ -10126,7 +10126,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["thundurustherian"],
 	},
-	"Thundurustherian": {
+	"Thundurus-Therian": {
 		"num": 642,
 		"species": "Thundurus-Therian",
 		"baseSpecies": "Thundurus",
@@ -10179,7 +10179,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["landorustherian"],
 	},
-	"Landorustherian": {
+	"Landorus-Therian": {
 		"num": 645,
 		"species": "Landorus-Therian",
 		"baseSpecies": "Landorus",
@@ -10207,7 +10207,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["kyuremblack", "kyuremwhite"],
 	},
-	"Kyuremblack": {
+	"Kyurem-Black": {
 		"num": 646,
 		"species": "Kyurem-Black",
 		"baseSpecies": "Kyurem",
@@ -10222,7 +10222,7 @@ Pokedex = {
 		"color": "Gray",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Kyuremwhite": {
+	"Kyurem-White": {
 		"num": 646,
 		"species": "Kyurem-White",
 		"baseSpecies": "Kyurem",
@@ -10251,7 +10251,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["keldeoresolute"],
 	},
-	"Keldeoresolute": {
+	"Keldeo-Resolute": {
 		"num": 647,
 		"species": "Keldeo-Resolute",
 		"baseSpecies": "Keldeo",
@@ -10280,7 +10280,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["meloettapirouette"],
 	},
-	"Meloettapirouette": {
+	"Meloetta-Pirouette": {
 		"num": 648,
 		"species": "Meloetta-Pirouette",
 		"baseSpecies": "Meloetta",
@@ -10308,7 +10308,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["genesectdouse", "genesectshock", "genesectburn", "genesectchill"],
 	},
-	"Genesectdouse": {
+	"Genesect-Douse": {
 		"num": 649,
 		"species": "Genesect-Douse",
 		"baseSpecies": "Genesect",
@@ -10323,7 +10323,7 @@ Pokedex = {
 		"color": "Purple",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Genesectshock": {
+	"Genesect-Shock": {
 		"num": 649,
 		"species": "Genesect-Shock",
 		"baseSpecies": "Genesect",
@@ -10338,7 +10338,7 @@ Pokedex = {
 		"color": "Purple",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Genesectburn": {
+	"Genesect-Burn": {
 		"num": 649,
 		"species": "Genesect-Burn",
 		"baseSpecies": "Genesect",
@@ -10353,7 +10353,7 @@ Pokedex = {
 		"color": "Purple",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Genesectchill": {
+	"Genesect-Chill": {
 		"num": 649,
 		"species": "Genesect-Chill",
 		"baseSpecies": "Genesect",
@@ -10615,7 +10615,7 @@ Pokedex = {
 		"otherForms": ["vivillonarchipelago", "vivilloncontinental", "vivillonelegant", "vivillongarden", "vivillonhighplains", "vivillonicysnow", "vivillonjungle", "vivillonmarine", "vivillonmodern", "vivillonmonsoon", "vivillonocean", "vivillonpolar", "vivillonriver", "vivillonsandstorm", "vivillonsavanna", "vivillonsun", "vivillontundra"],
 		"otherFormes": ["vivillonfancy", "vivillonpokeball"],
 	},
-	"Vivillonfancy": {
+	"Vivillon-Fancy": {
 		"num": 666,
 		"species": "Vivillon-Fancy",
 		"baseSpecies": "Vivillon",
@@ -10629,7 +10629,7 @@ Pokedex = {
 		"color": "Black",
 		"eggGroups": ["Bug"],
 	},
-	"Vivillonpokeball": {
+	"Vivillon-Pokeball": {
 		"num": 666,
 		"species": "Vivillon-Pokeball",
 		"baseSpecies": "Vivillon",
@@ -10703,7 +10703,7 @@ Pokedex = {
 		"otherForms": ["floetteblue", "floetteorange", "floettewhite", "floetteyellow"],
 		"otherFormes": ["floetteeternal"],
 	},
-	"Floetteeternal": {
+	"Floette-Eternal": {
 		"num": 670,
 		"species": "Floette-Eternal",
 		"baseSpecies": "Floette",
@@ -10823,7 +10823,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["meowsticf"],
 	},
-	"Meowsticf": {
+	"Meowstic-F": {
 		"num": 678,
 		"species": "Meowstic-F",
 		"baseSpecies": "Meowstic",
@@ -10881,7 +10881,7 @@ Pokedex = {
 		"eggGroups": ["Mineral"],
 		"otherFormes": ["aegislashblade"],
 	},
-	"Aegislashblade": {
+	"Aegislash-Blade": {
 		"num": 681,
 		"species": "Aegislash-Blade",
 		"baseSpecies": "Aegislash",
@@ -11263,7 +11263,7 @@ Pokedex = {
 		"eggGroups": ["Amorphous"],
 		"otherFormes": ["pumpkaboosmall", "pumpkaboolarge", "pumpkaboosuper"],
 	},
-	"Pumpkaboosmall": {
+	"Pumpkaboo-Small": {
 		"num": 710,
 		"species": "Pumpkaboo-Small",
 		"baseSpecies": "Pumpkaboo",
@@ -11278,7 +11278,7 @@ Pokedex = {
 		"evos": ["gourgeistsmall"],
 		"eggGroups": ["Amorphous"],
 	},
-	"Pumpkaboolarge": {
+	"Pumpkaboo-Large": {
 		"num": 710,
 		"species": "Pumpkaboo-Large",
 		"baseSpecies": "Pumpkaboo",
@@ -11293,7 +11293,7 @@ Pokedex = {
 		"evos": ["gourgeistlarge"],
 		"eggGroups": ["Amorphous"],
 	},
-	"Pumpkaboosuper": {
+	"Pumpkaboo-Super": {
 		"num": 710,
 		"species": "Pumpkaboo-Super",
 		"baseSpecies": "Pumpkaboo",
@@ -11323,7 +11323,7 @@ Pokedex = {
 		"eggGroups": ["Amorphous"],
 		"otherFormes": ["gourgeistsmall", "gourgeistlarge", "gourgeistsuper"],
 	},
-	"Gourgeistsmall": {
+	"Gourgeist-Small": {
 		"num": 711,
 		"species": "Gourgeist-Small",
 		"baseSpecies": "Gourgeist",
@@ -11339,7 +11339,7 @@ Pokedex = {
 		"evoLevel": 1,
 		"eggGroups": ["Amorphous"],
 	},
-	"Gourgeistlarge": {
+	"Gourgeist-Large": {
 		"num": 711,
 		"species": "Gourgeist-Large",
 		"baseSpecies": "Gourgeist",
@@ -11355,7 +11355,7 @@ Pokedex = {
 		"evoLevel": 1,
 		"eggGroups": ["Amorphous"],
 	},
-	"Gourgeistsuper": {
+	"Gourgeist-Super": {
 		"num": 711,
 		"species": "Gourgeist-Super",
 		"baseSpecies": "Gourgeist",
@@ -11532,7 +11532,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["hoopaunbound"],
 	},
-	"Hoopaunbound": {
+	"Hoopa-Unbound": {
 		"num": 720,
 		"species": "Hoopa-Unbound",
 		"baseSpecies": "Hoopa",
@@ -11827,7 +11827,7 @@ Pokedex = {
 		"eggGroups": ["Flying"],
 		"otherFormes": ["oricoriopompom", "oricoriopau", "oricoriosensu"],
 	},
-	"Oricoriopompom": {
+	"Oricorio-Pom-Pom": {
 		"num": 741,
 		"species": "Oricorio-Pom-Pom",
 		"baseSpecies": "Oricorio",
@@ -11842,7 +11842,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Flying"],
 	},
-	"Oricoriopau": {
+	"Oricorio-Pa'u": {
 		"num": 741,
 		"species": "Oricorio-Pa'u",
 		"baseSpecies": "Oricorio",
@@ -11857,7 +11857,7 @@ Pokedex = {
 		"color": "Pink",
 		"eggGroups": ["Flying"],
 	},
-	"Oricoriosensu": {
+	"Oricorio-Sensu": {
 		"num": 741,
 		"species": "Oricorio-Sensu",
 		"baseSpecies": "Oricorio",
@@ -11924,7 +11924,7 @@ Pokedex = {
 		"eggGroups": ["Field"],
 		"otherFormes": ["lycanrocmidnight"],
 	},
-	"Lycanrocmidnight": {
+	"Lycanroc-Midnight": {
 		"num": 745,
 		"species": "Lycanroc-Midnight",
 		"baseSpecies": "Lycanroc",
@@ -11953,7 +11953,7 @@ Pokedex = {
 		"eggGroups": ["Water 2"],
 		"otherFormes": ["wishiwashischool"],
 	},
-	"Wishiwashischool": {
+	"Wishiwashi-School": {
 		"num": 746,
 		"species": "Wishiwashi-School",
 		"baseSpecies": "Wishiwashi",
@@ -12613,7 +12613,7 @@ Pokedex = {
 		"otherFormes": ["miniormeteor"],
 		"otherForms": ["miniororange", "minioryellow", "miniorgreen", "miniorblue", "miniorindigo", "miniorviolet"],
 	},
-	"Miniormeteor": {
+	"Minior-Meteor": {
 		"num": 774,
 		"species": "Minior-Meteor",
 		"baseSpecies": "Minior",
@@ -12673,7 +12673,7 @@ Pokedex = {
 		"eggGroups": ["Amorphous"],
 		"otherFormes": ["mimikyubusted"],
 	},
-	"Mimikyubusted": {
+	"Mimikyu-Busted": {
 		"num": 778,
 		"species": "Mimikyu-Busted",
 		"baseSpecies": "Mimikyu",
@@ -12973,7 +12973,7 @@ Pokedex = {
 		"eggGroups": ["Undiscovered"],
 		"otherFormes": ["magearnaoriginal"],
 	},
-	"Magearnaoriginal": {
+	"Magearna-Original": {
 		"num": 801,
 		"species": "Magearna-Original",
 		"baseSpecies": "Magearna",
@@ -13000,7 +13000,7 @@ Pokedex = {
 		"color": "Gray",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Missingno": {
+	"Missingno.": {
 		"num": 0,
 		"species": "Missingno.",
 		"types": ["Bird", "Normal"],
