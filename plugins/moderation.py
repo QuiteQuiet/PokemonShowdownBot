@@ -51,7 +51,7 @@ with open('plugins/bans.yaml', 'a+') as yf:
 # Constants
 def MIN_CAPS_LENGTH(): return 12
 def CAPS_PROPORTION(): return 0.9
-def MESSAGES_FOR_SPAM(): return 5
+def MESSAGES_FOR_SPAM(): return 4
 def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * MESSAGES_FOR_SPAM()
 def SPAM_INTERVAL(): return timedelta(seconds = 6)
 
@@ -144,7 +144,7 @@ def isSpam(msg, user, room, now):
     if timesLen < MESSAGES_FOR_SPAM():
          return False
     timeDiff = now - times[timesLen - (MESSAGES_FOR_SPAM() + 1)]
-    if timeDiff < SPAM_INTERVAL() and timeDiff > MIN_MESSAGE_TIME():
+    if timeDiff <= SPAM_INTERVAL() and timeDiff > MIN_MESSAGE_TIME():
     # For it to be spam, the following conditions has to be met:
     # 1: At least 5 messages in the last 6 seconds
     # 2: At least 300ms between every message
