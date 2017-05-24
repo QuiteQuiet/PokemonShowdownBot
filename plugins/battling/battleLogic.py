@@ -6,10 +6,50 @@ from data.types import Types
 
 blacklist = {'focuspunch','fakeout','snore','dreameater','lastresort','explosion','selfdestruct','synchronoise','belch','trumphcard','wringout'}
 chargemoves = {'hyperbeam','gigaimpact','frenzyplant','blastburn','hydrocannon','rockwrecker','roaroftime','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash','skyattack','skydrop','solarbeam'}
+zmoves = {'fairiumz':'twinkletackle', 'groundiumz':'tectonicrage', 'flyiniumz':'supersonicskystrike', 'iciumz':'subzeroslammer', 'aloraichiumz':'stokedsparksurfer', 'marshadiumz':'soulstealing7starstrike', 'decidiumz':'sinisterarrowraid', 'psychiumz':'shatteredpsyche', 'buginiumz':'savagespinout', 'snorliumz':'pulverizingpancake', 'primariumz':'oceanicoperetta', 'ghostiumz':'neverendingnightmare', 'inciniumz':'maliciousmoonsault', 'firiumz':'infernooverdrive', 'wateriumz':'hydrovortex', 'tapuniumz':'guardianofalola', 'electriumz':'gigavolthavoc', 'mewniumz':'genesissupernova', 'eeviumz':'extremeevoboost', 'dragoniumz':'devastatingdrake', 'steeliumz':'corkscrewcrash', 'rockiumz':'continentalcrush', 'pikaniumz':'catastropika', 'normaliumz':'breakneckblitz', 'grassiumz':'bloomdoom', 'darkiniumz':'blackholeeclipse', 'fightiniumz':'alloutpummeling', 'poisoniumz':'aciddownpour', 'pikashuniumz':'10000000voltthunderbolt'}
 waterImmune = ['Dry Skin','Water Absorb','Storm Drain']
 grassImmune = ['Sap Sipper']
 fireImmune = ['Flash Fire']
 groundImmune = ['Levitate']
+
+def getUsableZmove(pokemon):
+    zcrystals = zmoves.keys()
+    if not pokemon.item in zcrystals: return None
+    zmovedata = Moves[zmoves[pokemon.item]]
+    if zmovedata['basePower'] == 1:
+        for move in pokemon.moves:
+            if Moves[move]['type'] == zmovedata['type']:
+                zmovedata['baseMove'] = move
+                if Moves[move]['category'] == 'Status':
+                    zmovedata['basePower'] = 0
+                    zmovedata['category'] = 'Status'
+                    if Moves[move]['zMoveBoost']:
+                        zmovedata['boosts'] = Moves[move]['zMoveBoost']
+                else:
+                    zmovedata['basePower'] = Moves[move]['zMovePower']
+        # If no move matches this isn't a Z-Crystal we can use
+        if zmovedata['basepower'] == 1: return None
+        # Status Z-Moves are technically fine to use
+        return zmovedata
+    else:
+        # Only need this right here
+        def addBase(zmove, base):
+            zmove['baseMove'] = base
+            return zmove
+        # Only special Z-Moves like Sinister Arrow Raid has a base power so check if they're usable
+        if zmovedata['id'] == 'catastropika' and pokemon.species == 'Pikachu' and 'thunderbolt' in pokemon.moves: return addBase(zmovedata, 'thunderbolt')
+        if zmovedata['id'] == 'extremeevoboost' and pokemon.species == 'Eevee' and 'lastresort' in pokemon.moves: return addBase(zmovedata, 'lastresort')
+        if zmovedata['id'] == 'genesissupernova' and pokemon.species == 'Mew' and 'psychic' in pokemon.moves: return addBase(zmovedata, 'psychic')
+        if zmovedata['id'] == 'sinisterarrowraid' and pokemon.species == 'Deucideye' and 'spiritshackle' in pokemon.moves: return addBase(zmovedata, 'spiritshackle')
+        if zmovedata['id'] == 'stokedsparksurfer' and pokemon.species == 'Raichu-Alola' and 'thunderbolt' in pokemon.moves: return addBase(zmovedata, 'thunderbolt')
+        if zmovedata['id'] == 'pulverizingpancake' and pokemon.species == 'Snorlax' and 'gigaimpact' in pokemon.moves: return addBase(zmovedata, 'gigaaimpact')
+        if zmovedata['id'] == 'maliciousmoonsault' and pokemon.species == 'Incineroar' and 'darkestlariat' in pokemon.moves: return addBase(zmovedata, 'darklariat')
+        if zmovedata['id'] == 'oceanicoperetta' and pokemon.species == 'Primarina' and 'sparklingaria' in pokemon.moves: return addBase(zmovedata, 'sparklingaria')
+        if zmovedata['id'] == 'soulstealing7starstrike' and pokemon.species == 'Marshadow' and 'spectralthief' in pokemon.moves: return addBase(zmovedata, 'spectralthief')
+        if zmovedata['id'] == 'guardianofalola' and pokemon.species in ('Tapu Koko', 'Tapu Bulu', 'Tapu Fini', 'Tapu Lele') and 'naturesmadness' in pokemon.moves: return addBase(zmovedata, 'naturesmadness')
+    # Shouldn't ever get here, but just in case do an explicit return
+    return None
+
 
 def getAction(battle, playing):
     active = battle.me.active
@@ -19,7 +59,7 @@ def getAction(battle, playing):
         moves = [moveData[0]['move'].replace(' ','').lower()]
     else:
         moves = [m['move'].replace(' ','').lower() for m in moveData if not m['disabled']]
-    if playing == 'challengecup1v1':
+    if playing == 'gen7challengecup1v1':
         return getCC1v1Move(moves, active, battle.other.active), 'move'
     else:
         act = pickAction(battle.me, battle.other.active)
@@ -31,6 +71,9 @@ def calcMatchup(me, other):
     score = 0
     for m in me.moves:
         score += calcScore(m, me, other.species)
+    zmove = getUsableZmove(me)
+    if zmove:
+        score += calcScore(zmove, me, other.species)
     return score
 def pickAction(me, other):
     matchups = {}
@@ -52,10 +95,15 @@ def pickAction(me, other):
         return 'move'
     return 'switch'
 def getMove(moves, active, opponent):
+    action = ''
     move = getCC1v1Move(moves, active, opponent)
-    if active.canMega:
-        move += ' mega'
-    return move
+    if 'isZ' in move and active.side.canZmove:
+        action += '{} zmove'.format(move['baseMove'])
+    else:
+        action += move['id']
+    if active.canMega and active.side.canMegaPokemon:
+        action += ' mega'
+    return action
 def getSwitch(myTeam, myActive, opponent):
     scores = {}
     for poke in myTeam:
@@ -86,7 +134,9 @@ def getSwitch(myTeam, myActive, opponent):
 
 def getCC1v1Move(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
-    values = {}
+
+    # Copy this list so we don't ruin the original one when we append the Z-Move
+    movescopy = []
     for m in moves:
         for fault in ['-', "'"]:
             m = m.replace(fault,'')
@@ -94,34 +144,45 @@ def getCC1v1Move(moves, pokemon, opponent):
         for var in ['return', 'frustration']:
             if m.startswith(var):
                 m = var
+        movescopy.append(Moves[m])
+    zmove = getUsableZmove(pokemon)
+    if zmove:
+        movescopy.append(zmove)
+    values = {}
+    for move in movescopy:
+        moveid = move['id']
+        if 'isZ' in move and not pokemon.side.canZmove:
+            values[moveid] = 0
+            continue
         # This begins a score system for the moves, naively trying to pick the best moves without calculating damage
         # Based on the move's base power
-        values[m] = Moves[m]['basePower']
-        if m in blacklist or m in chargemoves:
-            values[m] = 0
+        values[moveid] = move['basePower']
+        if moveid in blacklist or moveid in chargemoves:
+            values[moveid] = 0
             continue
 
-        if Moves[m]['type'] in Pokedex[pokemon.species]['types']:
-            values[m] *= 1.5
+        if move['type'] in Pokedex[pokemon.species]['types']:
+            values[moveid] *= 1.5
         # Multiply with the effectiveness of the move
         eff = 1
         if len(Pokedex[opponent.species]['types']) > 1:
             types = Pokedex[opponent.species]['types']
-            eff = Types[types[0]][Moves[m]['type']] * Types[types[1]][Moves[m]['type']]
+            eff = Types[types[0]][move['type']] * Types[types[1]][move['type']]
         else:
-            eff = Types[ Pokedex[opponent.species]['types'][0] ][Moves[m]['type']]
-        values[m] *= eff
+            eff = Types[ Pokedex[opponent.species]['types'][0] ][move['type']]
+        values[moveid] *= eff
         # Abilities that give immunities
-        if Moves[m]['type'] == 'Water' and Pokedex[opponent.species]['abilities']['0'] in waterImmune:
-            values[m] = 0
-        if Moves[m]['type'] == 'Fire' and Pokedex[opponent.species]['abilities']['0'] in fireImmune:
-            values[m] = 0
-        if Moves[m]['type'] == 'Grass' and Pokedex[opponent.species]['abilities']['0'] in grassImmune:
-            values[m] = 0
-        if Moves[m]['type'] == 'Ground' and Pokedex[opponent.species]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
-            values[m] = 0
+        if move['type'] == 'Water' and Pokedex[opponent.species]['abilities']['0'] in waterImmune:
+            values[moveid] = 0
+        if move['type'] == 'Fire' and Pokedex[opponent.species]['abilities']['0'] in fireImmune:
+            values[moveid] = 0
+        if move['type'] == 'Grass' and Pokedex[opponent.species]['abilities']['0'] in grassImmune:
+            values[moveid] = 0
+        if move['type'] == 'Ground' and Pokedex[opponent.species]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
+            values[moveid] = 0
     options = [m for m,v in values.items() if v == max(values.values())]
-    return options[randint(0, len(options)-1)]
+    picked = options[randint(0, len(options) - 1)]
+    return [m for m in movescopy if m['id'] == picked][0]
 
 def getLead(team, opposing):
     scores = {}
@@ -141,13 +202,14 @@ def getLead(team, opposing):
 
 def calcScore(move, mon, opponents):
     ''' Calculates an arbitrary score for a move against an opponent to decide how good it is '''
-    if 'hiddenpower' in  move:
-        move = move[:-2]
-    for var in ['return', 'frustration']:
-        if move.startswith(var):
-            move = var
-    move = move.replace("'",'')
-    move = Moves[move]
+    if type(move) is str:
+        if 'hiddenpower' in  move:
+            move = move[:-2]
+        for var in ['return', 'frustration']:
+            if move.startswith(var):
+                move = var
+        move = move.replace("'",'')
+        move = Moves[move]
     opp = Pokedex[opponents]
 
     score = move['basePower'] - (100 - move['accuracy'])

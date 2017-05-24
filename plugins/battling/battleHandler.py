@@ -59,7 +59,7 @@ class BattleHandler:
             for poke in sidedata['pokemon']:
                 btl.me.updateTeam(
                     Pokemon(self.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
-                            poke['stats'],poke['moves'],poke['baseAbility'],poke['item'], False, teamSlot))
+                            poke['stats'],poke['moves'],poke['baseAbility'],poke['item'], False, teamSlot, btl.me))
                 teamSlot += 1
             if 'active' in request:
                 btl.myActiveData = request['active']
@@ -82,7 +82,7 @@ class BattleHandler:
                 moves = ['','','','']
                 hasMega = True if 'hasMega' in Pokedex[species] else False
                 btl.other.updateTeam(
-                    Pokemon(species, msg[3], '100/100', False, stats, moves, Pokedex[species]['abilities']['0'], '', hasMega, len(self.activeBattles[battle].other.team)+1))
+                    Pokemon(species, msg[3], '100/100', False, stats, moves, Pokedex[species]['abilities']['0'], '', hasMega, len(self.activeBattles[battle].other.team) + 1, btl.other))
         elif 'player' == msg[1]:
             if len(msg) < 4: return
             if msg[3] == self.botName:
@@ -106,9 +106,8 @@ class BattleHandler:
             else:
                 mon = self.getSpecies(msg[3])
                 if mon not in btl.other.team:
-                    btl.other.updateTeam(
-                        Pokemon(self.getSpecies(msg[3]), msg[3], '100/100', False,
-                                {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(btl.other.team)+1))
+                    btl.other.updateTeam(Pokemon(self.getSpecies(msg[3]), msg[3], '100/100', False,
+                                {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(btl.other.team)+1, btl.other))
                 btl.other.setActive(btl.other.getPokemon(mon))
         elif msg[1] in ['win', 'tie']:
             self.handleOutcome(battle, msg[2] == self.botName)
@@ -126,6 +125,11 @@ class BattleHandler:
                 btl.me.active.canMega = False
             else:
                 btl.other.removeBaseForm(msg[3], mega)
+        elif '-zmove' == msg[1]:
+            if msg[2].startswith(btl.me.id):
+                btl.me.usedZmove()
+            else:
+                btl.other.usedZmove()
 
         # This keeps track of what moves the opponent has revealed
         elif 'move' == msg[1]:

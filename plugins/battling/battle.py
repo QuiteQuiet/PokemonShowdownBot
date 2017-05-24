@@ -1,5 +1,5 @@
 class Pokemon:
-    def __init__(self, ident, details, condition, active, stats, moves, baseAbility, item, canMegaEvo, slot):
+    def __init__(self, ident, details, condition, active, stats, moves, baseAbility, item, canMegaEvo, slot, side):
         self.species = ident
         self.details = details
         self.condition = condition.split()[0]
@@ -11,6 +11,7 @@ class Pokemon:
         self.item = item
         self.canMega = canMegaEvo
         self.teamSlot = slot
+        self.side = side
         self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
     def setCondition(self, cond, status):
         self.condition = cond
@@ -20,6 +21,8 @@ class Player:
     def __init__(self):
         self.name = ''
         self.id = ''
+        self.canZmove = True
+        self.canMegaPokemon = True
         self.active = None
         self.team = {}
         self.side = {}
@@ -42,6 +45,10 @@ class Player:
     def removeBaseForm(self, pokemon, mega):
         self.team[mega] = self.team.pop(pokemon, None)
         self.team[mega].species = mega
+        self.canMegaPokemon = False
+
+    def usedZmove(self):
+        self.canZmove = False
 
 class Battle:
     def __init__(self, name):
