@@ -6,6 +6,7 @@ __pycache__/
 details.yaml
 plugins/scoreboard.yaml
 plugins/bans.yaml
+plugins/battling/teams.yaml
 
 # logs
 logs/

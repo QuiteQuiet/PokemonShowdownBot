@@ -26,7 +26,6 @@ import time
 
 from robot import PokemonShowdownBot, Room, User
 from commands import Command
-from plugins.battling.battleHandler import supportedFormats
 from plugins import moderation
 from plugins.messages import MessageDatabase
 from plugins.workshop import Workshop
@@ -104,10 +103,13 @@ class PSBot(PokemonShowdownBot):
             challs = json.loads(message[2])
             if challs['challengesFrom']:
                 opp = [name for name, form in challs['challengesFrom'].items()][0]
-                if challs['challengesFrom'][opp] in supportedFormats:
+                format = challs['challengesFrom'][opp]
+                if format in self.bh.supportedFormats:
+                    team = self.bh.getRandomTeam(format)
+                    self.send('|/utm {}'.format(team))
                     self.send('|/accept {name}'.format(name = opp))
                 else:
-                    self.sendPm(opp, 'Sorry, I only accept challenges in Challenge Cup 1v1, Random Battles or Battle Factory :(')
+                    self.sendPm(opp, "Sorry, I can't accept challenges in that format :(")
         elif 'updatesearch' in message[1]:
             # This gets sent before `updatechallenges` does when recieving a battle, but it's
             # not useful for anything, so just return straight away
@@ -171,7 +173,7 @@ class PSBot(PokemonShowdownBot):
                     action, reason = moderation.getAction(self, room, user, anything, message[2])
                     self.takeAction(room.title, user, action, reason)
 
-
+            message[4] = '|'.join(message[4:])
             if message[4].startswith(self.commandchar) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
                 self.log('Command', message[4], user.id)
@@ -204,6 +206,7 @@ class PSBot(PokemonShowdownBot):
                     else:
                         self.sendPm(user.id, 'Only global voices (+) and up can add me to rooms, sorry :(')
 
+            message[4] = '|'.join(message[4:])
             if message[4].startswith(self.commandchar) and message[4][1:] and message[4][1].isalpha():
                 command = self.extractCommand(message[4])
                 self.log('Command', message[4], user.id)
@@ -220,7 +223,7 @@ class PSBot(PokemonShowdownBot):
             if 'create' in message[2]:
                 room.createTour(self.ws, message[3])
                 # Tour was created, join it if in supported formats
-                if self.details['joinTours'] and room.tour.format in supportedFormats:
+                if self.details['joinTours'] and room.tour.format in self.bh.supportedFormats:
                     room.tour.joinTour()
             elif 'end' == message[2]:
                 winner, tier = room.getTourWinner(message[3])

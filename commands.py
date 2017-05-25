@@ -103,7 +103,7 @@ def Command(self, cmd, room, msg, user):
     # External commands from plugins (and also room.py)
     try:
         return ExternalCommands[cmd](self, cmd, room, msg, user)
-    except:
+    except Exception as e:
         # Do nothing, it's expected some commands doesn't exist
         pass
 

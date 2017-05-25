@@ -1,4 +1,5 @@
 from random import randint
+from copy import deepcopy
 
 from data.moves import Moves
 from data.pokedex import Pokedex
@@ -15,9 +16,12 @@ groundImmune = ['Levitate']
 def getUsableZmove(pokemon):
     zcrystals = zmoves.keys()
     if not pokemon.item in zcrystals: return None
-    zmovedata = Moves[zmoves[pokemon.item]]
+    zmovedata = deepcopy(Moves[zmoves[pokemon.item]])
     if zmovedata['basePower'] == 1:
         for move in pokemon.moves:
+            for var in ('return', 'frustration'):
+                if move.startswith(var):
+                    move = var
             if Moves[move]['type'] == zmovedata['type']:
                 zmovedata['baseMove'] = move
                 if Moves[move]['category'] == 'Status':
@@ -28,7 +32,7 @@ def getUsableZmove(pokemon):
                 else:
                     zmovedata['basePower'] = Moves[move]['zMovePower']
         # If no move matches this isn't a Z-Crystal we can use
-        if zmovedata['basepower'] == 1: return None
+        if zmovedata['basePower'] == 1: return None
         # Status Z-Moves are technically fine to use
         return zmovedata
     else:
@@ -47,9 +51,13 @@ def getUsableZmove(pokemon):
         if zmovedata['id'] == 'oceanicoperetta' and pokemon.species == 'Primarina' and 'sparklingaria' in pokemon.moves: return addBase(zmovedata, 'sparklingaria')
         if zmovedata['id'] == 'soulstealing7starstrike' and pokemon.species == 'Marshadow' and 'spectralthief' in pokemon.moves: return addBase(zmovedata, 'spectralthief')
         if zmovedata['id'] == 'guardianofalola' and pokemon.species in ('Tapu Koko', 'Tapu Bulu', 'Tapu Fini', 'Tapu Lele') and 'naturesmadness' in pokemon.moves: return addBase(zmovedata, 'naturesmadness')
-    # Shouldn't ever get here, but just in case do an explicit return
-    return None
+    # Shouldn't ever get here, but just in case do an explicit return with a specific falsy value
+    return False
 
+def getBaseSpecies(species):
+    if species in Pokedex: return species
+    species = species.split('-')[0]
+    return species
 
 def getAction(battle, playing):
     active = battle.me.active
@@ -161,24 +169,26 @@ def getCC1v1Move(moves, pokemon, opponent):
             values[moveid] = 0
             continue
 
-        if move['type'] in Pokedex[pokemon.species]['types']:
+        mySpecies = getBaseSpecies(pokemon.species)
+        oppSpecies = getBaseSpecies(opponent.species)
+        if move['type'] in Pokedex[mySpecies]['types']:
             values[moveid] *= 1.5
         # Multiply with the effectiveness of the move
         eff = 1
-        if len(Pokedex[opponent.species]['types']) > 1:
-            types = Pokedex[opponent.species]['types']
+        if len(Pokedex[oppSpecies]['types']) > 1:
+            types = Pokedex[oppSpecies]['types']
             eff = Types[types[0]][move['type']] * Types[types[1]][move['type']]
         else:
-            eff = Types[ Pokedex[opponent.species]['types'][0] ][move['type']]
+            eff = Types[ Pokedex[oppSpecies]['types'][0] ][move['type']]
         values[moveid] *= eff
         # Abilities that give immunities
-        if move['type'] == 'Water' and Pokedex[opponent.species]['abilities']['0'] in waterImmune:
+        if move['type'] == 'Water' and Pokedex[oppSpecies]['abilities']['0'] in waterImmune:
             values[moveid] = 0
-        if move['type'] == 'Fire' and Pokedex[opponent.species]['abilities']['0'] in fireImmune:
+        if move['type'] == 'Fire' and Pokedex[oppSpecies]['abilities']['0'] in fireImmune:
             values[moveid] = 0
-        if move['type'] == 'Grass' and Pokedex[opponent.species]['abilities']['0'] in grassImmune:
+        if move['type'] == 'Grass' and Pokedex[oppSpecies]['abilities']['0'] in grassImmune:
             values[moveid] = 0
-        if move['type'] == 'Ground' and Pokedex[opponent.species]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
+        if move['type'] == 'Ground' and Pokedex[oppSpecies]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
             values[moveid] = 0
     options = [m for m,v in values.items() if v == max(values.values())]
     picked = options[randint(0, len(options) - 1)]
@@ -210,9 +220,17 @@ def calcScore(move, mon, opponents):
                 move = var
         move = move.replace("'",'')
         move = Moves[move]
-    opp = Pokedex[opponents]
+    opp = Pokedex[getBaseSpecies(opponents)]
 
+    boostTable = [1, 1.5, 2, 2.5, 3, 3.5, 4]
     score = move['basePower'] - (100 - move['accuracy'])
+
+    # Stat drops and raises
+    category = 'atk' if move['category'] == 'Physical' else 'spa'
+    if mon.boosts[category] > 0:
+        score *= boostTable[mon.boosts[category]]
+    if mon.boosts[category] < 0:
+        score /= boostTable[-mon.boosts[category]]
 
     oBias = 'Physical' if mon.stats['atk'] > mon.stats['spa'] else 'Special'
     if mon.stats['atk'] == mon.stats['spa']:
