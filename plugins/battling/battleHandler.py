@@ -120,7 +120,9 @@ class BattleHandler:
         elif 'switch' == msg[1]:
             if msg[2].startswith(btl.me.id):
                 lastActive = btl.me.active
-                btl.me.setActive(btl.me.getPokemon(self.getSpecies(msg[3])))
+                newActive = btl.me.getPokemon(self.getSpecies(msg[3]))
+                newActive.clearBoosts()
+                btl.me.setActive(newActive)
                 btl.me.changeTeamSlot(lastActive, btl.me.active)
             else:
                 mon = self.getSpecies(msg[3])
@@ -164,6 +166,12 @@ class BattleHandler:
                 btl.me.active.boosts[stat] += int(msg[4])
             else:
                 btl.other.active.boosts[stat] += int(msg[4])
+        elif '-unboost' == msg[1]:
+            stat = msg[3]
+            if msg[2].startswith(btl.me.id):
+                btl.me.active.boosts[stat] -= int(msg[4])
+            else:
+                btl.other.active.boosts[stat] -= int(msg[4])
 
         # Because of how they're treated, taking damage and healing it are done the same things to
         elif msg[1] in ['-heal','-damage']:

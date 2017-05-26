@@ -13,6 +13,8 @@ class Pokemon:
         self.teamSlot = slot
         self.side = side
         self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
+    def clearBoosts(self):
+        self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
     def setCondition(self, cond, status):
         self.condition = cond
         self.status = status
@@ -29,6 +31,8 @@ class Player:
     def setActive(self, poke):
         self.active = poke
     def updateTeam(self, poke):
+        if poke.species in self.team:
+            poke.boosts = self.team[poke.species].boosts
         self.team[poke.species] = poke
     def changeTeamSlot(self, old, new):
         if not old:

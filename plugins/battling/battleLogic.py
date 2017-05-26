@@ -90,8 +90,6 @@ def pickAction(me, other):
             matchups[mon] = calcMatchup(me.team[mon], other)
     if matchups[me.active.species] > 140:
         return 'move'
-    if not randint(0,5):
-        return 'move'
     best = [poke for poke,res in matchups.items() if res == max(matchups.values())]
     if best[0] == me.active.species:
         return 'move'
@@ -100,6 +98,8 @@ def pickAction(me, other):
         if me.team[mon].status == 'fnt':
             fainted += 1
     if fainted == 5:
+        return 'move'
+    if not randint(0,5):
         return 'move'
     return 'switch'
 def getMove(moves, active, opponent):
@@ -169,10 +169,21 @@ def getCC1v1Move(moves, pokemon, opponent):
             values[moveid] = 0
             continue
 
+        # STAB-bonus
         mySpecies = getBaseSpecies(pokemon.species)
         oppSpecies = getBaseSpecies(opponent.species)
         if move['type'] in Pokedex[mySpecies]['types']:
             values[moveid] *= 1.5
+
+        # Stat drops and raises
+        boostTable = [1, 1.5, 2, 2.5, 3, 3.5, 4]
+        category = 'atk' if move['category'] == 'Physical' else 'spa'
+        if pokemon.boosts[category] > 0 or opponent.boosts[category] < 0:
+            values[moveid] *= boostTable[pokemon.boosts[category]]
+        if pokemon.boosts[category] < 0 or opponent.boosts[category] > 0:
+            values[moveid] /= boostTable[-pokemon.boosts[category]]
+
+
         # Multiply with the effectiveness of the move
         eff = 1
         if len(Pokedex[oppSpecies]['types']) > 1:
@@ -222,15 +233,7 @@ def calcScore(move, mon, opponents):
         move = Moves[move]
     opp = Pokedex[getBaseSpecies(opponents)]
 
-    boostTable = [1, 1.5, 2, 2.5, 3, 3.5, 4]
     score = move['basePower'] - (100 - move['accuracy'])
-
-    # Stat drops and raises
-    category = 'atk' if move['category'] == 'Physical' else 'spa'
-    if mon.boosts[category] > 0:
-        score *= boostTable[mon.boosts[category]]
-    if mon.boosts[category] < 0:
-        score /= boostTable[-mon.boosts[category]]
 
     oBias = 'Physical' if mon.stats['atk'] > mon.stats['spa'] else 'Special'
     if mon.stats['atk'] == mon.stats['spa']:
