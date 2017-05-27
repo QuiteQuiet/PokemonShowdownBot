@@ -221,7 +221,7 @@ class PSBot(PokemonShowdownBot):
         elif 'tournament' == message[1]:
             if room.loading: return
             if 'create' in message[2]:
-                room.createTour(self.ws, message[3])
+                room.createTour(self.ws, message[3], self.bh)
                 # Tour was created, join it if in supported formats
                 if self.details['joinTours'] and room.tour.format in self.bh.supportedFormats:
                     room.tour.joinTour()

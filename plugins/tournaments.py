@@ -3,11 +3,12 @@ from random import randint
 import robot as r
 
 class Tournament:
-    def __init__(self, ws, roomName, tourFormat):
+    def __init__(self, ws, roomName, tourFormat, battleHandler):
         self.ws = ws
         self.room = roomName
         self.format = tourFormat
         self.hasStarted = False
+        self.bh = battleHandler
 
 
     def sendTourCmd(self, cmd):
@@ -21,13 +22,19 @@ class Tournament:
         self.sendTourCmd('challenge {opp}'.format(opp = opponent))
     def acceptChallenge(self):
         self.sendTourCmd('acceptchallenge')
+    def pickTeam(self):
+        team = self.bh.getRandomTeam(self.format)
+        if team:
+            self.ws.send('|/utm {}'.format(team))
     def onUpdate(self, msg):
         if 'updateEnd' in msg : return
         if 'update' in msg:
             info = json.loads(msg[1])
             if 'challenges' in info and info['challenges']:
+                self.pickTeam()
                 self.sendChallenge(info['challenges'][0])
             elif 'challenged' in info and info['challenged']:
+                self.pickTeam()
                 self.acceptChallenge()
             elif 'isStarted' in info:
                 self.hasStarted = info['isStarted']

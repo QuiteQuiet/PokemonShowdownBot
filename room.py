@@ -49,8 +49,8 @@ class Room:
         if target not in self.tourwhitelist: return False
         self.tourwhitelist.remove(target)
         return True
-    def createTour(self, ws, form):
-        self.tour = Tournament(ws, self.title, form)
+    def createTour(self, ws, form, battleHandler):
+        self.tour = Tournament(ws, self.title, form, battleHandler)
     def getTourWinner(self, msg):
         things = json.loads(msg)
         return things['results'][0], things['format']
