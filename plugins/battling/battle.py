@@ -62,6 +62,7 @@ class Battle:
         self.other = Player()
         self.field = {}
         self.spectating = False
+        self.ladderGame = False
 
     def setMe(self, me, pId):
         self.me.name = me
@@ -69,6 +70,8 @@ class Battle:
     def setOther(self, other, pId):
         self.other.name = other
         self.other.id = pId
+    def isLadderMatch(self):
+        self.ladderGame = True
     def setFieldCond(self, cond):
         # TODO: do this
         pass

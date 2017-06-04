@@ -12,6 +12,7 @@ class BattleHandler:
     def __init__(self, ws, name):
         self.ws = ws
         self.botName = name
+        self.ladder = False
         self.teams = {}
         self.activeBattles = {}
         self.supportedFormats = ['gen7challengecup1v1', 'gen7hackmonscup', 'battlefactory', 'gen7randombattle']
@@ -30,9 +31,9 @@ class BattleHandler:
         self.ws.send(msg)
     def lead(self, battle, poke, rqid):
         self.send('{room}|/team {mon}|{rqid}'.format(room = battle, mon = poke, rqid = rqid))
-    def act(self, battle, action, move, rqid, mega = ''):
-        print('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move) + mega, rqid = rqid))
-        self.send('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move) + mega, rqid = rqid))
+    def act(self, battle, action, move, rqid):
+        print('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
+        self.send('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
     def respond(self, battle, msg):
         self.send('{room}|{msg}'.format(room = battle, msg = msg))
     def handleOutcome(self, battle, won):
@@ -58,13 +59,20 @@ class BattleHandler:
     def parse(self, battle, message):
         if not message: return
         if not message.startswith('|'): return
-        if battle in self.activeBattles and 'init' in message: return
+        if battle in self.activeBattles and message.startswith('|init'): return
 
         msg = message.split('|')
 
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
             self.respond(battle, '/timer on')
+        if 'deinit' == msg[1]:
+            room = self.activeBattles.pop(battle)
+            if self.ladder and room.ladderGame:
+                # Look for a new battle since the last one ended
+                pass
+        if 'rated' == msg[1]:
+            self.activeBattles[battle].isLadderMatch()
 
         btl = self.activeBattles[battle] if battle in self.activeBattles else None
         if not btl or btl.spectating: return
