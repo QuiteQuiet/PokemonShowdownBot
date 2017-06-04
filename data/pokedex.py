@@ -1631,7 +1631,7 @@ Pokedex = {
 		"evoLevel": 30,
 		"eggGroups": ["Mineral"],
 	},
-	"Farfetchd": {
+	"Farfetch'd": {
 		"num": 83,
 		"species": "Farfetch'd",
 		"types": ["Normal", "Flying"],
@@ -4070,7 +4070,7 @@ Pokedex = {
 		"color": "White",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Hooh": {
+	"Ho-Oh": {
 		"num": 250,
 		"species": "Ho-Oh",
 		"types": ["Fire", "Flying"],
@@ -12721,7 +12721,7 @@ Pokedex = {
 		"color": "Green",
 		"eggGroups": ["Mineral"],
 	},
-	"Jangmoo": {
+	"Jangmo-o": {
 		"num": 782,
 		"species": "Jangmo-o",
 		"types": ["Dragon"],
@@ -12733,7 +12733,7 @@ Pokedex = {
 		"evos": ["hakamoo"],
 		"eggGroups": ["Dragon"],
 	},
-	"Hakamoo": {
+	"Hakamo-o": {
 		"num": 783,
 		"species": "Hakamo-o",
 		"types": ["Dragon", "Fighting"],
@@ -12747,7 +12747,7 @@ Pokedex = {
 		"evoLevel": 35,
 		"eggGroups": ["Dragon"],
 	},
-	"Kommoo": {
+	"Kommo-o": {
 		"num": 784,
 		"species": "Kommo-o",
 		"types": ["Dragon", "Fighting"],
@@ -12760,7 +12760,7 @@ Pokedex = {
 		"evoLevel": 45,
 		"eggGroups": ["Dragon"],
 	},
-	"Tapukoko": {
+	"Tapu Koko": {
 		"num": 785,
 		"species": "Tapu Koko",
 		"types": ["Electric", "Fairy"],
@@ -12772,7 +12772,7 @@ Pokedex = {
 		"color": "Yellow",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Tapulele": {
+	"Tapu Lele": {
 		"num": 786,
 		"species": "Tapu Lele",
 		"types": ["Psychic", "Fairy"],
@@ -12784,7 +12784,7 @@ Pokedex = {
 		"color": "Pink",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Tapubulu": {
+	"Tapu Bulu": {
 		"num": 787,
 		"species": "Tapu Bulu",
 		"types": ["Grass", "Fairy"],
@@ -12796,7 +12796,7 @@ Pokedex = {
 		"color": "Red",
 		"eggGroups": ["Undiscovered"],
 	},
-	"Tapufini": {
+	"Tapu Fini": {
 		"num": 788,
 		"species": "Tapu Fini",
 		"types": ["Water", "Fairy"],
