@@ -1,3 +1,12 @@
+def relativeWeightBasedBasePower(attacker, defender):
+	aWeight = attacker['weightkg']
+	dWeight = defender['weightkg']
+	if aWeight > dWeight * 5: return 120
+	if aWeight > dWeight * 4: return 100
+	if aWeight > dWeight * 3: return 80
+	if aWeight > dWeight * 2: return 60
+	return 40
+
 Moves = {
 	"10000000voltthunderbolt": {
 		"num": 719,
@@ -5497,6 +5506,7 @@ Moves = {
 		"num": 535,
 		"accuracy": 100,
 		"basePower": 0,
+		"calculateBasePower": relativeWeightBasedBasePower,
 		"category": "Physical",
 		"desc": "The power of this move depends on (user's weight / target's weight), rounded down. Power is equal to 120 if the result is 5 or more, 100 if 4, 80 if 3, 60 if 2, and 40 if 1 or less. Damage doubles and no accuracy check is done if the target has used Minimize while active.",
 		"shortDesc": "More power the heavier the user than the target.",
@@ -5537,6 +5547,7 @@ Moves = {
 		"num": 484,
 		"accuracy": 100,
 		"basePower": 0,
+		"calculateBasePower": relativeWeightBasedBasePower,
 		"category": "Physical",
 		"desc": "The power of this move depends on (user's weight / target's weight), rounded down. Power is equal to 120 if the result is 5 or more, 100 if 4, 80 if 3, 60 if 2, and 40 if 1 or less. Damage doubles and no accuracy check is done if the target has used Minimize while active.",
 		"shortDesc": "More power the heavier the user than the target.",
