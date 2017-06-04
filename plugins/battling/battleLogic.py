@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 from copy import deepcopy
 
 from data.moves import Moves
@@ -131,13 +131,13 @@ def getSwitch(myTeam, myActive, opponent):
     else:
         if myActive in picks:
             picks.remove(myActive)
-        pick = myTeam[picks[randint(0, len(picks) - 1)]].teamSlot
+        pick = choice(myTeam).teamSlot
     if pick <= 1:
         notFaintedMons = []
         for mon in myTeam:
             if not myTeam[mon].status == 'fnt' and not myTeam[mon].teamSlot == 1:
                 notFaintedMons.append(myTeam[mon].teamSlot)
-        pick = notFaintedMons[randint(0, len(notFaintedMons) - 1)]
+        pick = choice(notFaintedMons)
     return pick
 
 def getCC1v1Move(moves, pokemon, opponent):
@@ -159,19 +159,21 @@ def getCC1v1Move(moves, pokemon, opponent):
     values = {}
     for move in movescopy:
         moveid = move['id']
+        mySpecies = getBaseSpecies(pokemon.species)
+        oppSpecies = getBaseSpecies(opponent.species)
+
         if 'isZ' in move and not pokemon.side.canZmove:
             values[moveid] = 0
             continue
         # This begins a score system for the moves, naively trying to pick the best moves without calculating damage
         # Based on the move's base power
-        values[moveid] = move['basePower']
+        values[moveid] = move['basePower'] if not 'calculateBasePower' in move else move['calculateBasePower'](Pokedex[mySpecies], Pokedex[oppSpecies])
+
         if moveid in blacklist or moveid in chargemoves:
             values[moveid] = 0
             continue
 
         # STAB-bonus
-        mySpecies = getBaseSpecies(pokemon.species)
-        oppSpecies = getBaseSpecies(opponent.species)
         if move['type'] in Pokedex[mySpecies]['types']:
             values[moveid] *= 1.5
 
@@ -202,7 +204,7 @@ def getCC1v1Move(moves, pokemon, opponent):
         if move['type'] == 'Ground' and Pokedex[oppSpecies]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
             values[moveid] = 0
     options = [m for m,v in values.items() if v == max(values.values())]
-    picked = options[randint(0, len(options) - 1)]
+    picked = choice(options)
     return [m for m in movescopy if m['id'] == picked][0]
 
 def getLead(team, opposing):
@@ -213,13 +215,13 @@ def getLead(team, opposing):
         for opp in opposing:
             for move in moves:
                 scores[mon] += calcScore(move, team[mon], opp)
-    try:
-        m = max(scores.values())
-        options = [poke for poke,score in scores.items() if score == m]
-        return team[options[randint(0,len(options)-1)]].teamSlot
-    except ValueError:
+    m = max(scores.values())
+    options = [poke for poke,score in scores.items() if score == m]
+    if len(options) > 0:
+        return team[choice(options)].teamSlot
+    else:
         print('WARNING: Failed to pick proper lead, using random.')
-        return randint(1,6)
+        return randint(1, 6)
 
 def calcScore(move, mon, opponents):
     ''' Calculates an arbitrary score for a move against an opponent to decide how good it is '''
