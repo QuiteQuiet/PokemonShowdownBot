@@ -58,6 +58,14 @@ class Room:
         self.tour = None
 
 # Commands
+def leaveroom(bot, cmd, room, msg, user):
+    reply = r.ReplyObject()
+    msg = bot.removeSpaces(msg)
+    if not msg: msg = room.title
+    if bot.leaveRoom(msg):
+        return reply.response('Leaving room {r} succeeded'.format(r = msg))
+    return reply.response('Could not leave room: {r}'.format(r = msg))
+
 def allowgames(bot, cmd, room, msg, user):
     reply = r.ReplyObject()
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
@@ -95,6 +103,7 @@ def untourwl(bot, cmd, room, msg, user):
     return reply.response('{name} removed from the whitelist in this room.'.format(name = msg))
 
 RoomCommands = {
+    'leave'         : leaveroom,
     'allowgames'    : allowgames,
     'tour'          : tour,
     'tourwl'        : tourwl,

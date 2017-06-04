@@ -53,12 +53,6 @@ def Command(self, cmd, room, msg, user):
         return ReplyObject('Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), True, False, False, False, True)
     if cmd == 'explain':
         return ReplyObject("BB-8 is the name of a robot in the seventh Star Wars movie :)", True)
-    if cmd == 'leave':
-        msg = self.removeSpaces(msg)
-        if not msg: msg = room.title
-        if self.leaveRoom(msg):
-            return ReplyObject('Leaving room {r} succeeded'.format(r = msg))
-        return ReplyObject('Could not leave room: {r}'.format(r = msg))
     if cmd == 'get':
         if user.isOwner():
             res = str(eval(msg))
@@ -103,9 +97,12 @@ def Command(self, cmd, room, msg, user):
     # External commands from plugins (and also room.py)
     try:
         return ExternalCommands[cmd](self, cmd, room, msg, user)
-    except Exception as e:
+    except KeyError as ke:
         # Do nothing, it's expected some commands doesn't exist
         pass
+    except Exception as e:
+        # Something else went wrong D:
+        return ReplyObject(e)
 
     # Informational commands
     if cmd in Links:
@@ -122,7 +119,7 @@ def Command(self, cmd, room, msg, user):
     if cmd == 'ask':
         return ReplyObject(Lines[randint(0, len(Lines) - 1)], True)
     if cmd == 'seen':
-        return ReplyObject("This is not a command because I value other users' privacy.", True)
+        return ReplyObject("This is not a command because I value other users privacy.", True)
     if cmd == 'squid':
         return ReplyObject('\u304f\u30b3\u003a\u5f61', True)
     if cmd in YoutubeLinks:
@@ -177,7 +174,7 @@ def Command(self, cmd, room, msg, user):
             cmd = substitutes[cmd]
         if User.compareRanks(room.rank, '*'):
             return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/xy/pokemon/{mon}/">{capital} analysis</a>'.format(mon = cmd, capital = cmd.title()), True, True)
-        return ReplyObject('Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), True)
+        return ReplyObject('Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), reply = True, pmreply = True)
 
 
     return ReplyObject('{command} is not a valid command.'.format(command = cmd))
