@@ -239,17 +239,17 @@ class PSBot(PokemonShowdownBot):
                 if not room.tour: return
                 room.tour.onUpdate(message[2:])
 
-
-psb = PSBot()
-restartCount = 0
-while restartCount < 100:
-    # This function has a loop that runs as long as the websocket is connected
-    psb.ws.run_forever()
-    # If we get here, the socket is closed and disconnected
-    # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
-    time.sleep(30)
-    print('30 seconds since last disconnect. Retrying connection...')
-    psb.openConnection()
-    restartCount += 1
-    print('Restart Count:', restartCount)
+if __name__ == '__main':
+    psb = PSBot()
+    restartCount = 0
+    while restartCount < 100:
+        # This function has a loop that runs as long as the websocket is connected
+        psb.ws.run_forever()
+        # If we get here, the socket is closed and disconnected
+        # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
+        time.sleep(30)
+        print('30 seconds since last disconnect. Retrying connection...')
+        psb.openConnection()
+        restartCount += 1
+        print('Restart Count:', restartCount)
 
