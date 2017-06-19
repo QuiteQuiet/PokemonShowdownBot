@@ -157,7 +157,7 @@ def Command(self, cmd, room, msg, user):
     if cmd in formats:
         return ReplyObject('Format: http://www.smogon.com/dex/xy/formats/{tier}/'.format(tier = cmd), True)
     # This command is here because it's an awful condition, so try it last :/
-    if [p for p in Pokedex if re.sub('-(?:mega(?:-(x|y))?|primal|xl|l)','', cmd, flags=re.I) in p.replace(' ','').lower()]:
+    if [p for p in Pokedex if re.sub('-(?:mega(?:-(x|y))?|primal|xl|l)$','', cmd, flags=re.I) in p.replace(' ','').lower()]:
         cmd = re.sub('-(?:mega(?:-(x|y))?|primal)','', cmd)
         substitutes = {'gourgeist-s':'gourgeist-small',  # This doesn't break Arceus-Steel like adding |S to the regex would
                        'gourgeist-l':'gourgeist-large',  # and gourgeist-s /pumpkaboo-s still get found, because it matches the
@@ -167,9 +167,10 @@ def Command(self, cmd, room, msg, user):
                        'pumpkaboo-xl':'pumpkaboo-super',
                        'giratina-o':'giratina-origin',
                        'mr.mime':'mr_mime',
-                       'mimejr.':'mime_jr'}
+                       'mimejr.':'mime_jr'
+        }
         if cmd.lower() not in (self.removeSpaces(p).lower() for p in Pokedex):
-            return ReplyObject('{cmd} is not a valid command'.format(cmd = cmd), True)
+            return ReplyObject('{cmd} is not a valid command xxx'.format(cmd = cmd), True)
         if cmd in substitutes:
             cmd = substitutes[cmd]
         if msg not in ('rb', 'gs', 'rs', 'dp', 'bw', 'xy', 'sm'):
