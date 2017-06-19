@@ -32,18 +32,22 @@ class PokemonShowdownBot:
 
     def __init__(self, url, onMessage = None):
         global guidechar
-        with open("details.yaml", 'r') as yaml_file:
-            self.details = yaml.load(yaml_file)
-            self.owner = self.toId(self.details['master'])
-            self.name = self.details['user']
-            self.id = self.toId(self.name)
-            self.rooms = {}
-            self.commandchar = self.details['command']
-            self.intro()
-            self.splitMessage = onMessage if onMessage else self.onMessage
-            self.url = url
-            #websocket.enableTrace(True)
-            self.openConnection()
+        try:
+            with open("details.yaml", 'r') as yaml_file:
+                self.details = yaml.load(yaml_file)
+        except FileNotFoundError:
+            self.loadDefaults()
+
+        self.owner = self.toId(self.details['master'])
+        self.name = self.details['user']
+        self.id = self.toId(self.name)
+        self.rooms = {}
+        self.commandchar = self.details['command']
+        self.intro()
+        self.splitMessage = onMessage if onMessage else self.onMessage
+        self.url = url
+        #websocket.enableTrace(True)
+        self.openConnection()
         guidechar = self.commandchar
 
     def onError(self, ws, error):
@@ -67,6 +71,12 @@ class PokemonShowdownBot:
         self.ws.close()
         self.ws = None
 
+    def loadDefaults(self):
+        import shutil
+        shutil.copy('details-example.yaml', 'details.yaml')
+        with open("details.yaml", 'r') as yaml_file:
+                self.details = yaml.load(yaml_file)
+
     def intro(self):
         print('+~~~~~~~~~~~~~~~~~~~~~~~~+')
         print('|  Pokemon Showdown Bot  |')
@@ -82,6 +92,10 @@ class PokemonShowdownBot:
         self.ws.send(msg)
 
     def login(self, challenge, challengekeyid):
+        if self.name == 'username' and self.details['password'] == 'password':
+            print('Error: Login details still at default; will not proceed with execution!')
+            exit()
+
         payload = { 'act':'login',
                     'name': self.name,
                     'pass': self.details['password'],
