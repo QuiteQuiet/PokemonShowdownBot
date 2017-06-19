@@ -36,7 +36,7 @@ from plugins import PluginCommands
 ExternalCommands = RoomCommands.copy()
 ExternalCommands.update(PluginCommands)
 
-usageLink = r'http://www.smogon.com/stats/2017-02/'
+usageLink = r'http://www.smogon.com/stats/2017-05/'
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 
@@ -172,9 +172,11 @@ def Command(self, cmd, room, msg, user):
             return ReplyObject('{cmd} is not a valid command'.format(cmd = cmd), True)
         if cmd in substitutes:
             cmd = substitutes[cmd]
+        if msg not in ('rb', 'gs', 'rs', 'dp', 'bw', 'xy', 'sm'):
+            msg = 'sm'
         if User.compareRanks(room.rank, '*'):
-            return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/xy/pokemon/{mon}/">{capital} analysis</a>'.format(mon = cmd, capital = cmd.title()), True, True)
-        return ReplyObject('Analysis: http://www.smogon.com/dex/xy/pokemon/{mon}/'.format(mon = cmd), reply = True, pmreply = True)
+            return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/{gen}/pokemon/{mon}/">{capital} analysis</a>'.format(gen = msg, mon = cmd, capital = cmd.title()), True, True)
+        return ReplyObject('Analysis: http://www.smogon.com/dex/{gen}/pokemon/{mon}/'.format(gen = msg, mon = cmd), reply = True, pmreply = True)
 
 
     return ReplyObject('{command} is not a valid command.'.format(command = cmd))
