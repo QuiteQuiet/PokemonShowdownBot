@@ -169,8 +169,9 @@ def Command(self, cmd, room, msg, user):
                        'mr.mime':'mr_mime',
                        'mimejr.':'mime_jr'
         }
+        # Just in case do a double check before progressing...
         if cmd.lower() not in (self.removeSpaces(p).lower() for p in Pokedex):
-            return ReplyObject('{cmd} is not a valid command xxx'.format(cmd = cmd), True)
+            return ReplyObject('{cmd} is not a valid command'.format(cmd = cmd), True)
         if cmd in substitutes:
             cmd = substitutes[cmd]
         if msg not in ('rb', 'gs', 'rs', 'dp', 'bw', 'xy', 'sm'):
