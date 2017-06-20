@@ -239,7 +239,7 @@ class PSBot(PokemonShowdownBot):
                 if not room.tour: return
                 room.tour.onUpdate(message[2:])
 
-if __name__ == '__main':
+if __name__ == '__main__':
     psb = PSBot()
     restartCount = 0
     while restartCount < 100:
@@ -252,4 +252,3 @@ if __name__ == '__main':
         psb.openConnection()
         restartCount += 1
         print('Restart Count:', restartCount)
-
