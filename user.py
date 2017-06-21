@@ -12,7 +12,7 @@ class User:
                 print('{rank} is not a supported usergroup'.format(rank = rank2))
             return False
 
-    def __init__(self, name, rank, owner = False):
+    def __init__(self, name, rank = ' ', owner = False):
         self.name = name
         self.id = re.sub(r'[^a-zA-z0-9]', '', name).lower()
         self.rank = rank
