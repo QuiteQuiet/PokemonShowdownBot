@@ -125,20 +125,24 @@ def getSwitch(myTeam, myActive, opponent):
     m = max(scores.values())
     picks = [poke for poke,score in scores.items() if score == m]
     pick = 0
-    if len(picks) == 1:
-        if myActive not in picks:
-            pick = myTeam[picks[0]].teamSlot
-    else:
-        if myActive in picks:
-            picks.remove(myActive)
-        pick = choice(myTeam).teamSlot
-    if pick <= 1:
-        notFaintedMons = []
-        for mon in myTeam:
-            if not myTeam[mon].status == 'fnt' and not myTeam[mon].teamSlot == 1:
-                notFaintedMons.append(myTeam[mon].teamSlot)
-        pick = choice(notFaintedMons)
-    return pick
+    try:
+        if len(picks) == 1:
+            if myActive not in picks:
+                pick = myTeam[picks[0]].teamSlot
+        else:
+            if myActive in picks:
+                picks.remove(myActive)
+            pick = choice(myTeam).teamSlot
+        if pick <= 1:
+            notFaintedMons = []
+            for mon in myTeam:
+                if not myTeam[mon].status == 'fnt' and not myTeam[mon].teamSlot == 1:
+                    notFaintedMons.append(myTeam[mon].teamSlot)
+            pick = choice(notFaintedMons)
+        return pick
+    except Exception as e:
+        print(e)
+        return randint(1, 6)
 
 def getCC1v1Move(moves, pokemon, opponent):
     # Moves is a list of 4 moves, possibly good or bad moves...
