@@ -181,7 +181,7 @@ class PSBot(PokemonShowdownBot):
                 res = self.do(self, command, room, message[4][len(command) + 1:].lstrip(), user)
                 if not res.text or res.text == 'NoAnswer': return
 
-                if self.evalPermission(user) or res.ignoreBroadcastPermission:
+                if self.userHasPermission(user, self.details['broadcastrank']) or res.ignoreBroadcastPermission:
                     if not res.ignoreEscaping:
                         res.text = self.escapeText(res.text)
                     self.reply(room.title, user, res.text, res.samePlace)

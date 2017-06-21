@@ -60,6 +60,7 @@ class PokemonShowdownBot:
         print('Websocket opened')
 
     def openConnection(self):
+        if not self.url: return
         self.ws = websocket.WebSocketApp(self.url,
                                          on_message = self.splitMessage,
                                          on_error = self.onError,
@@ -197,9 +198,6 @@ class PokemonShowdownBot:
     # Generic permissions test for users
     def isOwner(self, name):
         return self.owner == self.toId(name)
-    def evalPermission(self, user):
-        return User.compareRanks(user.rank, self.details['broadcastrank']) or self.isOwner(user.id)
-
     def userHasPermission(self, user, rank):
         return self.isOwner(user.id) or User.compareRanks(user.rank, rank)
 
