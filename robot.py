@@ -237,6 +237,20 @@ class ReplyObject:
         self.ignoreBroadcastPermission = broadcast
         self.gameCommand = game
         self.canPmReply = pmreply
+
+    def __eq__(self, other):
+        try:
+            return (self.text == other.text
+                and self.samePlace == other.samePlace
+                and self.ignoreEscaping == other.ignoreEscaping
+                and self.ignoreBroadcastPermission == other.ignoreBroadcastPermission
+                and self.gameCommand == other.gameCommand
+                and self.canPmReply == other.canPmReply
+            )
+        except:
+            # This only happens if the other object isn't a matching object
+            return False
+
     def response(self, text):
         self.text = text
         return self
