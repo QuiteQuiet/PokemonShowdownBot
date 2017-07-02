@@ -135,7 +135,7 @@ def Command(self, cmd, room, msg, user):
         while len(team) < 6 or not acceptableWeakness(team):
             poke = list(tiers[cmd.replace('team','poke')])[randint(0, len(tiers[cmd.replace('team','poke')]) - 1)]
             # Test if share dex number with anything in the team
-            if [p for p in team if Pokedex[poke]['dex'] == Pokedex[p]['dex']]:
+            if [p for p in team if Pokedex[poke]['num'] == Pokedex[p]['num']]:
                 continue
             if hasMega:
                 continue
