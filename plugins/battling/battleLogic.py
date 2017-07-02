@@ -77,11 +77,14 @@ def getAction(battle, playing):
             return getMove(moves, active, battle.other.active), 'move'
 def calcMatchup(me, other):
     score = 0
-    for m in me.moves:
-        score += calcScore(m, me, other.species)
-    zmove = getUsableZmove(me)
-    if zmove:
-        score += calcScore(zmove, me, other.species)
+    if me.item.startswith('choice') and me.lastMoveUsed:
+        score = calcScore(me.lastMoveUsed, me, other.species)
+    else:
+        for m in me.moves:
+            score += calcScore(m, me, other.species)
+        zmove = getUsableZmove(me)
+        if zmove:
+            score += calcScore(zmove, me, other.species)
     return score
 def pickAction(me, other):
     matchups = {}
@@ -141,7 +144,7 @@ def getSwitch(myTeam, myActive, opponent):
             pick = choice(notFaintedMons)
         return pick
     except Exception as e:
-        print(e)
+        print(e.__traceback__) # yay for python3
         return randint(1, 6)
 
 def getCC1v1Move(moves, pokemon, opponent):
@@ -152,7 +155,7 @@ def getCC1v1Move(moves, pokemon, opponent):
     for m in moves:
         for fault in ['-', "'"]:
             m = m.replace(fault,'')
-        if m == 'recharge': return m
+        if m == 'recharge': return {'id': m}
         for var in ['return', 'frustration']:
             if m.startswith(var):
                 m = var
@@ -160,6 +163,12 @@ def getCC1v1Move(moves, pokemon, opponent):
     zmove = getUsableZmove(pokemon)
     if zmove:
         movescopy.append(zmove)
+    if pokemon.item.startswith('choice') and pokemon.lastMoveUsed:
+        movescopy = [Moves[pokemon.lastMoveUsed]]
+
+    # Early return if there's only one possible option to use
+    if len(movescopy) == 1:
+        return movescopy[0]
     values = {}
     for move in movescopy:
         moveid = move['id']
@@ -263,5 +272,10 @@ def calcScore(move, mon, opponents):
         score *= 1.5
     if mon.ability in ['hugepower','purepower', 'adaptability']:
         score *= 2
-    # Ignore items for now
+
+    # Ignore most items for now
+    if mon.item == 'choiceband' and move['category'] == 'Physical': score *= 1.5
+    if mon.item == 'choicespecs' and move['category'] == 'Special': score *= 1.5
+    if mon.item == 'lifeorb': score *= 1.3
+
     return score

@@ -129,7 +129,6 @@ class BattleHandler:
             if msg[2].startswith(btl.me.id):
                 lastActive = btl.me.active
                 newActive = btl.me.getPokemon(self.getSpecies(msg[3]))
-                newActive.clearBoosts()
                 btl.me.setActive(newActive)
                 btl.me.changeTeamSlot(lastActive, btl.me.active)
             else:
@@ -160,12 +159,15 @@ class BattleHandler:
             else:
                 btl.other.usedZmove()
 
-        # This keeps track of what moves the opponent has revealed
+        # This keeps track of what moves the opponent has revealed and the last used move from either side
         elif 'move' == msg[1]:
-            move = re.sub(r'[^a-zA-Z0-9]', '', msg[3])
+            move = re.sub(r'[^a-zA-Z0-9]', '', msg[3]).lower()
             if not msg[2].startswith(btl.me.id):
                 if move not in btl.other.active.moves:
                     btl.other.active.moves.append(move)
+                btl.other.active.markLastUsedMove(move)
+            else:
+                btl.me.active.markLastUsedMove(move)
 
         # Boosting moves
         elif '-boost' == msg[1]:
