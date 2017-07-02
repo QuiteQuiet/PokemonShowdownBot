@@ -67,7 +67,7 @@ def leaveroom(bot, cmd, room, msg, user):
     return reply.response('Could not leave room: {r}'.format(r = msg))
 
 def allowgames(bot, cmd, room, msg, user):
-    reply = r.ReplyObject()
+    reply = r.ReplyObject(True)
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
     if room.isPM: return reply.response("You can't use this command in a pm.")
     msg = bot.removeSpaces(msg)
