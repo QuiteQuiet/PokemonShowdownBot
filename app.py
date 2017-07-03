@@ -30,8 +30,30 @@ from plugins import moderation
 from plugins.messages import MessageDatabase
 from plugins.workshop import Workshop
 
+
 class PSBot(PokemonShowdownBot):
+    """Mainly a wrapper class for the Robot class, implementing required methods.
+
+    This implements the major method required, splitMessage class, and also handles
+    the delegation of tasks to their respective modules. Most of the underlying
+    functionality and/or function calls can be found in the PokemonShowdownBot
+    class in robot.py.
+
+    You should expect to handle the PS protocols outlined here:
+    https://github.com/Zarel/Pokemon-Showdown/blob/master/PROTOCOL.md
+
+    For the sake of simplicity, we assume that the command char used is ~ in the documentation.
+
+    Attributes:
+        do: Command method, handles command behaviour (i.e. ~git returns url to this project)
+        usernotes: MessageDatabase, which handles/logs all PMs sent from users
+    """
     def __init__(self):
+        """Initializes the PSBot class
+                                                                                 
+        Setups up the commands, usernotes, and opens the websocket to the
+        main pokemonshowdown server hosted on https://play.pokemonshowdown.com.
+        """
         self.do = Command
         self.usernotes = MessageDatabase()
         PokemonShowdownBot.__init__(self,
@@ -39,6 +61,21 @@ class PSBot(PokemonShowdownBot):
                                     self.splitMessage)
 
     def splitMessage(self, ws, message):
+        """ Decides bot behaviour wth the server based on the content from the websocket.
+
+        This method is the modified splitMessage that is passed to the open
+        websocket in the PokemonShowdownBot class. This method splits the string given
+        by the websocket and delegates the tasks to the corresponding interfaces.
+
+        Args:
+            ws: websocket, websocket object we are receiving information from.
+            message: string,  information given by the websocket.
+        Returns:
+            None.
+        Raises:
+            By default, nothing is raised. But interfaces which this method delegates tasks to
+            may produce exceptions, so best follow the path to the individual module.
+        """
         if not message: return
         if '\n' not in message: self.parseMessage(message, '')
 
@@ -74,6 +111,16 @@ class PSBot(PokemonShowdownBot):
         return False
 
     def handleJoin(self, room, message):
+        """ Handles new users entering a room.
+
+        Args:
+            room: Room object, room this message was received from.
+            message: string, string produced from user joining this room.
+        Returns:
+            None.
+        Raises:
+            None.
+        """
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
             room.doneLoading()
@@ -86,6 +133,22 @@ class PSBot(PokemonShowdownBot):
             self.sendPm(user.id, self.usernotes.pendingMessages(user.id))
 
     def parseMessage(self, msg, roomName):
+        """Parses the message given by a user and delegates the tasks further
+
+        This is where we handle most of the parsing of the PS protocols. Tasks
+        like user related queries(i.e. commands) are delegated to the Command method.
+        And Showdown Tourneys are handled in their own interface in the plugins module.
+        Likewise for the MessageDatabase inteface.
+
+        Args:
+            room: Room object, room this message was received from.
+            message: string, string produced from interacting with the websocket.
+                     example: "|c:|1467521329| bb8nu|random chat message".
+        Returns:
+            None.
+        Raises:
+            None.
+        """
         if not msg.startswith('|'): return
         message = self.escapeMessage(msg).split('|')
         room = Room('Empty') if not roomName else self.getRoom(roomName)
@@ -111,7 +174,7 @@ class PSBot(PokemonShowdownBot):
                 else:
                     self.sendPm(opp, "Sorry, I can't accept challenges in that format :(")
         elif 'updatesearch' in message[1]:
-            # This gets sent before `updatechallenges` does when recieving a battle, but it's
+            # This gets sent before `updatechallenges` does when receiving a battle, but it's
             # not useful for anything, so just return straight away
             return
 
