@@ -34,15 +34,17 @@ from plugins.workshop import Workshop
 class PSBot(PokemonShowdownBot):
     """Mainly a wrapper class for the Robot class, implementing required methods.
 
-    This implements the major method required, splitMessage class, and also handles
-    the delegation of tasks to their respective modules. Most of the underlying
-    functionality and/or function calls can be found in the PokemonShowdownBot
-    class in robot.py.
+    This implements the major method required: splitMessage. Also manages the
+    delegation of tasks to their respective handlers. Most of the underlying
+    functionality and/or function calls can be found in the inherited class
+    PokemonShowdownBot in robot.py.
 
-    You should expect to handle the PS protocols outlined here:
+    You should expect to be somewhat familiar with the PS protocols outlined here:
     https://github.com/Zarel/Pokemon-Showdown/blob/master/PROTOCOL.md
 
     For the sake of simplicity, we assume that the command char used is ~ in the documentation.
+    Utility like functions are placed in the PokemonShowdownBot class, to make this handler
+    class look cleaner.
 
     Attributes:
         do: Command method, handles command behaviour (i.e. ~git returns url to this project)
@@ -73,7 +75,7 @@ class PSBot(PokemonShowdownBot):
         Returns:
             None.
         Raises:
-            By default, nothing is raised. But interfaces which this method delegates tasks to
+            By default, nothing is raised. But handlers which this method delegates tasks to
             may produce exceptions, so best follow the path to the individual module.
         """
         if not message: return
@@ -135,15 +137,15 @@ class PSBot(PokemonShowdownBot):
     def parseMessage(self, msg, roomName):
         """Parses the message given by a user and delegates the tasks further
 
-        This is where we handle most of the parsing of the PS protocols. Tasks
-        like user related queries(i.e. commands) are delegated to the Command method.
-        And Showdown Tourneys are handled in their own interface in the plugins module.
+        This is where we handle the parsing of all the non-battle related PS protocols.
+        Tasks like user related queries (i.e. commands) are delegated to the Command method.
+        And Showdown tournaments are handled in their own handler in the plugins module.
         Likewise for the MessageDatabase inteface.
 
         Args:
-            room: Room object, room this message was received from.
-            message: string, string produced from interacting with the websocket.
-                     example: "|c:|1467521329| bb8nu|random chat message".
+            msg: String, string produced from interacting with the websocket connected
+                 to the PS server. Example: "|c:|1467521329| bb8nu|random chat message".
+            roomName: String, name of the room that the message came from.
         Returns:
             None.
         Raises:
