@@ -229,12 +229,13 @@ class PokemonShowdownBot:
 # Reply class for commands
 class ReplyObject:
     def __init__(self, res = '', reply = False, escape = False, broadcast = False, game = False, pmreply = False):
-        self.text = res
+        self.text = str(res)
         self.samePlace = reply
         self.ignoreEscaping = escape
         self.ignoreBroadcastPermission = broadcast
         self.gameCommand = game
         self.canPmReply = pmreply
+        self.isException = isinstance(res, Exception)
 
     def __eq__(self, other):
         try:
@@ -244,6 +245,7 @@ class ReplyObject:
                 and self.ignoreBroadcastPermission == other.ignoreBroadcastPermission
                 and self.gameCommand == other.gameCommand
                 and self.canPmReply == other.canPmReply
+                and self.isException == other.isException
             )
         except:
             # This only happens if the other object isn't a matching object

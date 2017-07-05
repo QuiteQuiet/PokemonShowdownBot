@@ -26,7 +26,6 @@ import time
 
 from robot import PokemonShowdownBot, Room, User
 from commands import Command
-from plugins import moderation
 from plugins.messages import MessageDatabase
 from plugins.workshop import Workshop
 
@@ -67,20 +66,14 @@ class PSBot(PokemonShowdownBot):
         for m in msg:
             self.parseMessage(m, room)
 
-    def testRoombaned(self, room, user):
-        if moderation.shouldBan(self, user, room):
-            self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
-            return True
-        return False
-
     def handleJoin(self, room, message):
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
             room.doneLoading()
         user = User(message, message[0], self.isOwner(message))
-        if self.testRoombaned(room, user):
-            return
-        room.addUser(user)
+        if not room.addUser(user):
+            return self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
+
         # If the user have a message waiting, tell them that in a pm
         if self.usernotes.shouldNotifyMessage(user.id):
             self.sendPm(user.id, self.usernotes.pendingMessages(user.id))
@@ -156,8 +149,7 @@ class PSBot(PokemonShowdownBot):
                 room.rank = message[2][0]
             newUser = User(message[2][1:], message[2][0], self.isOwner(message[2]))
             room.renamedUser(self.toId(message[3]), newUser)
-            self.testRoombaned(room, newUser)
-
+            self.handleJoin(room, message[2])
 
         # Chat messages
         elif 'c' in message[1].lower():
@@ -167,18 +159,13 @@ class PSBot(PokemonShowdownBot):
             if self.userIsSelf(user.id): return
 
             room.logChat(user, message[2])
-            if room.moderate and self.canPunish(room):
-                anything = moderation.shouldAct(message[4], user, room, message[2])
-                if anything:
-                    action, reason = moderation.getAction(self, room, user, anything, message[2])
-                    self.takeAction(room.title, user, action, reason)
 
-            message[4] = '|'.join(message[4:])
-            if message[4].startswith(self.commandchar) and message[4][1:] and message[4][1].isalpha():
-                command = self.extractCommand(message[4])
-                self.log('Command', message[4], user.id)
+            saidMessage = '|'.join(message[4:])
+            if saidMessage.startswith(self.commandchar) and saidMessage[1:] and saidMessage[1].isalpha():
+                command = self.extractCommand(saidMessage)
+                self.log('Command', saidMessage, user.id)
 
-                res = self.do(self, command, room, message[4][len(command) + 1:].lstrip(), user)
+                res = self.do(self, command, room, saidMessage[len(command) + 1:].lstrip(), user)
                 if not res.text or res.text == 'NoAnswer': return
 
                 if self.userHasPermission(user, self.details['broadcastrank']) or res.ignoreBroadcastPermission:
@@ -190,6 +177,12 @@ class PSBot(PokemonShowdownBot):
                     self.sendPm(user.id, self.escapeText(res.text))
                 else:
                     self.sendPm(user.id, 'Please pm the command for a response.')
+
+            # Test room punishments after commands
+            anything = room.moderation.shouldAct(message[4], user, message[2])
+            if anything and self.canPunish(room):
+                action, reason = room.moderation.getAction(self, room, user, anything, message[2])
+                self.takeAction(room.title, user, action, reason)
 
             if type(room.activity) == Workshop:
                 room.activity.logSession(room.title, user.rank + user.name, message[4])

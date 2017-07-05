@@ -5,27 +5,46 @@ import json
 from collections import deque
 from plugins.tournaments import Tournament
 import robot as r
+from user import User
+from plugins.moderation import ModerationHandler
 
 class Room:
     def __init__(self, room, data = None):
-        if not data: data = {'moderate':False, 'allow games':False, 'tourwhitelist':[]}
+        if not data: data = {
+            'moderate': {
+                'room': room,
+                'anything': False,
+                'spam': False,
+                'banword': False,
+                'stretching': False,
+                'caps': False,
+                'groupchats': False,
+                'urls': False
+            },
+            'allow games':False,
+            'tourwhitelist':[]}
         self.users = {}
         self.loading = True
         self.title = room
         self.isPM = room.lower() == 'pm'
         self.rank = ' '
-        self.moderate = data['moderate']
+        self.moderation = ModerationHandler(data['moderate'])
         self.allowGames = data['allow games']
         self.tour = None
         self.activity = None
         self.tourwhitelist = data['tourwhitelist']
         self.chatlog = deque({'': -1}, 20)
+        self.moderation.assignRoom(self)
+
     def doneLoading(self):
         self.loading = False
 
     def addUser(self, user):
+        if self.moderation.isBannedFromRoom(user):
+            return
         if user.id not in self.users:
             self.users[user.id] = user
+        return True
     def removeUser(self, userid):
         if userid in self.users:
             return self.users.pop(userid)
@@ -35,6 +54,9 @@ class Room:
     def getUser(self, name):
         if name in self.users:
             return self.users[name]
+
+    def botHasBanPermission(self):
+        return User.compareRanks(self.rank, '@')
 
     def logChat(self, user, message):
         self.chatlog.append({user.id: len(message)})
