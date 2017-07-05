@@ -47,7 +47,7 @@ class PSBot(PokemonShowdownBot):
     class look cleaner.
 
     Attributes:
-        do: Command method, handles command behaviour (i.e. ~git returns url to this project)
+        do: Command method, handles command behaviour (i.e. ~git returns a url to this project)
         usernotes: MessageDatabase, which handles/logs all PMs sent from users
     """
     def __init__(self):
