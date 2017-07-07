@@ -181,7 +181,7 @@ class PSBot(PokemonShowdownBot):
             # Test room punishments after commands
             anything = room.moderation.shouldAct(message[4], user, message[2])
             if anything and self.canPunish(room):
-                action, reason = room.moderation.getAction(self, room, user, anything, message[2])
+                action, reason = room.moderation.getAction(room, user, anything, message[2])
                 self.takeAction(room.title, user, action, reason)
 
             if type(room.activity) == Workshop:
