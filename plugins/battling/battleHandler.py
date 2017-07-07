@@ -65,7 +65,6 @@ class BattleHandler:
 
         if 'init' == msg[1] and 'battle' == msg[2]:
             self.activeBattles[battle] = Battle(battle)
-            self.respond(battle, '/timer on')
         if 'deinit' == msg[1]:
             room = self.activeBattles.pop(battle)
             if self.ladder and room.ladderGame:
@@ -114,6 +113,7 @@ class BattleHandler:
             if len(msg) < 4: return
             if msg[3] == self.botName:
                 btl.setMe(msg[3], msg[2])
+                self.respond(battle, '/timer on')
             else:
                 btl.setOther(msg[3], msg[2])
         elif 'teampreview' == msg[1]:
