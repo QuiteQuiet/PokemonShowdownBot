@@ -29,8 +29,32 @@ from commands import Command
 from plugins.messages import MessageDatabase
 from plugins.workshop import Workshop
 
+
 class PSBot(PokemonShowdownBot):
+    """Mainly a wrapper class for the Robot class, implementing required methods.
+
+    This implements the major method required: splitMessage. Also manages the
+    delegation of tasks to their respective handlers. Most of the underlying
+    functionality and/or function calls can be found in the inherited class
+    PokemonShowdownBot in robot.py.
+
+    You should expect to be somewhat familiar with the PS protocols outlined here:
+    https://github.com/Zarel/Pokemon-Showdown/blob/master/PROTOCOL.md
+
+    For the sake of simplicity, we assume that the command char used is ~ in the documentation.
+    Utility like functions are placed in the PokemonShowdownBot class, to make this handler
+    class look cleaner.
+
+    Attributes:
+        do: Command method, handles command behaviour (i.e. ~git returns a url to this project)
+        usernotes: MessageDatabase, which handles/logs all PMs sent from users
+    """
     def __init__(self):
+        """Initializes the PSBot class
+                                                                                 
+        Setups up the commands, usernotes, and opens the websocket to the
+        main pokemonshowdown server hosted on https://play.pokemonshowdown.com.
+        """
         self.do = Command
         self.usernotes = MessageDatabase()
         PokemonShowdownBot.__init__(self,
@@ -38,6 +62,21 @@ class PSBot(PokemonShowdownBot):
                                     self.splitMessage)
 
     def splitMessage(self, ws, message):
+        """ Decides bot behaviour wth the server based on the content from the websocket.
+
+        This method is the modified splitMessage that is passed to the open
+        websocket in the PokemonShowdownBot class. This method splits the string given
+        by the websocket and delegates the tasks to the corresponding interfaces.
+
+        Args:
+            ws: websocket, websocket object we are receiving information from.
+            message: string,  information given by the websocket.
+        Returns:
+            None.
+        Raises:
+            By default, nothing is raised. But handlers which this method delegates tasks to
+            may produce exceptions, so best follow the path to the individual module.
+        """
         if not message: return
         if '\n' not in message: self.parseMessage(message, '')
 
@@ -67,6 +106,16 @@ class PSBot(PokemonShowdownBot):
             self.parseMessage(m, room)
 
     def handleJoin(self, room, message):
+        """ Handles new users entering a room.
+
+        Args:
+            room: Room object, room this message was received from.
+            message: string, string produced from user joining this room.
+        Returns:
+            None.
+        Raises:
+            None.
+        """
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
             room.doneLoading()
@@ -79,6 +128,22 @@ class PSBot(PokemonShowdownBot):
             self.sendPm(user.id, self.usernotes.pendingMessages(user.id))
 
     def parseMessage(self, msg, roomName):
+        """Parses the message given by a user and delegates the tasks further
+
+        This is where we handle the parsing of all the non-battle related PS protocols.
+        Tasks like user related queries (i.e. commands) are delegated to the Command method.
+        And Showdown tournaments are handled in their own handler in the plugins module.
+        Likewise for the MessageDatabase inteface.
+
+        Args:
+            msg: String, string produced from interacting with the websocket connected
+                 to the PS server. Example: "|c:|1467521329| bb8nu|random chat message".
+            roomName: String, name of the room that the message came from.
+        Returns:
+            None.
+        Raises:
+            None.
+        """
         if not msg.startswith('|'): return
         message = self.escapeMessage(msg).split('|')
         room = Room('Empty') if not roomName else self.getRoom(roomName)
@@ -104,7 +169,7 @@ class PSBot(PokemonShowdownBot):
                 else:
                     self.sendPm(opp, "Sorry, I can't accept challenges in that format :(")
         elif 'updatesearch' in message[1]:
-            # This gets sent before `updatechallenges` does when recieving a battle, but it's
+            # This gets sent before `updatechallenges` does when receiving a battle, but it's
             # not useful for anything, so just return straight away
             return
 
