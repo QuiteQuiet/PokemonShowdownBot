@@ -11,7 +11,7 @@ class User:
     either ' ', +, ☆, %, @, *, &, #, or ~. Note that ☆ is only relevant for 
     battle rooms. 
     
-    To compare groups against each other self.Groups have the information required 
+    To compare groups against each other User.Groups have the information required 
     when used like: User.Groups[user.rank] for a numeric value.
 
     Lastly, user.name is the unaltered name as seen in the chat rooms, and can be 
@@ -38,7 +38,7 @@ class User:
                 print('{rank} is not a supported usergroup'.format(rank = rank2))
             return False
 
-    def __init__(self, name, rank=' ', owner=False):
+    def __init__(self, name, rank = ' ', owner = False):
         self.name = name
         self.id = re.sub(r'[^a-zA-z0-9]', '', name).lower()
         self.rank = rank
@@ -46,6 +46,5 @@ class User:
 
     def hasRank(self, rank):
         return self.owner or User.compareRanks(self.rank, rank)
-
     def isOwner(self):
         return self.owner
