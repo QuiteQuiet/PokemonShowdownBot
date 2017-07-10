@@ -176,7 +176,7 @@ def Command(self, cmd, room, msg, user):
             cmd = substitutes[cmd]
         if msg not in ('rb', 'gs', 'rs', 'dp', 'bw', 'xy', 'sm'):
             msg = 'sm'
-        if User.compareRanks(room.rank, '*'):
+        if self.canHtml(room):
             return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/{gen}/pokemon/{mon}/">{capital} analysis</a>'.format(gen = msg, mon = cmd, capital = cmd.title()), True, True)
         return ReplyObject('Analysis: http://www.smogon.com/dex/{gen}/pokemon/{mon}/'.format(gen = msg, mon = cmd), reply = True, pmreply = True)
 

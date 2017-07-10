@@ -15,6 +15,7 @@ PluginCommands = {
     'unbanuser'     : moderation.unbanthing,
     'unbanphrase'   : moderation.unbanthing,
     'oldgentour'    : tournaments.oldgentour,
+    'showranking'   : tournaments.getranking,
     'tell'          : messages.tell,
     'read'          : messages.read,
     'untell'        : messages.untell,

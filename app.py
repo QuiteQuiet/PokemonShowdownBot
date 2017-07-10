@@ -51,7 +51,7 @@ class PSBot(PokemonShowdownBot):
     """
     def __init__(self):
         """Initializes the PSBot class
-                                                                                 
+
         Setups up the commands, usernotes, and opens the websocket to the
         main pokemonshowdown server hosted on https://play.pokemonshowdown.com.
         """
@@ -98,7 +98,9 @@ class PSBot(PokemonShowdownBot):
                 for m in msg:
                     self.bh.parse(room, m)
             except AttributeError as e:
+                import traceback
                 print('AttributeError: {}'.format(e))
+                traceback.print_tb(e.__traceback__)
                 print('MESSAGE THAT CAUSED IT:\n{}'.format(msg))
             return
 
@@ -277,24 +279,26 @@ class PSBot(PokemonShowdownBot):
 
         # Tournaments
         elif 'tournament' == message[1]:
-            if room.loading: return
             if 'create' in message[2]:
                 room.createTour(self.ws, message[3], self.bh)
+
+                if room.loading: return
                 # Tour was created, join it if in supported formats
                 if self.details['joinTours'] and room.tour.format in self.bh.supportedFormats:
                     room.tour.joinTour()
             elif 'end' == message[2]:
-                winner, tier = room.getTourWinner(message[3])
-                if self.name in winner:
-                    self.say(room.title, 'I won the {form} tournament :o'.format(form = tier))
-                else:
-                    self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))
+                if not room.loading:
+                    winner, tier = room.getTourWinner(message[3])
+                    if self.name in winner:
+                        self.say(room.title, 'I won the {form} tournament :o'.format(form = tier))
+                    else:
+                        self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))
                 room.endTour()
             elif 'forceend' in message[2]:
                 room.endTour()
             else:
                 # This is for general tournament updates
-                if not room.tour: return
+                if not room.tour or room.loading: return
                 room.tour.onUpdate(message[2:])
 
 if __name__ == '__main__':

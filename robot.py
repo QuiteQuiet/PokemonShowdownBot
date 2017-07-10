@@ -194,6 +194,8 @@ class PokemonShowdownBot:
         return User.compareRanks(room.rank, '@')
     def canStartTour(self, room):
         return User.compareRanks(room.rank, '@')
+    def canHtml(self, room):
+        return User.compareRanks(room.rank, '*')
 
     # Generic permissions test for users
     def isOwner(self, name):
