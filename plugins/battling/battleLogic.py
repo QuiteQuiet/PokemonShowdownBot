@@ -134,7 +134,7 @@ def getSwitch(myTeam, myActive, opponent):
     else:
         if myActive in picks:
             picks.remove(myActive)
-        pick = choice(picks).teamSlot
+        pick = myTeam[choice(picks)].teamSlot
     if pick <= 1:
         notFaintedMons = []
         for mon in myTeam:

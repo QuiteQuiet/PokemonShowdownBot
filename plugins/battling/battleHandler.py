@@ -97,9 +97,8 @@ class BattleHandler:
                         if btl.me.team[poke].active:
                             btl.me.team[poke].canMega = True
 
-            if 'forceSwitch' in request:
-                if request['forceSwitch'][0]:
-                    self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
+            if 'forceSwitch' in request and request['forceSwitch'][0]:
+                self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
 
         elif 'poke' == msg[1]:
             if not self.activeBattles[battle].me.id == msg[2]:
