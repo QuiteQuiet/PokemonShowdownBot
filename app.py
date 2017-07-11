@@ -1,26 +1,3 @@
-# This is the entry point for the Pokemon Showdown Bot, and contain most of the
-# permission checks for chat returns.
-#
-# It's derived from the base class PokemonShowdownBot, and as such hide a lot of
-# it's core functions by simply calling functions from the base class.
-# For any function called here not defined in this file, look in robot.py.
-#
-# Changes to this file should be made with caution, as much of the extended functions
-# depend on this being structured in a specific way.
-#
-# Extended notes:
-# user:
-#     user objects are objects containing some information about the user who said anything.
-#     This information consists of user.id, user.rank, and user.name. user.id is
-#     a format-removed id of the speaker with only a-z lowercase and 0-9 present.
-#
-#     user.rank contain the auth level of the user, as a single character string of
-#     either ' ', +, %, @, *, &, #, or ~. To compare groups against each other self.Groups have
-#     the information required when used like: User.Groups[user.rank] for a numeric value.
-#
-#     Lastly, user.name is the unaltered name as seen in the chatrooms, and can be used
-#     for things like replying, but shouldn't be used for comparisions.
-
 import json
 import time
 
@@ -135,7 +112,7 @@ class PSBot(PokemonShowdownBot):
         This is where we handle the parsing of all the non-battle related PS protocols.
         Tasks like user related queries (i.e. commands) are delegated to the Command method.
         And Showdown tournaments are handled in their own handler in the plugins module.
-        Likewise for the MessageDatabase inteface.
+        Likewise for the MessageDatabase interface.
 
         Args:
             msg: String, string produced from interacting with the websocket connected
