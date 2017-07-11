@@ -18,9 +18,7 @@ class Tournament:
         htmlString += '<th style="border: 1px solid black;">Tours</th>'
         htmlString += '<th style="border: 1px solid black;">Wins</th>'
         htmlString += '<th style="border: 1px solid black;">Win%</th></tr>'
-        top10 = sorted(data.items(), key = lambda x: x[1]['won'], reverse = True)[:10]
-        # Sort again to put the highest win with fewest entered tours on top
-        top10 = sorted(top10, key = lambda x: x[1]['entered'])
+        top10 = sorted(data.items(), key = lambda x: (x[1]['won'], x[1]['won'] / x[1]['entered']), reverse = True)[:10]
         rank = 1
         for person in top10:
             wins = person[1]['won']
