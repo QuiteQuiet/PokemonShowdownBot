@@ -11,13 +11,29 @@ class Tournament:
 
     @staticmethod
     def buildRankingsTable(data, metagame):
-        htmlString = '<h1 style="font-size:1em;">{}</h1><ol>'.format(metagame)
+        htmlString = '<h1 style="font-size:1em;">{}</h1>'.format(metagame)
+        htmlString += '<table style="border-collapse: collapse; margin: 0; border: 1px solid black; width: 100%;}">'
+        htmlString += '<tr><th style="border: 1px solid black;">Rank</th>'
+        htmlString += '<th style="border: 1px solid black;">Name</th>'
+        htmlString += '<th style="border: 1px solid black;">Tours</th>'
+        htmlString += '<th style="border: 1px solid black;">Wins</th>'
+        htmlString += '<th style="border: 1px solid black;">Win%</th></tr>'
         top10 = sorted(data.items(), key = lambda x: x[1]['won'], reverse = True)[:10]
+        # Sort again to put the highest win with fewest entered tours on top
+        top10 = sorted(top10, key = lambda x: x[1]['entered'])
+        rank = 1
         for person in top10:
             wins = person[1]['won']
             if wins < 1: continue
-            htmlString += '<li>{player}: {score} wins</li>'.format(player = person[0], score = wins)
-        htmlString += '</ol>'
+            entered = person[1]['entered']
+            htmlString += '<tr style="{style} text-align: center;">'.format(style = 'background-color: #333333; color: #AAAAAA;' if rank % 2 == 0 else 'background-color: #AAAAAA; color: #333333;')
+            htmlString += '<td>{rank}</td>'.format(rank = rank)
+            htmlString += '<td>{player}</td>'.format(player = person[0])
+            htmlString += '<td>{played}</td>'.format(played = entered)
+            htmlString += '<td>{won}</td>'.format(won = wins)
+            htmlString += '<td>{percent:.1f}</td></tr>'.format(percent = (wins / entered) * 100)
+            rank += 1
+        htmlString += '</table>'
         return htmlString
 
     def __init__(self, ws, room, tourFormat, battleHandler):
@@ -101,29 +117,35 @@ def oldgentour(bot, cmd, room, msg, user):
 
 def getranking(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', True, True)
-    if not user.hasRank('%'): reply.response('Listing the rankings require Room Driver (%) or higher.')
+    if not user.hasRank('%') and not room.isPM: reply.response('Listing the rankings require Room Driver (%) or higher.')
     # format is room (optional), format, user (if ever, also optional)
     with open('plugins/tournament-rankings.yaml', 'r+') as yf:
         yf.seek(0, 0)
         data = yaml.load(yf)
 
-    parts = bot.removeSpaces(msg).split(',')
+    parts = msg.split(',')
     try:
-        roomData = data[parts[0]]
+        roomData = data[bot.toId(parts[0])]
         parts.pop(0)
     except KeyError:
-        roomData = data[room.title]
+        roomData = data[room.title] if room.title in data else None
     try:
-        formatData = roomData[parts[0]]
-        parts.pop(0)
+        formatData = roomData[bot.toId(parts[0])]
+        format = bot.toId(parts.pop(0))
         try:
             userData = formatData[parts[0]]
-            return reply.response('{user} has played {games} and won {wins} ({winrate}% win rate)'.format(user = parts[0], games = userData['entered'], wins = userData['won'], winrate = userData['won'] // userData['entered']))
-        except:
+            return reply.response('{user} has played {games} and won {wins} ({winrate:.1f}% win rate)'.format(user = parts[0], games = userData['entered'], wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
+        except IndexError:
             rankingsTable = Tournament.buildRankingsTable(formatData, msg)
             if bot.canHtml(room):
                 return reply.response('/addhtmlbox {}'.format(rankingsTable))
             else:
-                return reply.response('Cannot show rankings in this room')
-    except:
-        return reply.response('This room has no rankings in this format :(')
+                return reply.response('Cannot show full rankings in this room')
+        except KeyError:
+            return reply.response('{user} has no data for {tier} in {room}'.format(user = parts[0], tier = format, room = room.title))
+    except TypeError:
+        return reply.response('The room {} has no data about rankings'.format(msg.split(',')[0]))
+    except IndexError:
+        return reply.response('No format given')
+    except KeyError:
+        return reply.response('The room has no data about the format {}'.format(parts[0]))
