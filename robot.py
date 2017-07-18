@@ -210,7 +210,7 @@ class PokemonShowdownBot:
             if e.startswith('groupchat'): continue
             if not newAutojoin and e not in self.details['joinRooms']: continue
             room = self.getRoom(e)
-            details['joinRooms'][e] = {'moderate': room.moderate,
+            details['joinRooms'][e] = {'moderate': room.moderation.config,
                                         'allow games':room.allowGames,
                                         'tourwhitelist': room.tourwhitelist
                                         }
