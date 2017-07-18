@@ -121,26 +121,27 @@ def getranking(bot, cmd, room, msg, user):
         yf.seek(0, 0)
         data = yaml.load(yf)
 
-    parts = msg.split(',')
+    parts = list(map(bot.toId, msg.split(',')))
+    roomTitle = ''
     try:
-        roomData = data[bot.toId(parts[0])]
-        parts.pop(0)
+        roomData = data[parts[0]]
+        roomTitle = parts.pop(0)
     except KeyError:
         roomData = data[room.title] if room.title in data else None
     try:
-        formatData = roomData[bot.toId(parts[0])]
-        format = bot.toId(parts.pop(0))
+        formatData = roomData[parts[0]]
+        format = parts.pop(0)
         try:
             userData = formatData[parts[0]]
             return reply.response('{user} has played {games} and won {wins} ({winrate:.1f}% win rate)'.format(user = parts[0], games = userData['entered'], wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
         except IndexError:
-            rankingsTable = Tournament.buildRankingsTable(formatData, msg)
+            rankingsTable = Tournament.buildRankingsTable(formatData, format)
             if bot.canHtml(room):
                 return reply.response('/addhtmlbox {}'.format(rankingsTable))
             else:
                 return reply.response('Cannot show full rankings in this room')
         except KeyError:
-            return reply.response('{user} has no data for {tier} in {room}'.format(user = parts[0], tier = format, room = room.title))
+            return reply.response('{user} has no data for {tier} in {room}'.format(user = parts[0], tier = format, room = roomTitle if roomTitle else room.title))
     except TypeError:
         return reply.response('The room {} has no data about rankings'.format(msg.split(',')[0]))
     except IndexError:
