@@ -3,7 +3,7 @@ import robot as r
 import re
 from collections import deque
 from datetime import datetime, timedelta
-from urllib.request import urlopen
+import urllib
 import yaml
 
 class PunishedUser:
@@ -135,7 +135,7 @@ class ModerationHandler:
     def badLink(self, link):
         if any(u in link for u in ModerationHandler.UrlShorteners):
             if not link.startswith('http://'): link = 'http://' + link
-            resp = urlopen(link)
+            resp = urllib.request.urlopen(link)
             if 200 <= resp.getcode() > 400:
                 link = resp.url()
             else:
