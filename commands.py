@@ -36,7 +36,7 @@ from plugins import PluginCommands
 ExternalCommands = RoomCommands.copy()
 ExternalCommands.update(PluginCommands)
 
-usageLink = r'http://www.smogon.com/stats/2017-05/'
+usageLink = r'http://www.smogon.com/stats/2017-06/'
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 
@@ -137,7 +137,7 @@ def Command(self, cmd, room, msg, user):
             # Test if share dex number with anything in the team
             if [p for p in team if Pokedex[poke]['num'] == Pokedex[p]['num']]:
                 continue
-            if hasMega:
+            if hasMega and '-Mega' in poke:
                 continue
             team |= {poke}
             if not acceptableWeakness(team):
