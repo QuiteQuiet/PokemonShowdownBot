@@ -38,10 +38,10 @@ class BattleHandler:
         self.send('{room}|{msg}'.format(room = battle, msg = msg))
     def handleOutcome(self, battle, won):
         if won:
-            self.respond(battle, 'O-oh, I won?')
+            self.respond(battle.name, 'O-oh, I won?')
         else:
-            self.respond(battle, 'I guess that was expected...')
-        print('Battle: {outcome}'.format(outcome = 'win' if won else 'loss'))
+            self.respond(battle.name, 'I guess that was expected...')
+        print('Battle: {outcome} against {opponent}'.format(outcome = 'Won' if won else 'Lost', opponent = battle.other.name))
     def getRandomTeam(self, metagame):
         try:
             teamCount = len(self.teams[metagame])
@@ -137,7 +137,7 @@ class BattleHandler:
                                 {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(btl.other.team)+1, btl.other))
                 btl.other.setActive(btl.other.getPokemon(mon))
         elif msg[1] in ['win', 'tie']:
-            self.handleOutcome(battle, msg[2] == self.botName)
+            self.handleOutcome(btl, msg[2] == self.botName)
             self.respond(battle, '/leave')
 
         # In-battle events

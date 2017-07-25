@@ -67,6 +67,7 @@ class Player:
 class Battle:
     def __init__(self, name):
         self.rqid = 1
+        self.name = name
         self.myActiveData = {}
         self.me = Player()
         self.other = Player()
