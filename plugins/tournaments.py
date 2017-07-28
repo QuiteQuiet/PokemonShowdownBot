@@ -40,6 +40,7 @@ class Tournament:
         self.format = tourFormat
         self.players = []
         self.hasStarted = False
+        self.loggedParticipation = False
         self.bh = battleHandler
 
     def sendTourCmd(self, cmd):
@@ -93,8 +94,10 @@ class Tournament:
             data[self.room.title][self.format] = roomFormatData
         with open('plugins/tournament-rankings.yaml', 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
+        self.loggedParticipation = True
 
     def logWin(self, winner):
+        if not self.loggedParticipation: return # This may happen if the bot joins midway through a tournament
         with open('plugins/tournament-rankings.yaml', 'a+') as yf:
             yf.seek(0, 0)
             data = yaml.load(yf)

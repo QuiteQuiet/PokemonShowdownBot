@@ -76,7 +76,7 @@ class Room:
     def getTourWinner(self, msg):
         things = json.loads(msg)
         winner = things['results'][0]
-        self.tour.logWin(winner)
+        if self.tour: self.tour.logWin(winner)
         return winner, things['format']
     def endTour(self):
         self.tour = None
