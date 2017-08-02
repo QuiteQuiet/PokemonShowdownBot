@@ -39,6 +39,7 @@ class PokemonShowdownBot:
             self.loadDefaults()
 
         self.owner = self.toId(self.details['master'])
+        self.apikeys = self.details['apikeys']
         self.name = self.details['user']
         self.id = self.toId(self.name)
         self.rooms = {}

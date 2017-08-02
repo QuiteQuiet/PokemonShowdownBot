@@ -70,7 +70,7 @@ def handler(bot, cmd, room, msg, user):
         return reply.response(workshop.getTeam())
     elif msg == 'end':
         if not workshop.hasHostingRights(user): return reply.response('Only the workshop host or a Room Moderator can end the workshop')
-        bot.sendPm(user.id, workshop.pasteLog(room.title, bot.details['apikey']))
+        bot.sendPm(user.id, workshop.pasteLog(room.title, bot.apikeys['pastebin']))
         room.activity = None
         return reply.response('Workshop session ended')
     return reply.response('Unrecognized command: {cmd}'.format(cmd = msg if msg else 'nothing'))
