@@ -109,7 +109,7 @@ def Command(self, cmd, room, msg, user):
         msg = msg.lower()
         if msg in Links[cmd]:
             return ReplyObject(Links[cmd][msg], True)
-        return ReplyObject('{tier} is not a supported format for {command}'.format(tier = msg, command = cmd), True)
+        return ReplyObject('{tier} is not a supported format for {command}'.format(tier = msg if msg else "''", command = cmd), True)
     if cmd == 'usage':
         return ReplyObject(usageLink, True, False, False, False, True)
     # Fun stuff

@@ -152,7 +152,7 @@ class BattleHandler:
                 btl.me.active.canMega = False
             else:
                 btl.other.removeBaseForm(msg[3], mega)
-        elif '-zmove' == msg[1]:
+        elif '-zmove' == msg[1] or '-zpower' == msg[1]:
             if msg[2].startswith(btl.me.id):
                 btl.me.usedZmove()
             else:

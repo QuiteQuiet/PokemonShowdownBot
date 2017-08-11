@@ -7,7 +7,7 @@ import robot as r
 class Tournament:
 
     @staticmethod
-    def toId(thing): return re.sub(r'[^a-zA-z0-9,]', '', thing).lower()
+    def toId(thing): return re.sub(r'[^a-zA-Z0-9,]', '', thing).lower()
 
     @staticmethod
     def buildRankingsTable(data, metagame):

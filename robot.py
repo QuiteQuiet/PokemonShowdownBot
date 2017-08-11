@@ -168,7 +168,7 @@ class PokemonShowdownBot:
 
     # Helpful functions
     def toId(self, thing):
-        return re.sub(r'[^a-zA-z0-9,]', '', thing).lower()
+        return re.sub(r'[^a-zA-Z0-9,]', '', thing).lower()
     def escapeText(self, line):
         if line[0] == '/':
             return '/' + line

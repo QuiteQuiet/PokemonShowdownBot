@@ -236,7 +236,7 @@ def calcScore(move, mon, opponents):
     ''' Calculates an arbitrary score for a move against an opponent to decide how good it is '''
     if type(move) is str:
         if 'hiddenpower' in  move:
-            move = move[:-2]
+            move = move[:-2] if not move == 'hiddenpower' else move
         for var in ['return', 'frustration']:
             if move.startswith(var):
                 move = var
