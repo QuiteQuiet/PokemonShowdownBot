@@ -265,11 +265,15 @@ class PSBot(PokemonShowdownBot):
                     room.tour.joinTour()
             elif 'end' == message[2]:
                 if not room.loading:
-                    winner, tier = room.getTourWinner(message[3])
-                    if self.name in winner:
-                        self.say(room.title, 'I won the {form} tournament :o'.format(form = tier))
+                    winners, tier = room.getTourWinner(message[3])
+                    if self.name in winners:
+                        message = 'I won the {form} tournament :o'.format(form = tier)
+                        if len(winners) > 1:
+                            winners.remove(self.name)
+                            message += '\nCongratulations to {others} for also winning :)'.format(others = ', '.join(winners))
+                        self.say(room.title, message)
                     else:
-                        self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winner)))
+                        self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)))
                 room.endTour()
             elif 'forceend' in message[2]:
                 room.endTour()
