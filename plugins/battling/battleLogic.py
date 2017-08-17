@@ -194,7 +194,6 @@ def getCC1v1Move(moves, pokemon, opponent):
         if pokemon.boosts[category] < 0 or opponent.boosts[category] > 0:
             values[moveid] /= boostTable[-pokemon.boosts[category]]
 
-
         # Multiply with the effectiveness of the move
         eff = 1
         if len(Pokedex[oppSpecies]['types']) > 1:
@@ -203,6 +202,7 @@ def getCC1v1Move(moves, pokemon, opponent):
         else:
             eff = Types[ Pokedex[oppSpecies]['types'][0] ][move['type']]
         values[moveid] *= eff
+
         # Abilities that give immunities
         if move['type'] == 'Water' and Pokedex[oppSpecies]['abilities']['0'] in waterImmune:
             values[moveid] = 0
@@ -212,6 +212,15 @@ def getCC1v1Move(moves, pokemon, opponent):
             values[moveid] = 0
         if move['type'] == 'Ground' and Pokedex[oppSpecies]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
             values[moveid] = 0
+
+        # Ignore most items for now
+        if pokemon.item == 'choiceband' and move['category'] == 'Physical': values[moveid] *= 1.5
+        if pokemon.item == 'choicespecs' and move['category'] == 'Special': values[moveid] *= 1.5
+        if pokemon.item == 'lifeorb': values[moveid] *= 1.3
+
+        # Status
+        if pokemon.status == 'brn' and move['category'] == 'Physical': values[moveid] /= 2
+
     options = [m for m,v in values.items() if v == max(values.values())]
     picked = choice(options)
     return [m for m in movescopy if m['id'] == picked][0]
@@ -273,5 +282,8 @@ def calcScore(move, mon, opponents):
     if mon.item == 'choiceband' and move['category'] == 'Physical': score *= 1.5
     if mon.item == 'choicespecs' and move['category'] == 'Special': score *= 1.5
     if mon.item == 'lifeorb': score *= 1.3
+
+    # Status
+    if mon.status == 'brn' and move['category'] == 'Physical': score /= 2
 
     return score
