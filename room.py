@@ -130,6 +130,8 @@ RoomCommands = {
     'leave'         : leaveroom,
     'allowgames'    : allowgames,
     'tour'          : tour,
+    'tourwhitelist' : tourwl,
     'tourwl'        : tourwl,
+    'untourwhitelist': untourwl,
     'untourwl'      : untourwl
 }
