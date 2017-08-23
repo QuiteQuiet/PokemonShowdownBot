@@ -219,7 +219,11 @@ def getCC1v1Move(moves, pokemon, opponent):
         if pokemon.item == 'lifeorb': values[moveid] *= 1.3
 
         # Status
-        if pokemon.status == 'brn' and move['category'] == 'Physical': values[moveid] /= 2
+        if pokemon.status == 'brn' and move['category'] == 'Physical':
+            if pokemon.ability == 'guts':
+                values[moveid] *= 1.5
+            else:
+                values[moveid] /= 2
 
     options = [m for m,v in values.items() if v == max(values.values())]
     picked = choice(options)
