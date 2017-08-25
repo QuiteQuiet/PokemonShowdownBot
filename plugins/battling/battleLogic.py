@@ -19,6 +19,8 @@ def getUsableZmove(pokemon):
     zmovedata = deepcopy(Moves[zmoves[pokemon.item]])
     if zmovedata['basePower'] == 1:
         for move in pokemon.moves:
+            if 'hiddenpower' in  move:
+                move = move[:-2] if not move == 'hiddenpower' else move
             for var in ('return', 'frustration'):
                 if move.startswith(var):
                     move = var
