@@ -5,10 +5,27 @@ from random import randint
 
 import robot as r
 from data.pokedex import Pokedex
+from plugins.pasteImporter import PasteImporter
 from plugins.battling.battle import Battle, Pokemon
 from plugins.battling.battleLogic import getAction, getSwitch, getLead
 # This currently only work in singles and not doubles / triples
 class BattleHandler:
+
+    @staticmethod
+    def PSPackTeam(importable):
+        """This method converts a PS importable to the packed format that PS use
+        to send teams to the server with
+
+        Args:
+            importable: string, the importable that should be converted to packed.
+        Returns:
+            String with the packed team.
+        Raises:
+            None.
+        """
+        #TODO
+        return ''
+
     def __init__(self, ws, name):
         self.ws = ws
         self.botName = name
@@ -122,8 +139,15 @@ class BattleHandler:
                 poke = getLead(btl.me.team, btl.other.team)
                 self.lead(battle, poke, btl.rqid)
         elif 'turn' == msg[1]:
-            action, actionType = getAction(btl, battle.split('-')[1])
-            self.act(battle, actionType, action, btl.rqid)
+            try:
+                action, actionType = getAction(btl, battle.split('-')[1])
+                self.act(battle, actionType, action, btl.rqid)
+            # There's a lot of very quiet bugs in the BattleLogic.getAction code
+            # so catch all the exceptions to get information about them.
+            except Exception as e:
+                import traceback
+                print('{}: {}'.format(type(e).__name__, e))
+                traceback.print_tb(e.__traceback__)
         elif 'switch' == msg[1]:
             if msg[2].startswith(btl.me.id):
                 lastActive = btl.me.active
@@ -203,15 +227,31 @@ class BattleHandler:
 
 
 def acceptTeam(self, cmd, room, msg, user):
-    reply = r.ReplyObject('')
-    meta, team = msg.split()
+    reply = r.ReplyObject('', reply = True, broadcast = True)
+    meta, team = msg.replace(' ', '').split(',')
     if not team: return reply.response('You forgot a team')
+
+
+    # Resolve links to teams
+    if team.startswith('http'):
+        team = PasteImporter.getPasteContent(team)
+    if not team:
+        return reply.response('Unsupported paste type (probably)')
+    # If the pasted team was an importable instead of packed, pack it
+    if not team.startswith('|'):
+        team = BattleHandler.PSPackTeam(team)
+    # Double check so it actually is packed
     if not team.startswith('|'): return reply.response("This team doesn't look like a valid packed team :(")
+
+    meta = self.toId(meta)
     if not meta in self.bh.teams:
         self.bh.teams[meta] = []
+    if not team in self.bh.teams[meta]:
+        self.bh.teams[meta].append(team)
+    else:
+        return reply.response('I already have that team! :D')
     if not meta in self.bh.supportedFormats:
         self.bh.supportedFormats.append(meta)
-    self.bh.teams[meta].append(team)
     with open('plugins/battling/teams.yaml', 'w+') as file:
         yaml.dump(self.bh.teams, file, default_flow_style = False, explicit_start = True)
     return reply.response('Saved that team for you so that I can play with it :)')
