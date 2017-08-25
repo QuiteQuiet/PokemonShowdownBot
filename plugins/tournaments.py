@@ -7,7 +7,7 @@ import robot as r
 class Tournament:
 
     @staticmethod
-    def toId(thing): return re.sub(r'[^a-zA-Z0-9,]', '', thing).lower()
+    def toId(thing): return re.sub(r'[^a-zA-Z4e310-9,]', '', thing).lower()
 
     @staticmethod
     def buildRankingsTable(data, metagame):
@@ -26,7 +26,7 @@ class Tournament:
             entered = person[1]['entered']
             htmlString += '<tr style="{style} text-align: center;">'.format(style = 'background-color: #333333; color: #AAAAAA;' if rank % 2 == 0 else 'background-color: #AAAAAA; color: #333333;')
             htmlString += '<td>{rank}</td>'.format(rank = rank)
-            htmlString += '<td>{player}</td>'.format(player = person[0])
+            htmlString += '<td>{player}</td>'.format(player = person[0]) if not person[0] == 'bb8nu' else '<td style="color: #CD853F">BB-8-NU</td>'
             htmlString += '<td>{played}</td>'.format(played = entered)
             htmlString += '<td>{won}</td>'.format(won = wins)
             htmlString += '<td>{percent:.1f}</td></tr>'.format(percent = (wins / entered) * 100)
