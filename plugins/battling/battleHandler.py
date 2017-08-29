@@ -29,7 +29,7 @@ class BattleHandler:
     def __init__(self, ws, name):
         self.ws = ws
         self.botName = name
-        self.ladder = False
+        self.ladderFormat = False
         self.teams = {}
         self.activeBattles = {}
         self.supportedFormats = ['gen7challengecup1v1', 'gen7hackmonscup', 'battlefactory', 'gen7randombattle']
@@ -46,13 +46,15 @@ class BattleHandler:
 
     def send(self, msg):
         self.ws.send(msg)
+    def respond(self, battle, msg):
+        self.send('{room}|{msg}'.format(room = battle, msg = msg))
+
     def lead(self, battle, poke, rqid):
         self.send('{room}|/team {mon}|{rqid}'.format(room = battle, mon = poke, rqid = rqid))
     def act(self, battle, action, move, rqid):
         print('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
         self.send('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
-    def respond(self, battle, msg):
-        self.send('{room}|{msg}'.format(room = battle, msg = msg))
+
     def handleOutcome(self, battle, won):
         if won:
             self.respond(battle.name, 'O-oh, I won?')
@@ -66,6 +68,22 @@ class BattleHandler:
         except:
             # No valid team for this format. It shouldn't happen but just in case
             return ''
+
+    def setLadderFormat(self, format):
+        '''Sets the format used for laddering.
+
+        Args:
+            format: string, the format that is going to be laddered in.
+        Returns:
+            Bool: True if setting the team was successful, False otherwise.
+        Raises:
+            None.
+        '''
+        if not format in self.teams: return False
+        self.ladderFormat = format
+        return True
+    def clearLadderFormat(self):
+        self.ladderFormat = False
 
     def getSpecies(self, details):
         pokemon = details.split(',')[0].replace('-*', '')
@@ -84,8 +102,10 @@ class BattleHandler:
             self.activeBattles[battle] = Battle(battle)
         if 'deinit' == msg[1]:
             room = self.activeBattles.pop(battle)
-            if self.ladder and room.ladderGame:
+            if self.ladderFormat and room.ladderGame:
                 # Look for a new battle since the last one ended
+                self.send('|/utm {}'.format(self.getRandomTeam(self.ladderFormat)))
+                self.send('|/search {}'.format(self.ladderFormat))
                 pass
         if 'rated' == msg[1]:
             self.activeBattles[battle].isLadderMatch()
@@ -225,8 +245,22 @@ class BattleHandler:
             if not msg[2].startswith(btl.me.id):
                 btl.other.active.setCondition('0', 'fnt')
 
+def startLaddering(bot, cmd, room, msg, user):
+    reply = r.ReplyObject('', reply = True)
+    if not user.isOwner: return reply.response('Only owner is allowed to do this.')
+    if bot.toId(msg) == 'false':
+        bot.bh.clearLadderFormat()
+        return reply.response('Stopped laddering.')
+    if not bot.bh.setLadderFormat(msg): return reply.response('Starting to ladder failed, no valid teams for format: {}.'.format(msg))
+    # Now that we know that we have valid teams for laddering, and the settings
+    # to restart after finishing a game are set, we can now begin.
 
-def acceptTeam(self, cmd, room, msg, user):
+    # Note: To ladder in formats with random teams, add an empty string to that format in teams.yaml.
+    bot.send('|/utm {}'.format(bot.bh.getRandomTeam(bot.bh.ladderFormat)))
+    bot.send('|/search {}'.format(bot.bh.ladderFormat))
+    return reply.response('Started laddering in format: {}'.format(bot.bh.ladderFormat))
+
+def acceptTeam(bot, cmd, room, msg, user):
     reply = r.ReplyObject('', reply = True, broadcast = True)
     meta, team = msg.replace(' ', '').split(',')
     if not team: return reply.response('You forgot a team')
@@ -243,15 +277,15 @@ def acceptTeam(self, cmd, room, msg, user):
     # Double check so it actually is packed
     if not team.startswith('|'): return reply.response("This team doesn't look like a valid packed team :(")
 
-    meta = self.toId(meta)
-    if not meta in self.bh.teams:
-        self.bh.teams[meta] = []
-    if not team in self.bh.teams[meta]:
-        self.bh.teams[meta].append(team)
+    meta = bot.toId(meta)
+    if not meta in bot.bh.teams:
+        bot.bh.teams[meta] = []
+    if not team in bot.bh.teams[meta]:
+        bot.bh.teams[meta].append(team)
     else:
         return reply.response('I already have that team! :D')
-    if not meta in self.bh.supportedFormats:
-        self.bh.supportedFormats.append(meta)
+    if not meta in bot.bh.supportedFormats:
+        bot.bh.supportedFormats.append(meta)
     with open('plugins/battling/teams.yaml', 'w+') as file:
-        yaml.dump(self.bh.teams, file, default_flow_style = False, explicit_start = True)
+        yaml.dump(bot.bh.teams, file, default_flow_style = False, explicit_start = True)
     return reply.response('Saved that team for you so that I can play with it :)')

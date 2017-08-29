@@ -24,5 +24,6 @@ PluginCommands = {
     'ws'            : workshop.handler,
     'anagram'       : anagram.start,
     'a'             : anagram.answer,
-    'storeteam'     : battleHandler.acceptTeam
+    'storeteam'     : battleHandler.acceptTeam,
+    'ladder'        : battleHandler.startLaddering
 }
