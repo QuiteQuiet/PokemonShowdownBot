@@ -78,9 +78,6 @@ def setbroadcast(robot, cmd, room, params, user):
         return ReplyObject('You are not allowed to set broadcast rank. (Requires #)')
     return ReplyObject('{rank} is not a valid rank'.format(rank = params if not params == ' ' else 'none'))
 
-def pick(robot, cmd, room, params, user):
-    return 
-
 def links(robot, cmd, room, params, user):
     params = params.lower()
     if params in Links[cmd]:
@@ -183,12 +180,12 @@ commands = [
     Command(['seen'], lambda s, c, r, p, u: ReplyObject("This is not a command because I value other users privacy.", True)),
     Command(['broadcast'], lambda s, c, r, p, u: ReplyObject('Rank required to broadcast: {rank}'.format(rank = s.details['broadcastrank']), True)),
     Command(['usage'], lambda s, c, r, p, u: ReplyObject(usageLink, reply = True, pmreply = True)),
-    Command(['pick'], lambda s, c, r, p, u: ReplyObject(choice(params.split(',')), True)),
+    Command(['pick'], lambda s, c, r, p, u: ReplyObject(choice(p.split(',')), True)),
 
     # Generate the command list on load
     Command([link for link in YoutubeLinks], lambda s, c, r, p, u: ReplyObject(YoutubeLinks[c], True)),
     Command([f for f in formats], lambda s, c, r, p, u: ReplyObject('Format: http://www.smogon.com/dex/sm/formats/{tier}/'.format(tier = c), True)),
-    
+
     # Commands with dedicated functions because of their complexity (need more than a single expression)
     Command(['get'], get),
     Command(['forcerestart'], forcerestart),
@@ -200,5 +197,5 @@ commands = [
     Command([t.replace('poke','team') for t in tiers], randteam),
 
     # Hardcoding the extra parameters that the regex previously took care of
-    Command([p.lower() for p in Pokedex] + ['pumpkaboo-s', 'pumpkaboo-l', 'pumpkaboo-xl', 'gourgeist-s', 'gourgeist-l', 'gourgeist-xl', 'giratina-o'], pokedex)
+    Command([p.replace('-', '').lower() for p in Pokedex] + ['pumpkaboo-s', 'pumpkaboo-l', 'pumpkaboo-xl', 'gourgeist-s', 'gourgeist-l', 'gourgeist-xl', 'giratina-o'], pokedex)
 ]
