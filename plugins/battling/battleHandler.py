@@ -106,15 +106,18 @@ class BattleHandler:
                 # Look for a new battle since the last one ended
                 self.send('|/utm {}'.format(self.getRandomTeam(self.ladderFormat)))
                 self.send('|/search {}'.format(self.ladderFormat))
-                pass
+
         if 'rated' == msg[1]:
             self.activeBattles[battle].isLadderMatch()
 
         btl = self.activeBattles[battle] if battle in self.activeBattles else None
         if not btl or btl.spectating: return
         if 'request' == msg[1]:
-            # This is where all the battle picking happen
-            request = json.loads(msg[2])
+            try:
+                # This is where all the battle picking happen
+                request = json.loads(msg[2])
+            except ValueError as e:
+                return
             if 'rqid' in request:
                 self.activeBattles[battle].rqid = request['rqid']
             sidedata = request['side']
