@@ -34,7 +34,6 @@ class Command:
             NotImplementedError if not implemented, otherwise unknown. """
         raise NotImplementedError('Command#run method not implemented')
 
-
 class ReplyObject:
     """ Class for returning information from a command to the core program.
 
@@ -103,7 +102,6 @@ class CommandInvoker:
             except AttributeError:
                 # Module contains no commands, this is expected and should be ignored
                 pass
-            
 
     def _iterPackages(self):
         for importer, modname, ispkg in pkgutil.walk_packages(path = '.', onerror = lambda x: None):
