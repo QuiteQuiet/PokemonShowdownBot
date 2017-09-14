@@ -87,7 +87,6 @@ class CommandInvoker:
     def buildInvokerTable(self):
         print('Loading commands...')
         for importer, modname, ispkg in self._iterPackages():
-            spec = importer.find_spec(modname)
             importedModule = importlib.import_module(modname)
             try:
                 # Look through the module and see if any commands have been defined
@@ -99,6 +98,7 @@ class CommandInvoker:
                             print('{} already exists as a command'.format(trigger))
                             continue
                         self.cmdInvokers[trigger] = command
+                print('Loaded from {}'.format(modname))
             except AttributeError:
                 # Module contains no commands, this is expected and should be ignored
                 pass

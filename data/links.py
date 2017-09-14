@@ -53,7 +53,7 @@ Links = {
 	'pu':'http://www.smogon.com/forums/threads/3526592/',
 	'lc':'http://www.smogon.com/forums/threads/3524037/'
 	},
-'tour':{
+'tours':{
     'lt':'http://www.smogon.com/forums/threads/3555097/',
     }
 }

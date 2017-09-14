@@ -249,7 +249,7 @@ class PSBot(PokemonShowdownBot):
                 self.log('Command', message[4], user.id)
                 params = message[4][len(command) + len(self.commandchar):].lstrip()
 
-                response = self.do(self, command, Room('pm'), params, user)
+                response = self.invoker.execute(self, command, Room('pm'), params, user)
 
                 if not response.text or response.text == 'NoAnswer': return
                 self.sendPm(user.id, response.text)
