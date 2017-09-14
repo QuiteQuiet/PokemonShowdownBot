@@ -3,7 +3,7 @@ import json
 import yaml
 from random import randint
 
-import robot as r
+from invoker import ReplyObject, Command
 from data.pokedex import Pokedex
 from plugins.pasteImporter import PasteImporter
 from plugins.battling.battle import Battle, Pokemon
@@ -246,7 +246,7 @@ class BattleHandler:
                 btl.other.active.setCondition('0', 'fnt')
 
 def startLaddering(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', reply = True)
+    reply = ReplyObject('', reply = True)
     if not user.isOwner: return reply.response('Only owner is allowed to do this.')
     if bot.toId(msg) == 'false':
         bot.bh.clearLadderFormat()
@@ -261,7 +261,7 @@ def startLaddering(bot, cmd, room, msg, user):
     return reply.response('Started laddering in format: {}'.format(bot.bh.ladderFormat))
 
 def acceptTeam(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', reply = True, broadcast = True)
+    reply = ReplyObject('', reply = True, broadcast = True)
     meta, team = msg.replace(' ', '').split(',')
     if not team: return reply.response('You forgot a team')
 
@@ -289,3 +289,8 @@ def acceptTeam(bot, cmd, room, msg, user):
     with open('plugins/battling/teams.yaml', 'w+') as file:
         yaml.dump(bot.bh.teams, file, default_flow_style = False, explicit_start = True)
     return reply.response('Saved that team for you so that I can play with it :)')
+
+command = [
+    Command(['storeteam'], acceptTeam),
+    Command(['ladder'], startLaddering)
+]

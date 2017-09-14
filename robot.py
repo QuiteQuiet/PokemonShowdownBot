@@ -228,32 +228,3 @@ class PokemonShowdownBot:
             self.login(message[3], message[2])
         elif parts[1] == 'updateuser':
             self.updateUser(parts[2], parts[3])
-
-# Reply class for commands
-class ReplyObject:
-    def __init__(self, res = '', reply = False, escape = False, broadcast = False, game = False, pmreply = False):
-        self.text = str(res)
-        self.samePlace = reply
-        self.ignoreEscaping = escape
-        self.ignoreBroadcastPermission = broadcast
-        self.gameCommand = game
-        self.canPmReply = pmreply
-        self.isException = isinstance(res, Exception)
-
-    def __eq__(self, other):
-        try:
-            return (self.text == other.text
-                and self.samePlace == other.samePlace
-                and self.ignoreEscaping == other.ignoreEscaping
-                and self.ignoreBroadcastPermission == other.ignoreBroadcastPermission
-                and self.gameCommand == other.gameCommand
-                and self.canPmReply == other.canPmReply
-                and self.isException == other.isException
-            )
-        except:
-            # This only happens if the other object isn't a matching object
-            return False
-
-    def response(self, text):
-        self.text = text
-        return self

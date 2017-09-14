@@ -1,6 +1,6 @@
 import requests
 
-import robot as r
+from invoker import ReplyObject, Command
 from plugins.games import GenericGame
 
 class Workshop(GenericGame):
@@ -48,7 +48,7 @@ class Workshop(GenericGame):
         return self.host == user.id or user.hasRank('@')
 
 def handler(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True)
+    reply = ReplyObject('', True)
     if msg.startswith('new'):
         if not user.hasRank('@'): return reply.response("You don't have permission to start workshops (Requires @)")
         if room.activity: return reply.response('A room.activity is already in progress')
@@ -74,3 +74,5 @@ def handler(bot, cmd, room, msg, user):
         room.activity = None
         return reply.response('Workshop session ended')
     return reply.response('Unrecognized command: {cmd}'.format(cmd = msg if msg else 'nothing'))
+
+commands = [Command(['workshop', 'ws'], handler)]

@@ -4,7 +4,7 @@
 import json
 from collections import deque
 from plugins.tournaments import Tournament
-import robot as r
+from invoker import ReplyObject, Command
 from user import User
 from plugins.moderation import ModerationHandler
 
@@ -82,56 +82,54 @@ class Room:
         self.tour = None
 
 # Commands
-def leaveroom(bot, cmd, room, msg, user):
-    reply = r.ReplyObject()
-    msg = bot.removeSpaces(msg)
-    if not msg: msg = room.title
-    if bot.leaveRoom(msg):
-        return reply.response('Leaving room {r} succeeded'.format(r = msg))
-    return reply.response('Could not leave room: {r}'.format(r = msg))
+def leaveroom(bot, cmd, room, params, user):
+    reply = ReplyObject()
+    params = bot.removeSpaces(params)
+    if not params: params = room.title
+    if bot.leaveRoom(params):
+        return reply.response('Leaving room {r} succeeded'.format(r = params))
+    return reply.response('Could not leave room: {r}'.format(r = params))
 
-def allowgames(bot, cmd, room, msg, user):
-    reply = r.ReplyObject(True)
+def allowgames(bot, cmd, room, params, user):
+    reply = ReplyObject(True)
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
     if room.isPM: return reply.response("You can't use this command in a pm.")
-    msg = bot.removeSpaces(msg)
-    if msg in ['true','yes','y','True']:
+    params = bot.removeSpaces(params)
+    if params in ['true','yes','y','True']:
         if room.allowGames: return reply.response('Chatgames are already allowed in this room.')
         room.allowGames = True
         return reply.response('Chatgames are now allowed in this room.')
 
-    elif msg in ['false', 'no', 'n',' False']:
+    elif params in ['false', 'no', 'n',' False']:
         room.allowGames = False
         return reply.response('Chatgames are no longer allowed in this room.')
-    return reply.response('{param} is not a supported parameter'.format(param = msg))
+    return reply.response('{param} is not a supported parameter'.format(param = params))
 
-def tour(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, True, True)
+def tour(bot, cmd, room, params, user):
+    reply = ReplyObject('', True, True, True)
     if room.isPM: return reply.response("You can't use this command in a pm.")
     if not room.isWhitelisted(user): return reply.response('You are not allowed to use this command. (Requires whitelisting by a Room Owner)')
     if not bot.canStartTour(room): return reply.response("I don't have the rank required to start a tour :(")
-    return reply.response('/tour {rest}\n/modnote From {user}'.format(rest = msg, user = user.name))
-def tourwl(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True)
+    return reply.response('/tour {rest}\n/modnote From {user}'.format(rest = params, user = user.name))
+def tourwl(bot, cmd, room, params, user):
+    reply = ReplyObject('', True)
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
-    target = bot.toId(msg)
+    target = bot.toId(params)
     if not room.addToWhitelist(target): return reply.response('This user is already whitelisted in that room.')
     bot.saveDetails()
-    return reply.response('{name} added to the whitelist in this room.'.format(name = msg))
-def untourwl(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True)
+    return reply.response('{name} added to the whitelist in this room.'.format(name = params))
+def untourwl(bot, cmd, room, params, user):
+    reply = ReplyObject('', True)
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
-    target = bot.toId(msg)
+    target = bot.toId(params)
     if not room.delFromWhitelist(target): return reply.response('This user is not whitelisted in that room.')
     bot.saveDetails()
-    return reply.response('{name} removed from the whitelist in this room.'.format(name = msg))
+    return reply.response('{name} removed from the whitelist in this room.'.format(name = params))
 
-RoomCommands = {
-    'leave'         : leaveroom,
-    'allowgames'    : allowgames,
-    'tour'          : tour,
-    'tourwhitelist' : tourwl,
-    'tourwl'        : tourwl,
-    'untourwhitelist': untourwl,
-    'untourwl'      : untourwl
-}
+commands = [
+    Command(['leave'], leaveroom),
+    Command(['allowgames'], allowgames),
+    Command(['tour'], tour),
+    Command(['tourwhitelist', 'tourwl'], tourwl),
+    Command(['untourwhitelist', 'untourwl'], untourwl)
+]

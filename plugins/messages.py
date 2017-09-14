@@ -1,4 +1,4 @@
-import robot as r
+from invoker import ReplyObject, Command
 
 from datetime import datetime, timedelta
 import random
@@ -88,7 +88,7 @@ class MessageDatabase:
 
 # Commands
 def tell(bot, cmd, room, msg, user):
-    reply = r.ReplyObject()
+    reply = ReplyObject()
     notes = bot.usernotes
     if not msg: return reply.response('You need to specify a user and a message to send in the format: [user], [message]')
     msg = msg.split(',')
@@ -106,7 +106,7 @@ def tell(bot, cmd, room, msg, user):
     return reply.response(responseText)
 
 def read(bot, cmd, room, msg, user):
-    reply = r.ReplyObject()
+    reply = ReplyObject()
     notes = bot.usernotes
     if not notes.hasMessage(user.id): return reply.response('You have no messages waiting')
     if not msg:
@@ -116,9 +116,15 @@ def read(bot, cmd, room, msg, user):
     return reply.response(notes.getMessages(user.id, int(msg)))
 
 def untell(bot, cmd, room, msg, user):
-    reply = r.ReplyObject()
+    reply = ReplyObject()
     notes = bot.usernotes
     if not msg: return reply.response('You need to specify a user to remove')
     if not notes.hasMessage(msg): return reply.response('This user has no waiting messages')
     if not notes.removeMessage(msg, user.id): return reply.response('You have no message to this user waiting')
     return reply.response('Message removed')
+
+commands = [
+    Command(['tell'], tell),
+    Command(['untell'], untell),
+    Command(['read'], read)
+]

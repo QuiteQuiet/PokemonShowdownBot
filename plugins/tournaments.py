@@ -2,7 +2,7 @@ import json
 import yaml
 import re
 from random import randint
-import robot as r
+from invoker import ReplyObject, Command
 
 class Tournament:
 
@@ -108,7 +108,7 @@ class Tournament:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
 
 def oldgentour(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, True)
+    reply = ReplyObject('', True, True)
     if not room.tour: return reply.response('No tour is currently active, so this command is disabled.')
     if not room.tour.format.startswith('gen'): return reply.response("The current tour isn't a previous generation, so this command is disabled.")
     pastGens = {'gen1': 'RBY', 'gen2':'GSC', 'gen3':'RSE',  'gen4':'DPP'}
@@ -117,7 +117,7 @@ def oldgentour(bot, cmd, room, msg, user):
     return reply.response(warning + "/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/")
 
 def getranking(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, True)
+    reply = ReplyObject('', True, True)
     if not user.hasRank('%') and not room.isPM: reply.response('Listing the rankings require Room Driver (%) or higher.')
     # format is room (optional), format, user (if ever, also optional)
     with open('plugins/tournament-rankings.yaml', 'r+') as yf:
@@ -151,3 +151,8 @@ def getranking(bot, cmd, room, msg, user):
         return reply.response('No format given')
     except KeyError:
         return reply.response('The room has no data about the format {}'.format(parts[0]))
+
+commands = [
+    Command(['oldgentour'], oldgentour),
+    Command(['showranking'], getranking)
+]

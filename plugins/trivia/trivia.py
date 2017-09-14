@@ -1,7 +1,7 @@
 from threading import Thread
 import time
 
-import robot as r
+from invoker import ReplyObject, Command
 from plugins.trivia.questions import QuestionGenerator
 from plugins.games import GenericGame
 # This class will put itself in a pseudo-while loop that is non-blocking
@@ -86,8 +86,8 @@ class Trivia(GenericGame):
     def status(self):
         return self.thread.name
 
-def commands(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, False, False, True, True)
+def triviaCommands(bot, cmd, room, msg, user):
+    reply = ReplyObject('', True, False, False, True, True)
     if room.isPM: return reply.response("Don't try to play games in pm please")
     if cmd == 'trivia':
         if not msg: return reply.response('{msg} is not an valid parameter for trivia')
@@ -119,3 +119,5 @@ def commands(bot, cmd, room, msg, user):
                 room.activity.multiple = True
         return reply.response('NoAnswer')
     return reply.response('')
+
+commands = [Command(['trivia'], triviaCommands)]

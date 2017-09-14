@@ -2,7 +2,7 @@ from data.pokedex import Pokedex
 from data.moves import Moves
 from data.abilities import Abilities
 from plugins.games import GenericGame
-import robot as r
+from invoker import ReplyObject, Command
 
 import re
 import random
@@ -59,7 +59,7 @@ class Anagram(GenericGame):
             return '!'
 
 def start(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, False, False, True, True)
+    reply = ReplyObject('', True, False, False, True, True)
     if room.isPM and not cmd.startswith('score'): return reply.response("Don't try to play games in pm please")
     if msg == 'new':
         if not user.hasRank('%'): return reply.response('You do not have permission to start a game in this room. (Requires %)')
@@ -90,7 +90,7 @@ def start(bot, cmd, room, msg, user):
         return reply.response('There is no active anagram right now')
 
 def answer(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, False, False, True, True)
+    reply = ReplyObject('', True, False, False, True, True)
     if not (room.activity and room.activity.isThisGame(Anagram)): return reply.response('There is no anagram active right now')
     if room.activity.isCorrect(re.sub(r'[ -]', '', msg).lower()):
         solved = room.activity.getSolvedWord()
@@ -102,3 +102,8 @@ def answer(bot, cmd, room, msg, user):
             yaml.dump(Scoreboard, ym)
         return reply.response('Congratulations, {name} got it{time}\nThe solution was: {solution}'.format(name = user.name, time = timeTaken, solution = solved))
     return reply.response('{test} is wrong!'.format(test = msg.lstrip()))
+
+commands = [
+    Command(['anagram'], start),
+    Command(['a'], answer)
+]

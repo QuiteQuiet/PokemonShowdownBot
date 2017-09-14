@@ -2,7 +2,7 @@ import json
 import time
 
 from robot import PokemonShowdownBot, Room, User
-from commands import Command
+from invoker import CommandInvoker
 from plugins.messages import MessageDatabase
 from plugins.workshop import Workshop
 
@@ -32,11 +32,11 @@ class PSBot(PokemonShowdownBot):
         Setups up the commands, usernotes, and opens the websocket to the
         main pokemonshowdown server hosted on https://play.pokemonshowdown.com.
         """
-        self.do = Command
         self.usernotes = MessageDatabase()
         PokemonShowdownBot.__init__(self,
                                     'ws://sim.psim.us:8000/showdown/websocket',
                                     self.splitMessage)
+        self.invoker = CommandInvoker()
 
     def splitMessage(self, ws, message):
         """ Decides bot behaviour wth the server based on the content from the websocket.
@@ -209,7 +209,7 @@ class PSBot(PokemonShowdownBot):
                 command = self.extractCommand(saidMessage)
                 self.log('Command', saidMessage, user.id)
 
-                res = self.do(self, command, room, saidMessage[len(command) + 1:].lstrip(), user)
+                res = self.invoker.execute(self, command, room, saidMessage[len(command) + 1:].lstrip(), user)
                 if not res.text or res.text == 'NoAnswer': return
 
                 if self.userHasPermission(user, self.details['broadcastrank']) or res.ignoreBroadcastPermission:

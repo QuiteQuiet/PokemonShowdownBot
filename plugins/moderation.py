@@ -1,4 +1,4 @@
-import robot as r
+from invoker import ReplyObject, Command
 
 import re
 from collections import deque
@@ -255,7 +255,7 @@ class ModerationHandler:
 
 # Commands
 def moderate(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True)
+    reply = ReplyObject('', True)
     if not msg: return reply.response('No parameters given. Command is ~moderate [room],True/False')
     if not user.hasRank('#'): return reply.response('You do not have permission to set this. (Requires #)')
     if not room.moderation.config['anything'] and not msg == 'anything': room.moderation.toggleRoomModeration()
@@ -263,7 +263,7 @@ def moderate(bot, cmd, room, msg, user):
     return reply.response('Moderation for {thing} is now turned {setting}'.format(thing = msg, setting = 'on' if room.moderation.config[msg] else 'off'))
 
 def banthing(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, True)
+    reply = ReplyObject('', True, True)
     if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
     if room.isPM: return reply.response("You can't ban things in PMs")
     error = room.moderation.addBan(cmd[3:], msg)
@@ -276,10 +276,16 @@ def banthing(bot, cmd, room, msg, user):
     return reply.response(error)
 
 def unbanthing(bot, cmd, room, msg, user):
-    reply = r.ReplyObject('', True, True)
+    reply = ReplyObject('', True, True)
     if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
     if room.isPM: return reply.response("You can't unban things in PMs")
     error = room.moderation.removeBan(cmd[5:], msg)
     if not error:
         return reply.response('Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} from the blacklist'.format(thing = msg, room = room.title, user = user.name))
     return reply.response(error)
+
+commands = [
+    Command(['moderate'], moderate),
+    Command(['banuser', 'banphrase'], banthing),
+    Command(['unbanuser', 'unbanphrase'], unbanthing)
+]
