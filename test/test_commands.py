@@ -1,4 +1,4 @@
-from invoker import CommandInvoker
+from invoker import CommandInvoker, ReplyObject
 from room import Room
 from user import User
 from app import PSBot
