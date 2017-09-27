@@ -197,5 +197,5 @@ commands = [
     Command([t.replace('poke','team') for t in tiers], randteam),
 
     # Hardcoding the extra parameters that the regex previously took care of
-    Command([p.replace('-', '').lower() for p in Pokedex] + ['pumpkaboo-s', 'pumpkaboo-l', 'pumpkaboo-xl', 'gourgeist-s', 'gourgeist-l', 'gourgeist-xl', 'giratina-o'], pokedex)
+    Command([re.sub(r'[^a-zA-Z0-9]', '', p).lower() for p in Pokedex] + ['pumpkaboo-s', 'pumpkaboo-l', 'pumpkaboo-xl', 'gourgeist-s', 'gourgeist-l', 'gourgeist-xl', 'giratina-o'], pokedex)
 ]

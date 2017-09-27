@@ -1,4 +1,5 @@
 from invoker import ReplyObject, Command
+import robot as r
 
 from datetime import datetime, timedelta
 import random

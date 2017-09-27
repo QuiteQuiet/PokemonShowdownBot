@@ -113,7 +113,7 @@ class CommandInvoker:
                 return self.cmdInvokers[cmd].run(robot, cmd, room, params, user)
             except Exception as e:
                 # Something went wrong, but we don't know what
-                traceback.print_tb(e)
+                traceback.print_tb(e.__traceback__)
                 return ReplyObject(e)
 
         return ReplyObject('{command} is not a valid command.'.format(command = cmd))
