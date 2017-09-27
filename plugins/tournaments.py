@@ -122,7 +122,7 @@ def getranking(bot, cmd, room, msg, user):
     # format is room (optional), format, user (if ever, also optional)
     with open('plugins/tournament-rankings.yaml', 'r+') as yf:
         yf.seek(0, 0)
-        data = yaml.load(yf)
+        data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
 
     parts = list(map(bot.toId, msg.split(',')))
     roomTitle = ''
