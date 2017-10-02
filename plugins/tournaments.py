@@ -80,7 +80,7 @@ class Tournament:
     def logParticipation(self):
         with open('plugins/tournament-rankings.yaml', 'a+') as yf:
             yf.seek(0, 0)
-            data = yaml.load(yf)
+            data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
             if not data: data = {}
             if self.room.title not in data: data[self.room.title] = {}
             if self.format not in data[self.room.title]: data[self.room.title][self.format] = {}
@@ -100,7 +100,7 @@ class Tournament:
         if not self.loggedParticipation: return # This may happen if the bot joins midway through a tournament
         with open('plugins/tournament-rankings.yaml', 'a+') as yf:
             yf.seek(0, 0)
-            data = yaml.load(yf)
+            data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
             for user in winner:
                 userData = data[self.room.title][self.format][Tournament.toId(user)]
                 userData['won'] = userData['won'] + 1
@@ -154,5 +154,5 @@ def getranking(bot, cmd, room, msg, user):
 
 commands = [
     Command(['oldgentour'], oldgentour),
-    Command(['showranking'], getranking)
+    Command(['showranking', 'leaderboard'], getranking)
 ]
