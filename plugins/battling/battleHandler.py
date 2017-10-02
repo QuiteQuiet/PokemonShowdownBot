@@ -95,6 +95,7 @@ class BattleHandler:
         if not message: return
         if not message.startswith('|'): return
         if battle in self.activeBattles and message.startswith('|init'): return
+        print(message)
 
         msg = message.split('|')
 

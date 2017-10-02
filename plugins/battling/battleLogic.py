@@ -63,20 +63,16 @@ def getBaseSpecies(species):
 
 def getAction(battle, playing):
     active = battle.me.active
-    moveData = battle.myActiveData[0]['moves']
-    moves = []
-    if len(moveData) == 1:
-        moves = [moveData[0]['move'].replace(' ','').lower()]
-    else:
-        moves = [m['move'].replace(' ','').lower() for m in moveData if not m['disabled']]
+    moves = battle.myActiveData[0]['moves']
     if playing == 'gen7challengecup1v1':
         return getMove(moves, active, battle.other.active), 'move'
     else:
-        act = pickAction(battle.me, battle.other.active)
+        act = pickAction(battle, battle.me, battle.other.active)
         if act == 'switch':
-            return getSwitch(battle.me.team, battle.me.active.species, battle.other.active), 'switch'
+            return getSwitch(battle.me.team, active.species, battle.other.active), 'switch'
         else:
             return getMove(moves, active, battle.other.active), 'move'
+
 def calcMatchup(me, other):
     score = 0
     if me.item.startswith('choice') and me.lastMoveUsed:
@@ -88,7 +84,7 @@ def calcMatchup(me, other):
         if zmove:
             score += calcScore(zmove, me, other.species)
     return score
-def pickAction(me, other):
+def pickAction(battle, me, other):
     matchups = {}
     for mon in me.team:
         if not me.team[mon].status == 'fnt':
@@ -105,6 +101,8 @@ def pickAction(me, other):
     if fainted == 5:
         return 'move'
     if not randint(0,5):
+        return 'move'
+    if 'trapped' in battle.myActiveData[0]:
         return 'move'
     return 'switch'
 def getMove(moves, active, opponent):
@@ -150,7 +148,10 @@ def getCC1v1Move(moves, pokemon, opponent):
 
     # Copy this list so we don't ruin the original one when we append the Z-Move
     movescopy = []
-    for m in moves:
+    for move in moves:
+        if 'pp' in move and move['pp'] <= 0: continue # Skip 0 pp moves
+        if 'disabled' in move and move['disabled']: continue
+        m = move['move'].replace(' ','').lower()
         for fault in ['-', "'"]:
             m = m.replace(fault,'')
         if m == 'recharge': return {'id': m}
@@ -166,7 +167,7 @@ def getCC1v1Move(moves, pokemon, opponent):
 
     # Early return if there's only one possible option to use
     if len(movescopy) == 1:
-        return movescopy[0]['id']
+        return movescopy[0]
     values = {}
     for move in movescopy:
         moveid = move['id']
