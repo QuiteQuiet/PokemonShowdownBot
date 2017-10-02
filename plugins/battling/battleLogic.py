@@ -166,7 +166,7 @@ def getCC1v1Move(moves, pokemon, opponent):
 
     # Early return if there's only one possible option to use
     if len(movescopy) == 1:
-        return movescopy[0]
+        return movescopy[0]['id']
     values = {}
     for move in movescopy:
         moveid = move['id']
