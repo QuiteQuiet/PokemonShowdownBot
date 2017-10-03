@@ -8,7 +8,31 @@ from invoker import ReplyObject, Command
 from user import User
 from plugins.moderation import ModerationHandler
 
+
 class Room:
+    """ Contains all important information for a pokemon showdown room.
+    
+    The only variable of note is the activity object. This variable does not
+    follow a strict typing as it can allow for several class types. What should
+    be noted is that there can only be 1 instance of activity per room, so 
+    having a situation with a Workshop and RoomGame running at the same time
+    is impossible.
+    
+    Attributes:
+        users: map, maps user ids (str) to user objects.
+        loading: Bool, if this room is still loading information.
+        title: string, name of the room.
+        rank: string, the rank of this bot in this room.
+        isPM: Bool, if this room is considered a private message.
+        moderation: ModerationHandler, handler object for moderating user content. 
+        allowGames: Bool, if this bot will allow games in this room.
+        tour: Bool, if this bot will allow tours in this room.
+        activity: Object, special instance of class containing behaviour for 
+                  some extended functionality provided by a RoomGame object 
+                  or a Workshop Object.
+        tourwhitelist: list of str, users who are not moderators but who have
+                       permission to start a tour.
+    """
     def __init__(self, room, data = None):
         if not data: data = {
             'moderate': {
