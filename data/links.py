@@ -53,8 +53,8 @@ Links = {
 	'pu':'http://www.smogon.com/forums/threads/3526592/',
 	'lc':'http://www.smogon.com/forums/threads/3524037/'
 	},
-'tours':{
-    'lt':'http://www.smogon.com/forums/threads/3555097/',
+'oldgen':{
+    'nu': 'http://www.smogon.com/forums/threads/3562659/'
     }
 }
 YoutubeLinks = {
