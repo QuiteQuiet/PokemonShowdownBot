@@ -33,7 +33,7 @@ class Room:
         self.tour = None
         self.activity = None
         self.tourwhitelist = data['tourwhitelist']
-        self.chatlog = deque({'': -1}, 20)
+        self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
         self.moderation.assignRoom(self)
 
     def doneLoading(self):
@@ -58,11 +58,11 @@ class Room:
     def botHasBanPermission(self):
         return User.compareRanks(self.rank, '@')
 
-    def logChat(self, user, message):
-        self.chatlog.append({user.id: len(message)})
+    def logChat(self, user, message, time):
+        self.chatlog.append({'user': user, 'message': message, 'timestamp': time})
 
     def isWhitelisted(self, user):
-        return user.hasRank('@') or user.id in self.tourwhitelist
+        return user.hasRank('%') or user.id in self.tourwhitelist
     def addToWhitelist(self, user):
         if user in self.tourwhitelist: return False
         self.tourwhitelist.append(user)
@@ -129,7 +129,7 @@ def untourwl(bot, cmd, room, params, user):
 commands = [
     Command(['leave'], leaveroom),
     Command(['allowgames'], allowgames),
-    Command(['tour'], tour),
+    Command(['tour', '!tour'], tour),
     Command(['tourwhitelist', 'tourwl'], tourwl),
     Command(['untourwhitelist', 'untourwl'], untourwl)
 ]

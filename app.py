@@ -202,10 +202,10 @@ class PSBot(PokemonShowdownBot):
             if not user: return
             if self.userIsSelf(user.id): return
 
-            room.logChat(user, message[2])
+            room.logChat(user, message[4], message[2])
 
             saidMessage = '|'.join(message[4:])
-            if saidMessage.startswith(self.commandchar) and saidMessage[1:] and saidMessage[1].isalpha():
+            if saidMessage.startswith(self.commandchar) and saidMessage[1:] and (saidMessage[1].isalpha() or saidMessage[1] == '!'):
                 command = self.extractCommand(saidMessage)
                 self.log('Command', saidMessage, user.id)
 
@@ -244,7 +244,7 @@ class PSBot(PokemonShowdownBot):
                         self.sendPm(user.id, 'Only global voices (+) and up can add me to rooms, sorry :(')
 
             message[4] = '|'.join(message[4:])
-            if message[4].startswith(self.commandchar) and message[4][1:] and message[4][1].isalpha():
+            if message[4].startswith(self.commandchar) and message[4][1:] and (message[4][1].isalpha() or message[4][1] == '!'):
                 command = self.extractCommand(message[4])
                 self.log('Command', message[4], user.id)
                 params = message[4][len(command) + len(self.commandchar):].lstrip()

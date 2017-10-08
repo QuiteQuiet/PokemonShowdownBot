@@ -16,6 +16,7 @@ class Command:
     def __init__(self, triggers, nonAbsRun = None, html = False):
         self.cmdTriggers = triggers
         self.altHtml = html
+        self.hasBroadcastAlt = False
         # This will hide the default run method if it is given on object creation
         self.run = nonAbsRun if nonAbsRun else self.run
     def run(self, robot, cmd, room, params, user):
@@ -97,6 +98,9 @@ class CommandInvoker:
                         if trigger in self.cmdInvokers:
                             print('{} already exists as a command'.format(trigger))
                             continue
+                        if trigger.startswith('!') and trigger[1:] in self.cmdInvokers:
+                            command.hasBroadcastAlt = True
+                            continue
                         self.cmdInvokers[trigger] = command
                 print('Loaded from {}'.format(modname))
             except AttributeError:
@@ -108,12 +112,22 @@ class CommandInvoker:
             yield importer, modname, ispkg
 
     def execute(self, robot, cmd, room, params, user):
+        broadcastAlt = False
+        if cmd.startswith('!'):
+            broadcastAlt = True
+            cmd = cmd[1:]
         if cmd in self.cmdInvokers:
             try:
-                return self.cmdInvokers[cmd].run(robot, cmd, room, params, user)
+                response = self.cmdInvokers[cmd].run(robot, cmd, room, params, user)
+                if self.cmdInvokers[cmd].hasBroadcastAlt and broadcastAlt and response.text[0] == '/':
+                    response.text[0] = '!'
+                return response
+            except KeyError as e:
+                pass
             except Exception as e:
                 # Something went wrong, but we don't know what
                 traceback.print_tb(e.__traceback__)
                 return ReplyObject(e)
+
 
         return ReplyObject('{command} is not a valid command.'.format(command = cmd))
