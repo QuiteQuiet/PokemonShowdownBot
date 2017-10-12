@@ -27,9 +27,8 @@ class Room:
         moderation: ModerationHandler, handler object for moderating user content. 
         allowGames: Bool, if this bot will allow games in this room.
         tour: Bool, if this bot will allow tours in this room.
-        activity: Object, special instance of class containing behaviour for 
-                  some extended functionality provided by a RoomGame object 
-                  or a Workshop Object.
+        activity: GenericGame, object which implements the standard behaviour for a Game,
+                  all activities do not strictly have the same type.
         tourwhitelist: list of str, users who are not moderators but who have
                        permission to start a tour.
     """
