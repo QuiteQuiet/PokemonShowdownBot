@@ -209,7 +209,7 @@ class PSBot(PokemonShowdownBot):
                 command = self.extractCommand(saidMessage)
                 self.log('Command', saidMessage, user.id)
 
-                res = self.invoker.execute(self, command, room, saidMessage[len(command) + 1:].lstrip(), user)
+                res = self.invoker.execute(self, command, saidMessage[len(command) + 1:].lstrip(), user, room)
                 if not res.text or res.text == 'NoAnswer': return
 
                 if self.userHasPermission(user, self.details['broadcastrank']) or res.ignoreBroadcastPermission:
@@ -249,7 +249,7 @@ class PSBot(PokemonShowdownBot):
                 self.log('Command', message[4], user.id)
                 params = message[4][len(command) + len(self.commandchar):].lstrip()
 
-                response = self.invoker.execute(self, command, Room('pm'), params, user)
+                response = self.invoker.execute(self, command, params, user, Room('pm'))
 
                 if not response.text or response.text == 'NoAnswer': return
                 self.sendPm(user.id, response.text)

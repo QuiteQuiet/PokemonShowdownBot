@@ -88,7 +88,7 @@ class MessageDatabase:
         return self.messages.pop(to, None)
 
 # Commands
-def tell(bot, cmd, room, msg, user):
+def tell(bot, cmd, msg, user):
     reply = ReplyObject()
     notes = bot.usernotes
     if not msg: return reply.response('You need to specify a user and a message to send in the format: [user], [message]')
@@ -106,7 +106,7 @@ def tell(bot, cmd, room, msg, user):
         responseText = "You sent yourself a message. Was this intended? It will work, but why?"
     return reply.response(responseText)
 
-def read(bot, cmd, room, msg, user):
+def read(bot, cmd, msg, user):
     reply = ReplyObject()
     notes = bot.usernotes
     if not notes.hasMessage(user.id): return reply.response('You have no messages waiting')
@@ -116,7 +116,7 @@ def read(bot, cmd, room, msg, user):
     if not msg.isdigit() and int(msg) < 1: return reply.response('Please enter a positive integer')
     return reply.response(notes.getMessages(user.id, int(msg)))
 
-def untell(bot, cmd, room, msg, user):
+def untell(bot, cmd, msg, user):
     reply = ReplyObject()
     notes = bot.usernotes
     if not msg: return reply.response('You need to specify a user to remove')

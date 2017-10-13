@@ -86,7 +86,7 @@ class Trivia(GenericGame):
     def status(self):
         return self.thread.name
 
-def triviaCommands(bot, cmd, room, msg, user):
+def triviaCommands(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, False, False, True, True)
     if room.isPM: return reply.response("Don't try to play games in pm please")
     if cmd == 'trivia':

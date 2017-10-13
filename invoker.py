@@ -1,4 +1,4 @@
-import importlib, pkgutil, traceback
+import importlib, pkgutil, inspect, traceback
 
 class Command:
     """ Wrapper class that every command should use when being created.
@@ -111,14 +111,17 @@ class CommandInvoker:
         for importer, modname, ispkg in pkgutil.walk_packages(path = '.', onerror = lambda x: None):
             yield importer, modname, ispkg
 
-    def execute(self, robot, cmd, room, params, user):
+    def execute(self, *args):
+        cmd = args[1]
         broadcastAlt = False
         if cmd.startswith('!'):
             broadcastAlt = True
             cmd = cmd[1:]
         if cmd in self.cmdInvokers:
             try:
-                response = self.cmdInvokers[cmd].run(robot, cmd, room, params, user)
+                command = self.cmdInvokers[cmd].run;
+                params = args[:len(inspect.signature(command).parameters)]
+                response = command(*params)
                 if self.cmdInvokers[cmd].hasBroadcastAlt and broadcastAlt and response.text[0] == '/':
                     response.text[0] = '!'
                 return response

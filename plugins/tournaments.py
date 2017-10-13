@@ -107,7 +107,7 @@ class Tournament:
         with open('plugins/tournament-rankings.yaml', 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
 
-def oldgentour(bot, cmd, room, msg, user):
+def oldgentour(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not room.tour: return reply.response('No tour is currently active, so this command is disabled.')
     if not room.tour.format.startswith('gen'): return reply.response("The current tour isn't a previous generation, so this command is disabled.")
@@ -116,7 +116,7 @@ def oldgentour(bot, cmd, room, msg, user):
     if room.tour.format[0:4] in pastGens: warning = "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n".format(gen = pastGens[room.tour.format[0:4]])
     return reply.response(warning + "/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/")
 
-def getranking(bot, cmd, room, msg, user):
+def getranking(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not user.hasRank('%') and not room.isPM: reply.response('Listing the rankings require Room Driver (%) or higher.')
     # format is room (optional), format, user (if ever, also optional)

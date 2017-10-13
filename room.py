@@ -11,20 +11,20 @@ from plugins.moderation import ModerationHandler
 
 class Room:
     """ Contains all important information for a pokemon showdown room.
-    
+
     The only variable of note is the activity object. This variable does not
     follow a strict typing as it can allow for several class types. What should
-    be noted is that there can only be 1 instance of activity per room, so 
+    be noted is that there can only be 1 instance of activity per room, so
     having a situation with a Workshop and RoomGame running at the same time
     is impossible.
-    
+
     Attributes:
         users: map, maps user ids (str) to user objects.
         loading: Bool, if this room is still loading information.
         title: string, name of the room.
         rank: string, the rank of this bot in this room.
         isPM: Bool, if this room is considered a private message.
-        moderation: ModerationHandler, handler object for moderating user content. 
+        moderation: ModerationHandler, handler object for moderating user content.
         allowGames: Bool, if this bot will allow games in this room.
         tour: Bool, if this bot will allow tours in this room.
         activity: GenericGame, object which implements the standard behaviour for a Game,
@@ -105,7 +105,7 @@ class Room:
         self.tour = None
 
 # Commands
-def leaveroom(bot, cmd, room, params, user):
+def leaveroom(bot, cmd, params, user, room):
     """ Independent command for making this bot leave a room.
 
     Args:
@@ -125,10 +125,10 @@ def leaveroom(bot, cmd, room, params, user):
         return reply.response('Leaving room {r} succeeded'.format(r = params))
     return reply.response('Could not leave room: {r}'.format(r = params))
 
-def allowgames(bot, cmd, room, params, user):
+def allowgames(bot, cmd, params, user, room):
     """ Independent command for changing permissions for games in this room.
-    
-    Reserved for room owners. They can decide to allow games/activities in their room. 
+
+    Reserved for room owners. They can decide to allow games/activities in their room.
 
     Args:
         bot: PokemonShowdownBot, the instance of PokemonShowdownBot that called this function.
@@ -153,9 +153,9 @@ def allowgames(bot, cmd, room, params, user):
         return reply.response('Chatgames are no longer allowed in this room.')
     return reply.response('{param} is not a supported parameter'.format(param = params))
 
-def tour(bot, cmd, room, params, user):
+def tour(bot, cmd, params, user, room):
     """ Independent command for initiating tours in this room.
-   
+
     This is only possible for rooms where this bot has at least '@' rank. Intended
     trusted users who do not have the required room rank.
 
@@ -163,7 +163,7 @@ def tour(bot, cmd, room, params, user):
         bot: PokemonShowdownBot, the instance of PokemonShowdownBot that called this function.
         cmd: string, the command that was send.
         room: Room, the room object that the command was sent from.
-        params: string, parameter(s) you'd give a normal /tour command on showdown. 
+        params: string, parameter(s) you'd give a normal /tour command on showdown.
         user: User, the user object of the user who sent the command.
     Returns:
         ReplyObject.
@@ -173,16 +173,16 @@ def tour(bot, cmd, room, params, user):
     if not room.isWhitelisted(user): return reply.response('You are not allowed to use this command. (Requires whitelisting by a Room Owner)')
     if not bot.canStartTour(room): return reply.response("I don't have the rank required to start a tour :(")
     return reply.response('/tour {rest}\n/modnote From {user}'.format(rest = params, user = user.name))
-def tourwl(bot, cmd, room, params, user):
+def tourwl(bot, cmd, params, user, room):
     """ Independent command for a user to tours whitelist.
-    
+
     Reserved for room owners.
-    
+
     Args:
         bot: PokemonShowdownBot, the instance of PokemonShowdownBot that called this function.
         cmd: string, the command that was send.
         room: Room, the room object that the command was sent from.
-        params: string, the name of the user. 
+        params: string, the name of the user.
         user: User, the user object of the user who sent the command.
     Returns:
         ReplyObject.
@@ -193,16 +193,16 @@ def tourwl(bot, cmd, room, params, user):
     if not room.addToWhitelist(target): return reply.response('This user is already whitelisted in that room.')
     bot.saveDetails()
     return reply.response('{name} added to the whitelist in this room.'.format(name = params))
-def untourwl(bot, cmd, room, params, user):
+def untourwl(bot, cmd, params, user, room):
     """ Independent command for removing a user from the tours whitelist.
-    
+
     Reserved for room owners.
-    
+
     Args:
         bot: PokemonShowdownBot, the instance of PokemonShowdownBot that called this function.
         cmd: string, the command that was send.
         room: Room, the room object that the command was sent from.
-        params: string, the name of the user. 
+        params: string, the name of the user.
         user: User, the user object of the user who sent the command.
     Returns:
         ReplyObject.

@@ -47,7 +47,7 @@ class Workshop(GenericGame):
     def hasHostingRights(self, user):
         return self.host == user.id or user.hasRank('@')
 
-def handler(bot, cmd, room, msg, user):
+def handler(bot, cmd, msg, user, room):
     reply = ReplyObject('', True)
     if msg.startswith('new'):
         if not user.hasRank('@'): return reply.response("You don't have permission to start workshops (Requires @)")

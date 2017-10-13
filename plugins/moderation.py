@@ -254,7 +254,7 @@ class ModerationHandler:
 
 
 # Commands
-def moderate(bot, cmd, room, msg, user):
+def moderate(bot, cmd, msg, user, room):
     reply = ReplyObject('', True)
     if not msg: return reply.response('No parameters given. Command is ~moderate [room],True/False')
     if not user.hasRank('#'): return reply.response('You do not have permission to set this. (Requires #)')
@@ -262,7 +262,7 @@ def moderate(bot, cmd, room, msg, user):
     room.moderation.config[msg] = not room.moderation.config[msg]
     return reply.response('Moderation for {thing} is now turned {setting}'.format(thing = msg, setting = 'on' if room.moderation.config[msg] else 'off'))
 
-def banthing(bot, cmd, room, msg, user):
+def banthing(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
     if room.isPM: return reply.response("You can't ban things in PMs")
@@ -275,7 +275,7 @@ def banthing(bot, cmd, room, msg, user):
         return reply.response('Added {thing} to the banlist\n{note}{act}'.format(thing = msg, user = user.name, note = modnote, act = ban))
     return reply.response(error)
 
-def unbanthing(bot, cmd, room, msg, user):
+def unbanthing(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not user.hasRank('#'): return reply.response('You do not have permission to do this. (Requires #)')
     if room.isPM: return reply.response("You can't unban things in PMs")

@@ -58,7 +58,7 @@ class Anagram(GenericGame):
         else:
             return '!'
 
-def start(bot, cmd, room, msg, user):
+def start(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, False, False, True, True)
     if room.isPM and not cmd.startswith('score'): return reply.response("Don't try to play games in pm please")
     if msg == 'new':
@@ -89,7 +89,7 @@ def start(bot, cmd, room, msg, user):
             return reply.response('Current anagram: {word}'.format(word = room.activity.getWord()))
         return reply.response('There is no active anagram right now')
 
-def answer(bot, cmd, room, msg, user):
+def answer(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, False, False, True, True)
     if not (room.activity and room.activity.isThisGame(Anagram)): return reply.response('There is no anagram active right now')
     if room.activity.isCorrect(re.sub(r'[ -]', '', msg).lower()):
