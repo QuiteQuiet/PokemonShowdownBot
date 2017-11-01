@@ -28,6 +28,9 @@ class Pokemon:
         self.condition = cond
         self.status = status
 
+    def isChoiceLocked(self):
+        return self.lastMoveUsed and self.item.startswith('choice')
+
 class Player:
     def __init__(self):
         self.name = ''
@@ -38,6 +41,9 @@ class Player:
         self.team = {}
         self.side = {}
     def setActive(self, poke):
+        if self.active:
+            self.active.clearBoosts()
+            self.active.clearLastUsedMove()
         self.active = poke
         self.active.clearBoosts()
     def updateTeam(self, poke):

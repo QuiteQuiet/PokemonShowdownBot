@@ -162,7 +162,7 @@ def getCC1v1Move(moves, pokemon, opponent):
     zmove = getUsableZmove(pokemon)
     if zmove:
         movescopy.append(zmove)
-    if pokemon.item.startswith('choice') and pokemon.lastMoveUsed:
+    if pokemon.isChoiceLocked() and not movescopy[0]['id'] == 'struggle':
         movescopy = [Moves[pokemon.lastMoveUsed]]
 
     # Early return if there's only one possible option to use
