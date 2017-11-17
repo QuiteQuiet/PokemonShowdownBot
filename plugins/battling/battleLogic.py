@@ -143,7 +143,7 @@ def pickAction(battle, me, other):
         return 'move'
     if not randint(0,5):
         return 'move'
-    if 'trapped' in battle.myActiveData[0]:
+    if 'trapped' in battle.myActiveData[0] or me.active.trapped:
         return 'move'
     return 'switch'
 def getMove(moves, active, opponent):

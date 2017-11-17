@@ -15,6 +15,7 @@ class Pokemon:
         self.canMega = canMegaEvo and self.side.canMegaPokemon
         self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
         self.lastMoveUsed = None
+        self.trapped = False
 
     def clearBoosts(self):
         self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}

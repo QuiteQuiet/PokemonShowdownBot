@@ -55,6 +55,17 @@ class BattleHandler:
         print('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
         self.send('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
 
+    def makeMove(self, battle, roomname):
+        try:
+            action, actionType = getAction(battle, roomname.split('-')[1])
+            self.act(roomname, actionType, action, battle.rqid)
+        # There's a lot of very quiet bugs in the BattleLogic.getAction code
+        # so catch all the exceptions to get information about them.
+        except Exception as e:
+            import traceback
+            print('{}: {}'.format(type(e).__name__, e))
+            traceback.print_tb(e.__traceback__)
+
     def handleOutcome(self, battle, won):
         if won:
             self.respond(battle.name, 'O-oh, I won?')
@@ -162,15 +173,7 @@ class BattleHandler:
                 poke = getLead(btl.me.team, btl.other.team)
                 self.lead(battle, poke, btl.rqid)
         elif 'turn' == msg[1]:
-            try:
-                action, actionType = getAction(btl, battle.split('-')[1])
-                self.act(battle, actionType, action, btl.rqid)
-            # There's a lot of very quiet bugs in the BattleLogic.getAction code
-            # so catch all the exceptions to get information about them.
-            except Exception as e:
-                import traceback
-                print('{}: {}'.format(type(e).__name__, e))
-                traceback.print_tb(e.__traceback__)
+            self.makeMove(btl, battle)
         elif 'switch' == msg[1]:
             if msg[2].startswith(btl.me.id):
                 lastActive = btl.me.active
@@ -202,7 +205,7 @@ class BattleHandler:
                 btl.other.removeBaseForm(msg[3], mega)
                 btl.other.canMegaPokemon = False
                 btl.other.active.canMega = False
-        elif '-ultra' == msg[3]:
+        elif '-ultra' == msg[1]:
             ultraburst = msg[3] + '-Ultra'
             if msg[2].startswith(btl.me.id):
                 btl.me.removeBaseForm(msg[3], ultraburst)
@@ -257,6 +260,21 @@ class BattleHandler:
         elif '-status' == msg[1]:
             if not msg[2].startswith(btl.me.id):
                 btl.other.active.setCondition(btl.other.active.condition, msg[3])
+
+        # hack to make sure the game progresses if we're trapped and still try to switch
+        elif 'callback' == msg[1]:
+            # split to account for shorter messages
+            if 'trapped' == msg[2]:
+                btl.me.active.trapped = True
+                # Figure out what ability trapped us (nothing have more than one ability that can trap)
+                # This doesn't account for trapping moves but that's okay
+                trappingAbilities = ['Shadow Tag', 'Arena Trap', 'Magnet Pull']
+                otherActiveAbilities = Pokedex[btl.other.active.species]['abilities']
+                for option in otherActiveAbilities:
+                    if otherActiveAbilities[option] in trappingAbilities:
+                        btl.other.active.ability = otherActiveAbilities[option]
+                print('{battle}| {active} is trapped, trying something else'.format(battle = battle, active = btl.me.active.species))
+                self.makeMove(btl, battle) # Try again
 
         elif 'faint' == msg[1]:
             if not msg[2].startswith(btl.me.id):
