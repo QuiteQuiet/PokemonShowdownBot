@@ -9,9 +9,10 @@ class Pokemon:
         self.moves = moves
         self.ability = baseAbility
         self.item = item
-        self.canMega = canMegaEvo
+        self.canUltraBurst = False # Necrozma-Ultra only
         self.teamSlot = slot
         self.side = side
+        self.canMega = canMegaEvo and self.side.canMegaPokemon
         self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
         self.lastMoveUsed = None
 
@@ -37,6 +38,7 @@ class Player:
         self.id = ''
         self.canZmove = True
         self.canMegaPokemon = True
+        self.canUltraBurst = True
         self.active = None
         self.team = {}
         self.side = {}
@@ -65,7 +67,6 @@ class Player:
     def removeBaseForm(self, pokemon, mega):
         self.team[mega] = self.team.pop(pokemon, None)
         self.team[mega].species = mega
-        self.canMegaPokemon = False
 
     def usedZmove(self):
         self.canZmove = False

@@ -117,7 +117,7 @@ class BattleHandler:
                 # This is where all the battle picking happen
                 request = json.loads(msg[2])
             except ValueError as e:
-                return
+                return e
             if 'rqid' in request:
                 self.activeBattles[battle].rqid = request['rqid']
             sidedata = request['side']
@@ -133,9 +133,9 @@ class BattleHandler:
                     if pokemon['active']:
                         btl.me.setActive(btl.me.getPokemon(self.getSpecies(pokemon['details'])))
                 if 'canMegaEvo' in request['active'][0]:
-                    for poke in btl.me.team:
-                        if btl.me.team[poke].active:
-                            btl.me.team[poke].canMega = True
+                    btl.me.active.canMega = btl.me.canMegaPokemon
+                if 'canUltraBurst' in request['active'][0]:
+                    btl.me.active.canUltraBurst = btl.me.canUltraBurst
 
             if 'forceSwitch' in request and request['forceSwitch'][0]:
                 self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
@@ -196,9 +196,23 @@ class BattleHandler:
                 mega += '-' + msg[4].split()[1]
             if msg[2].startswith(btl.me.id):
                 btl.me.removeBaseForm(msg[3], mega)
+                btl.me.canMegaPokemon = False
                 btl.me.active.canMega = False
             else:
                 btl.other.removeBaseForm(msg[3], mega)
+                btl.other.canMegaPokemon = False
+                btl.other.active.canMega = False
+        elif '-ultra' == msg[3]:
+            ultraburst = msg[3] + '-Ultra'
+            if msg[2].startswith(btl.me.id):
+                btl.me.removeBaseForm(msg[3], ultraburst)
+                btl.me.canUltraBurst = False
+                btl.me.active.canUltraBurst = False
+            else:
+                btl.other.removeBaseForm(msg[3], ultraburst)
+                btl.other.canUltraBurst = False
+                btl.other.active.canUltraBurst = False
+
         elif '-zmove' == msg[1] or '-zpower' == msg[1]:
             if msg[2].startswith(btl.me.id):
                 btl.me.usedZmove()

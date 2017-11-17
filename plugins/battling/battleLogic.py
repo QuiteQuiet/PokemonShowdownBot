@@ -153,8 +153,10 @@ def getMove(moves, active, opponent):
         action += '{} zmove'.format(move['baseMove'])
     else:
         action += move['id']
-    if active.canMega and active.side.canMegaPokemon:
+    if active.canMega:
         action += ' mega'
+    if active.canUltraBurst:
+        action += ' ultra'
     return action
 def getSwitch(myTeam, myActive, opponent):
     scores = {}
