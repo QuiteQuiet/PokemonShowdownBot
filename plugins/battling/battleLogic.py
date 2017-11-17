@@ -7,7 +7,42 @@ from data.types import Types
 
 blacklist = {'focuspunch','fakeout','snore','dreameater','lastresort','explosion','selfdestruct','synchronoise','belch','trumphcard','wringout'}
 chargemoves = {'hyperbeam','gigaimpact','frenzyplant','blastburn','hydrocannon','rockwrecker','roaroftime','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash','skyattack','skydrop','solarbeam'}
-zmoves = {'fairiumz':'twinkletackle', 'groundiumz':'tectonicrage', 'flyiniumz':'supersonicskystrike', 'iciumz':'subzeroslammer', 'aloraichiumz':'stokedsparksurfer', 'marshadiumz':'soulstealing7starstrike', 'decidiumz':'sinisterarrowraid', 'psychiumz':'shatteredpsyche', 'buginiumz':'savagespinout', 'snorliumz':'pulverizingpancake', 'primariumz':'oceanicoperetta', 'ghostiumz':'neverendingnightmare', 'inciniumz':'maliciousmoonsault', 'firiumz':'infernooverdrive', 'wateriumz':'hydrovortex', 'tapuniumz':'guardianofalola', 'electriumz':'gigavolthavoc', 'mewniumz':'genesissupernova', 'eeviumz':'extremeevoboost', 'dragoniumz':'devastatingdrake', 'steeliumz':'corkscrewcrash', 'rockiumz':'continentalcrush', 'pikaniumz':'catastropika', 'normaliumz':'breakneckblitz', 'grassiumz':'bloomdoom', 'darkiniumz':'blackholeeclipse', 'fightiniumz':'alloutpummeling', 'poisoniumz':'aciddownpour', 'pikashuniumz':'10000000voltthunderbolt'}
+zmoves = {'fairiumz':'twinkletackle',
+    'groundiumz':'tectonicrage',
+    'flyiniumz':'supersonicskystrike',
+    'iciumz':'subzeroslammer',
+    'psychiumz':'shatteredpsyche',
+    'ghostiumz':'neverendingnightmare',
+    'firiumz':'infernooverdrive',
+    'wateriumz':'hydrovortex',
+    'buginiumz':'savagespinout',
+    'electriumz':'gigavolthavoc',
+    'dragoniumz':'devastatingdrake',
+    'steeliumz':'corkscrewcrash',
+    'rockiumz':'continentalcrush',
+    'normaliumz':'breakneckblitz',
+    'grassiumz':'bloomdoom',
+    'darkiniumz':'blackholeeclipse',
+    'fightiniumz':'alloutpummeling',
+    'poisoniumz':'aciddownpour',
+    'aloraichiumz':'stokedsparksurfer',
+    'marshadiumz':'soulstealing7starstrike',
+    'decidiumz':'sinisterarrowraid',
+    'snorliumz':'pulverizingpancake',
+    'primariumz':'oceanicoperetta',
+    'inciniumz':'maliciousmoonsault',
+    'tapuniumz':'guardianofalola',
+    'mewniumz':'genesissupernova',
+    'eeviumz':'extremeevoboost',
+    'pikaniumz':'catastropika',
+    'pikashuniumz':'10000000voltthunderbolt',
+    'kommoniumz':'clangoroussoulblaze',
+    'lunaliumz':'menacingmoonrazemaelstrom',
+    'lycaniumz':'splinteredstormshards',
+    'mimikiumz':'letssnuggleforever',
+    'solganiumz':'searingsunrazesmash',
+    'ultranecroziumz':'lightthatburnsthesky'
+}
 waterImmune = ['Dry Skin','Water Absorb','Storm Drain']
 grassImmune = ['Sap Sipper']
 fireImmune = ['Flash Fire']
@@ -52,6 +87,12 @@ def getUsableZmove(pokemon):
         if zmovedata['id'] == 'maliciousmoonsault' and pokemon.species == 'Incineroar' and 'darkestlariat' in pokemon.moves: return addBase(zmovedata, 'darklariat')
         if zmovedata['id'] == 'oceanicoperetta' and pokemon.species == 'Primarina' and 'sparklingaria' in pokemon.moves: return addBase(zmovedata, 'sparklingaria')
         if zmovedata['id'] == 'soulstealing7starstrike' and pokemon.species == 'Marshadow' and 'spectralthief' in pokemon.moves: return addBase(zmovedata, 'spectralthief')
+        if zmovedata['id'] == 'clangoroussoulblaze' and pokemon.species == 'Kommo-o' and 'clangingscales' in pokemon.moves: return addBase(zmovedata, 'clangingscales')
+        if zmovedata['id'] == 'lightthatburnsthesky' and pokemon.species == 'Necrozma-Ultra' and 'photongeyser' in pokemon.moves: return addBase(zmovedata, 'photongeyser')
+        if zmovedata['id'] == 'letssnuggleforever' and pokemon.species in ('Mimikyu', 'Mimikyu-Busted') and 'playrough' in pokemon.moves: return addBase(zmovedata, 'playrough')
+        if zmovedata['id'] == 'menacingmoonrazemaelstrom' and pokemon.species in ('Lunala', 'Necrozma-Dawn-Wings') and 'moongeistbeam' in pokemon.moves: return addBase(zmovedata, 'moongeistbeam')
+        if zmovedata['id'] == 'searingsunrazesmash' and pokemon.species in ('Lunala', 'Necrozma-Dusk-Mane') and 'sunsteelstrike' in pokemon.moves: return addBase(zmovedata, 'sunsteelstrike')
+        if zmovedata['id'] == 'splinteredstormshards' and pokemon.species in ('Lycanroc', 'Lycanroc-Midnight', 'Lycanroc-Dusk') and 'stoneedge' in pokemon.moves: return addBase(zmovedata, 'stoneedge')
         if zmovedata['id'] == 'guardianofalola' and pokemon.species in ('Tapu Koko', 'Tapu Bulu', 'Tapu Fini', 'Tapu Lele') and 'naturesmadness' in pokemon.moves: return addBase(zmovedata, 'naturesmadness')
     # Shouldn't ever get here, but just in case do an explicit return with a specific falsy value
     return False
