@@ -10685,7 +10685,7 @@ Pokedex = {
 		"evoLevel": 35,
 		"eggGroups": ["Field"],
 	},
-	"Flabebe": {
+	"Flabébé": {
 		"num": 669,
 		"species": "Flabebe",
 		"baseForme": "Red",

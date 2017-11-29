@@ -170,7 +170,7 @@ def pokedex(robot, cmd, params, user, room):
 
 commands = [
     # The easy stuff that can be done with a single lambda expression
-    Command(['source', 'git'], lambda: ReplyObject('Source code can be found at: {url}'.format(url = URL()))),
+    Command(['source', 'git'], lambda: ReplyObject('Source code can be found at: {url}'.format(url = URL()), True)),
     Command(['credits'], lambda: ReplyObject('Credits can be found: {url}'.format(url = URL()), True)),
     Command(['owner'], lambda s: ReplyObject('Owned by: {owner}'.format(owner = s.owner), True)),
     Command(['commands', 'help'], lambda: ReplyObject('Read about commands here: {url}blob/master/COMMANDS.md'.format(url = URL()), reply = True, pmreply = True)),

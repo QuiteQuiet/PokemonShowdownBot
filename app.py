@@ -287,7 +287,7 @@ if __name__ == '__main__':
     restartCount = 0
     while restartCount < 100:
         # This function has a loop that runs as long as the websocket is connected
-        psb.ws.run_forever()
+        psb.listen()
         # If we get here, the socket is closed and disconnected
         # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
         time.sleep(30)

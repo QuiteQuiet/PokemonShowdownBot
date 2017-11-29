@@ -51,7 +51,7 @@ class PokemonShowdownBot:
         self.openConnection()
         guidechar = self.commandchar
 
-    def onError(self, error):
+    def onError(self, ws, error):
         print('Websocket Error:', error)
     def onClose(self, message):
         self.rooms = {}
@@ -72,6 +72,9 @@ class PokemonShowdownBot:
     def closeConnection(self):
         self.ws.close()
         self.ws = None
+
+    def listen(self):
+        self.ws.run_forever()
 
     def loadDefaults(self):
         import shutil
