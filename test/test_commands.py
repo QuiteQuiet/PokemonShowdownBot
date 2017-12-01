@@ -20,4 +20,4 @@ def testInvalidCommand():
 
 def testExternalLoader():
     reply = psb.invoker.execute(psb, 'source', test_room, '', test_user)
-    assert reply == ReplyObject('Source code can be found at: {}'.format(URL())), 'Commands not properly loaded'
+    assert reply == ReplyObject('Source code can be found at: {}'.format(URL()), True), 'Commands not properly loaded'
