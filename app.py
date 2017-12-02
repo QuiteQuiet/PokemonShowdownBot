@@ -160,6 +160,10 @@ class PSBot(PokemonShowdownBot):
         elif 'deinit' == message[1]:
             self.rooms.pop(roomName)
 
+        elif 'noinit' == message[1]:
+            # we didn't join the room for some other reason (doesn't exist/roombanned)
+            self.rooms.pop(room, None)
+
         # As long as the room have a roomintro (which even groupchats do now)
         # Roomintros are also the last thing that is sent when joining a room
         # so when this show up, assume the room is loaded

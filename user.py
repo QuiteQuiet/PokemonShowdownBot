@@ -25,7 +25,7 @@ class User:
         rank: string, user rank.
         owner: Bool, is this you.
     """
-    Groups = {' ': 0, '+': 1, '☆': 1, '%': 2, '@': 3, '*': 3.1, '&': 4, '#': 5, '~': 6}
+    Groups = {'‽': -1, '!': -1, ' ': 0, '+': 1, '☆': 1, '%': 2, '@': 3, '*': 3.1, '&': 4, '#': 5, '~': 6}
 
     @staticmethod
     def compareRanks(rank1, rank2):
