@@ -35,6 +35,16 @@ def testSpam():
     assert not test_room.moderation.isSpam('4', test_user, datetime.utcfromtimestamp(4)), 'should not be spam'
     assert test_room.moderation.isSpam('5', test_user, datetime.utcfromtimestamp(5)), 'should be spam now'
 
+def testSpam2():
+    test_room = Room('test')
+    test_user = User('user')
+    assert not test_room.moderation.isSpam('1', test_user, datetime.utcfromtimestamp(1)), 'should not be spam'
+    assert not test_room.moderation.isSpam('2', test_user, datetime.utcfromtimestamp(5)), 'should not be spam'
+    assert not test_room.moderation.isSpam('3', test_user, datetime.utcfromtimestamp(6)), 'should not be spam'
+    assert not test_room.moderation.isSpam('4', test_user, datetime.utcfromtimestamp(7)), 'should not be spam'
+    assert not test_room.moderation.isSpam('5', test_user, datetime.utcfromtimestamp(8)), 'should not be spam'
+    assert test_room.moderation.isSpam('6', test_user, datetime.utcfromtimestamp(9)), 'should be spam now'
+
 def testConfig():
     test_room = Room('test', {
         'moderate': {
