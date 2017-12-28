@@ -4,7 +4,7 @@ Links = {
     'ou':'http://www.smogon.com/forums/threads/3536420/',
     'uu':'http://www.smogon.com/forums/threads/3533364/',
     'ru':'http://www.smogon.com/forums/threads/3538036/',
-    'nu':'http://www.smogon.com/forums/threads/3607629/',
+    'nu':'http://www.smogon.com/forums/threads/3622107/',
     'pu':'http://www.smogon.com/forums/threads/3528743/',
     'lc':'http://www.smogon.com/forums/threads/3496013/'
     },
