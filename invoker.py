@@ -108,7 +108,7 @@ class CommandInvoker:
                 pass
 
     def _iterPackages(self):
-        for importer, modname, ispkg in pkgutil.walk_packages(path = '.', onerror = lambda x: None):
+        for importer, modname, ispkg in pkgutil.walk_packages(path = ['.'], onerror = lambda x: None):
             yield importer, modname, ispkg
 
     def execute(self, *args):
