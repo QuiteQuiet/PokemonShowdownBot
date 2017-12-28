@@ -64,7 +64,7 @@ def getUsableZmove(pokemon):
                 if Moves[move]['category'] == 'Status':
                     zmovedata['basePower'] = 0
                     zmovedata['category'] = 'Status'
-                    if Moves[move]['zMoveBoost']:
+                    if 'zMoveBoost' in Moves[move]:
                         zmovedata['boosts'] = Moves[move]['zMoveBoost']
                 else:
                     zmovedata['basePower'] = Moves[move]['zMovePower']
