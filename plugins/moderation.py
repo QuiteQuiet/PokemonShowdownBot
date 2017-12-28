@@ -161,10 +161,7 @@ class ModerationHandler:
         times = self.spamTracker[user.id]
         timesLen = len(times)
         if timesLen < ModerationHandler.MESSAGES_FOR_SPAM(): return False
-        print(timesLen)
-        past = times[timesLen - ModerationHandler.MESSAGES_FOR_SPAM()]
-        timeDiff = now - past
-        print(now, '-', past, ':', timeDiff)
+        timeDiff = now - times[timesLen - ModerationHandler.MESSAGES_FOR_SPAM()]
         if timeDiff <= ModerationHandler.SPAM_INTERVAL() and timeDiff > ModerationHandler.MIN_MESSAGE_TIME():
         # For it to be spam, the following conditions has to be met:
         # 1: At least 5 messages in the last 6 seconds
