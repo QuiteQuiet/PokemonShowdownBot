@@ -24,7 +24,7 @@ class ModerationHandler:
     @staticmethod
     def MIN_MESSAGE_TIME(): return timedelta(milliseconds = 300) * ModerationHandler.MESSAGES_FOR_SPAM()
     @staticmethod
-    def SPAM_INTERVAL(): return timedelta(seconds = 5)
+    def SPAM_INTERVAL(): return timedelta(seconds = 6)
     @staticmethod
     def toId(stuff): return re.sub(r'[^a-zA-Z0-9]', '', stuff).lower()
 
