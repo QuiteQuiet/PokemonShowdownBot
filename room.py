@@ -46,6 +46,7 @@ class Room:
             },
             'allow games':False,
             'tourwhitelist':[]}
+        if not data['moderate']['room']: data['moderate']['room'] = room
         self.users = {}
         self.loading = True
         self.title = room

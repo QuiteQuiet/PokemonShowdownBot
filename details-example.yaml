@@ -21,13 +21,13 @@ avatar: 0
 # allow games: Specify if chatgames like hangman should be allowed in the room
 # tourwhitelist: If you want to make specific people able to start tournaments without being @, add them to this list
 joinRooms:
-  room:
+  (room name here):
     moderate:
       anything: false
       banword: false
       caps: false
       groupchats: false
-      room: room # This should be the same name as the room name above
+      room:  # This should be the same name as the room name above
       spam: false
       stretching: false
       urls: false
