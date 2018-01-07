@@ -87,25 +87,40 @@ class CommandInvoker:
 
     def buildInvokerTable(self):
         print('Loading commands...')
+        failedtrees = []
         for importer, modname, ispkg in self._iterPackages():
-            importedModule = importlib.import_module(modname)
+            # skip subtrees of a failed import
+            if [subtree for subtree in failedtrees if modname.startswith(subtree)]: continue
             try:
-                # Look through the module and see if any commands have been defined
-                commands = getattr(importedModule, 'commands')
-                for command in commands:
-                    # build the invoker table for each command
-                    for trigger in command.cmdTriggers:
-                        if trigger in self.cmdInvokers:
-                            print('{} already exists as a command'.format(trigger))
-                            continue
-                        if trigger.startswith('!') and trigger[1:] in self.cmdInvokers:
-                            command.hasBroadcastAlt = True
-                            continue
-                        self.cmdInvokers[trigger] = command
-                print('Loaded from {}'.format(modname))
-            except AttributeError:
-                # Module contains no commands, this is expected and should be ignored
-                pass
+                importedModule = importlib.import_module(modname)
+                try:
+                    # Look through the module and see if any commands have been defined
+                    commands = getattr(importedModule, 'commands')
+                    try:
+                        for command in commands:
+                            # build the invoker table for each command
+                            for trigger in command.cmdTriggers:
+                                if trigger in self.cmdInvokers:
+                                    print('{} already exists as a command'.format(trigger))
+                                    continue
+                                if trigger.startswith('!') and trigger[1:] in self.cmdInvokers:
+                                    command.hasBroadcastAlt = True
+                                    continue
+                                self.cmdInvokers[trigger] = command
+                        print('Loaded from {}'.format(modname))
+                    except TypeError as e:
+                        # The module had a `commands` entry that was of an unexpected type
+                        # Mainly a safeguard towards importing native Python packages by mistake
+                        print('Module {} had an incompatible type for `commands`; type(commands) == {}; Skipping subtree...'.format(modname, type(commands)))
+                        failedtrees.append(modname)
+                except AttributeError:
+                    # Module contains no commands, this is expected and should be ignored
+                    pass
+            except ImportError as e:
+                # Something went horribly wrong
+                print(modname)
+                traceback.print_tb(e.__traceback__)
+                print(e)
 
     def _iterPackages(self):
         for importer, modname, ispkg in pkgutil.walk_packages(path = ['.'], onerror = lambda x: None):
