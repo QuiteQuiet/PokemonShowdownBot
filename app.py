@@ -158,11 +158,11 @@ class PSBot(PokemonShowdownBot):
 
         # Room was left in some way other than through ~leave
         elif 'deinit' == message[1]:
-            self.rooms.pop(roomName)
+            self.rooms.pop(room.title)
 
         elif 'noinit' == message[1]:
             # we didn't join the room for some other reason (doesn't exist/roombanned)
-            self.rooms.pop(room, None)
+            self.rooms.pop(room.title, None)
 
         # As long as the room have a roomintro (which even groupchats do now)
         # Roomintros are also the last thing that is sent when joining a room
@@ -179,18 +179,21 @@ class PSBot(PokemonShowdownBot):
             room.rank = message[2][message[2].index(self.name) - 1]
 
         elif 'j' in message[1].lower():
+            if room.loading: return
             self.handleJoin(room, message[2])
 
         elif 'l' == message[1].lower() or 'leave' == message[1].lower():
+            if room.loading: return
             if self.userIsSelf(message[2][1:]):
                 # This is just a failsafe in case the bot is forcibly removed from a room.
                 # Any other memory release required is handeled by the room destruction
                 if roomName in self.rooms:
-                    self.rooms.pop(roomName)
+                    self.rooms.pop(room.title)
                 return
             userid = self.toId(message[2])
             room.removeUser(userid)
         elif 'n' in message[1].lower() and len(message[1]) < 3:
+            if room.loading: return
             # Keep track of your own rank
             # When demoting / promoting a user the server sends a |N| message to update the userlist
             if self.userIsSelf(message[2][1:]):

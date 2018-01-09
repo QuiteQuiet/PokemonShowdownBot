@@ -64,8 +64,7 @@ class Room:
         self.loading = False
 
     def addUser(self, user):
-        if self.moderation.isBannedFromRoom(user):
-            return
+        if self.moderation.isBannedFromRoom(user): return
         if user.id not in self.users:
             self.users[user.id] = user
         return True
