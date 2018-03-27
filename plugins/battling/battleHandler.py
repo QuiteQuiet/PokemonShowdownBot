@@ -45,6 +45,7 @@ class BattleHandler:
                  yaml.dump(self.teams, file, default_flow_style = False, explicit_start = True)
 
     def send(self, msg):
+        print(msg)
         self.ws.send(msg)
     def respond(self, battle, msg):
         self.send('{room}|{msg}'.format(room = battle, msg = msg))
@@ -52,7 +53,6 @@ class BattleHandler:
     def lead(self, battle, poke, rqid):
         self.send('{room}|/team {mon}|{rqid}'.format(room = battle, mon = poke, rqid = rqid))
     def act(self, battle, action, move, rqid):
-        print('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
         self.send('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
 
     def makeMove(self, battle, roomname):

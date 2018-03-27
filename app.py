@@ -160,6 +160,9 @@ class PSBot(PokemonShowdownBot):
         elif 'deinit' == message[1]:
             self.rooms.pop(room.title)
 
+        elif 'popup' == message[1]:
+            print(message[2].replace('||', '\n\t'))
+
         elif 'noinit' == message[1]:
             # we didn't join the room for some other reason (doesn't exist/roombanned)
             self.rooms.pop(room.title, None)
@@ -292,13 +295,13 @@ class PSBot(PokemonShowdownBot):
 if __name__ == '__main__':
     psb = PSBot()
     restartCount = 0
-    while restartCount < 100:
+    while restartCount < 10:
         # This function has a loop that runs as long as the websocket is connected
         psb.listen()
         # If we get here, the socket is closed and disconnected
         # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
-        time.sleep(30)
-        print('30 seconds since last disconnect. Retrying connection...')
+        time.sleep(3**(restartCount + 1))
+        print('{} seconds since last disconnect. Retrying connection...'.format(3**(restartCount + 1)))
         psb.openConnection()
         restartCount += 1
         print('Restart Count:', restartCount)
