@@ -79,6 +79,9 @@ class ReplyObject:
     def response(self, text):
         self.text = text
         return self
+    def extra(self, text):
+        self.text += text
+        return self
 
 class CommandInvoker:
     def __init__(self):
@@ -140,8 +143,6 @@ class CommandInvoker:
                 if self.cmdInvokers[cmd].hasBroadcastAlt and broadcastAlt and response.text[0] == '/':
                     response.text[0] = '!'
                 return response
-            except KeyError as e:
-                pass
             except Exception as e:
                 # Something went wrong, but we don't know what
                 traceback.print_tb(e.__traceback__)

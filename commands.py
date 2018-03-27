@@ -32,7 +32,6 @@ from data.replies import Lines
 
 from user import User
 
-
 usageLink = r'http://www.smogon.com/stats/2017-08/'
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
@@ -143,7 +142,6 @@ def randteam(robot, cmd):
             break
     return ReplyObject(' / '.join(list(team)), True)
 
-
 def pokedex(robot, cmd, params, user, room):
     cmd = re.sub('-(?:mega(?:-(x|y))?|primal)','', cmd)
     substitutes = {'gourgeist-s':'gourgeist-small',  # This doesn't break Arceus-Steel like adding |S to the regex would
@@ -167,6 +165,14 @@ def pokedex(robot, cmd, params, user, room):
         return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/{gen}/pokemon/{mon}/">{capital} analysis</a>'.format(gen = params, mon = cmd, capital = cmd.title()), True, True)
     return ReplyObject('Analysis: http://www.smogon.com/dex/{gen}/pokemon/{mon}/'.format(gen = params, mon = cmd), reply = True, pmreply = True)
 
+def analysis(robot, cmd, params, user, room):
+    cmd = params.split(' ')[0]
+    params = params[len(cmd) + 1:]
+    response = pokedex(robot, cmd, params, user, room)
+    if robot.canHtml(room):
+        return response.extra('<br /><sub>This command also works without `analysis`, like {char}{pokemon}</sub>'.format(char = robot.commandchar, pokemon = cmd))
+    return response
+
 
 commands = [
     # The easy stuff that can be done with a single lambda expression
@@ -181,6 +187,9 @@ commands = [
     Command(['broadcast'], lambda s: ReplyObject('Rank required to broadcast: {rank}'.format(rank = s.details['broadcastrank']), True)),
     Command(['usage'], lambda: ReplyObject(usageLink, reply = True, pmreply = True)),
     Command(['pick'], lambda s, c, p: ReplyObject(choice(p.split(',')), True)),
+
+    # Aliasing the pokemon command because users use `analysis [pokemon]` too much
+    Command(['analysis', 'dex'], analysis),
 
     # Generate the command list on load
     Command([link for link in YoutubeLinks], lambda s, c: ReplyObject(YoutubeLinks[c], True)),
