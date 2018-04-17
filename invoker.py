@@ -41,7 +41,7 @@ class ReplyObject:
     Parameters used for creating this class defines the behaviour of the main
     program when it comes across the reply object.
 
-    Attrpbutes:
+    Attributes:
         text: str, the content of the reply.
         ignoreEscaping: bool, default every reply is escaped to not allow
         arbitrary commands to be executed through replies. Some commands require
@@ -110,7 +110,7 @@ class CommandInvoker:
                                     command.hasBroadcastAlt = True
                                     continue
                                 self.cmdInvokers[trigger] = command
-                        print('Loaded from {}'.format(modname))
+                        print('Loaded {number} from {module}'.format(number = len(commands), module = modname))
                     except TypeError as e:
                         # The module had a `commands` entry that was of an unexpected type
                         # Mainly a safeguard towards importing native Python packages by mistake
