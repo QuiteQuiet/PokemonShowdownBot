@@ -58,9 +58,10 @@ class ModerationHandler:
             'puu.sh','i.imgur.com','prntscr.com','gyazo.com',
             'bulbapedia.bulbagarden.net','serebii.net'
     ]
-    def __init__(self, config):
+    def __init__(self, config, room):
         self.roomtitle = config['room']
         self.config = config
+        self.room = room
         self.nextReset = datetime.now().date() + timedelta(days = 2)
         self.spamTracker = {}
         self.punishedUsers = {}
@@ -73,9 +74,6 @@ class ModerationHandler:
             if self.roomtitle not in self.banned:
                 self.banned[self.roomtitle] = {'phrase': [], 'user': []}
             self.banned = self.banned[self.roomtitle]
-
-    def assignRoom(self, room):
-        self.room = room
 
     def toggleRoomModeration(self):
         self.config['anything'] = not self.config['anything']

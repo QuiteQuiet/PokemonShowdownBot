@@ -52,13 +52,12 @@ class Room:
         self.title = room
         self.isPM = room.lower() == 'pm'
         self.rank = ' '
-        self.moderation = ModerationHandler(data['moderate'])
         self.allowGames = data['allow games']
         self.tour = None
         self.activity = None
         self.tourwhitelist = data['tourwhitelist']
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
-        self.moderation.assignRoom(self)
+        self.moderation = ModerationHandler(data['moderate'], self)
 
     def doneLoading(self):
         self.loading = False
@@ -173,6 +172,19 @@ def tour(bot, cmd, params, user, room):
     if not room.isWhitelisted(user): return reply.response('You are not allowed to use this command. (Requires whitelisting by a Room Owner)')
     if not bot.canStartTour(room): return reply.response("I don't have the rank required to start a tour :(")
     return reply.response('/tour {rest}\n/modnote From {user}'.format(rest = params, user = user.name))
+
+def gettourwl(bot, cmd, params, user, room):
+    reply = ReplyObject('', True, True)
+    targetRoom = bot.getRoom(params)
+    if not targetRoom: targetRoom = room
+    if not user.hasRank('@'): return reply.response('You don\'t have permission to view the tour whitelist for {}'.format(targetRoom.title))
+    if not targetRoom.tourwhitelist: return reply.response('No whitelist for room {}'.format(targetRoom.title))
+    if bot.canStartTour(room) and len(targetRoom.tourwhitelist) > 5:
+        return reply.response('!code - {}'.format('\n- '.join(targetRoom.tourwhitelist)))
+    else:
+        return reply.response('Whitelisted users in {room}: {users}'.format(room = targetRoom.title, users = ', '.join(targetRoom.tourwhitelist)))
+
+
 def tourwl(bot, cmd, params, user, room):
     """ Independent command for a user to tours whitelist.
 
@@ -193,6 +205,7 @@ def tourwl(bot, cmd, params, user, room):
     if not room.addToWhitelist(target): return reply.response('This user is already whitelisted in that room.')
     bot.saveDetails()
     return reply.response('{name} added to the whitelist in this room.'.format(name = params))
+
 def untourwl(bot, cmd, params, user, room):
     """ Independent command for removing a user from the tours whitelist.
 
@@ -219,5 +232,6 @@ commands = [
     Command(['allowgames'], allowgames),
     Command(['tour', '!tour'], tour),
     Command(['tourwhitelist', 'tourwl'], tourwl),
-    Command(['untourwhitelist', 'untourwl'], untourwl)
+    Command(['untourwhitelist', 'untourwl'], untourwl),
+    Command(['gettourwhitelist', 'gettourwl'], gettourwl)
 ]
