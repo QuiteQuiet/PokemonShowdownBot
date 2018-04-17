@@ -125,7 +125,14 @@ class PSBot(PokemonShowdownBot):
         """
         if not msg.startswith('|'): return
         message = self.escapeMessage(msg).split('|')
-        room = Room('Empty') if not roomName else self.getRoom(roomName)
+        room = self.getRoom(roomName)
+
+        # we got messages from a room we aren't in?
+        if not room:
+            if not roomName:
+                room = Room('Empty')
+            else:
+                self.rooms[roomName] = Room(roomName)
 
         # Logging in
         if message[1] == 'challstr':
@@ -157,7 +164,7 @@ class PSBot(PokemonShowdownBot):
             return
 
         # Room was left in some way other than through ~leave
-        elif 'deinit' == message[1]:
+        elif 'deinit' == message[1] and room:
             self.rooms.pop(room.title)
 
         elif 'popup' == message[1]:

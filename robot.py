@@ -140,15 +140,12 @@ class PokemonShowdownBot:
             print('Error! {name} not in {room}'.format(name = self.name, room = room))
             return False
         self.send('|/leave ' + room)
-        self.rooms.pop(room, None)
         return True
     def getRoom(self, roomName):
         alias = {'nu':'neverused'}
         if roomName in alias:
             roomName = alias[roomName]
-        if roomName not in self.rooms:
-            self.rooms[roomName] = Room(roomName)
-        return self.rooms[roomName]
+        return self.rooms[roomName] if roomName in self.rooms else None
 
     def say(self, room, msg):
         if '\n' in msg:
