@@ -214,7 +214,7 @@ class PSBot(PokemonShowdownBot):
 
         # Chat messages
         elif 'c' in message[1].lower():
-            if room.loading: return
+            if room.history(message): return
             user = room.getUser(self.toId(message[3]))
             if not user: return
             if self.userIsSelf(user.id): return

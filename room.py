@@ -2,6 +2,7 @@
 # Objects control settings on a room-per-room basis, meaning every room can
 # be treated differently.
 import json
+import time
 from collections import deque
 from plugins.tournaments import Tournament
 from invoker import ReplyObject, Command
@@ -49,6 +50,7 @@ class Room:
         if not data['moderate']['room']: data['moderate']['room'] = room
         self.users = {}
         self.loading = True
+        self.joinTime = int(time.time())
         self.title = room
         self.isPM = room.lower() == 'pm'
         self.rank = ' '
@@ -61,6 +63,12 @@ class Room:
 
     def doneLoading(self):
         self.loading = False
+
+    def history(self, message):
+        if not self.loading: return False
+        if int(message[2]) > self.joinTime:
+            self.loading = False
+        return self.loading
 
     def addUser(self, user):
         if self.moderation.isBannedFromRoom(user): return
