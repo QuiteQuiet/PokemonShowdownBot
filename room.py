@@ -36,7 +36,6 @@ class Room:
     def __init__(self, room, data = None):
         if not data: data = {
             'moderate': {
-                'room': room,
                 'anything': False,
                 'spam': False,
                 'banword': False,
@@ -47,7 +46,6 @@ class Room:
             },
             'allow games':False,
             'tourwhitelist':[]}
-        if not data['moderate']['room']: data['moderate']['room'] = room
         self.users = {}
         self.loading = True
         self.joinTime = int(time.time())
@@ -64,7 +62,7 @@ class Room:
     def doneLoading(self):
         self.loading = False
 
-    def history(self, message):
+    def isHistory(self, message):
         if not self.loading: return False
         if int(message[2]) > self.joinTime:
             self.loading = False

@@ -59,7 +59,6 @@ class ModerationHandler:
             'bulbapedia.bulbagarden.net','serebii.net'
     ]
     def __init__(self, config, room):
-        self.roomtitle = config['room']
         self.config = config
         self.room = room
         self.nextReset = datetime.now().date() + timedelta(days = 2)
@@ -71,9 +70,9 @@ class ModerationHandler:
             self.banned = yaml.load(yf)
             if not self.banned:
                 self.banned = {}
-            if self.roomtitle not in self.banned:
-                self.banned[self.roomtitle] = {'phrase': [], 'user': []}
-            self.banned = self.banned[self.roomtitle]
+            if self.room.title not in self.banned:
+                self.banned[self.room.title] = {'phrase': [], 'user': []}
+            self.banned = self.banned[self.room.title]
 
     def toggleRoomModeration(self):
         self.config['anything'] = not self.config['anything']
@@ -89,7 +88,7 @@ class ModerationHandler:
         with open('plugins/bans.yaml', 'r') as yf:
             bans = yaml.load(yf)
             if not bans: bans = {}
-            bans[self.roomtitle] = self.banned
+            bans[self.room.title] = self.banned
         with open('plugins/bans.yaml', 'w') as yf:
             yaml.dump(bans, yf)
 
@@ -104,7 +103,7 @@ class ModerationHandler:
         with open('plugins/bans.yaml', 'r') as yf:
             bans = yaml.load(yf)
             if not bans: bans = {}
-            bans[self.roomtitle] = self.banned
+            bans[self.room.title] = self.banned
         with open('plugins/bans.yaml', 'w') as yf:
             yaml.dump(bans, yf)
 

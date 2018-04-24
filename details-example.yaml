@@ -27,7 +27,6 @@ joinRooms:
       banword: false
       caps: false
       groupchats: false
-      room:  # This should be the same name as the room name above
       spam: false
       stretching: false
       urls: false
