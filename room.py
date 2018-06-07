@@ -8,6 +8,7 @@ from plugins.tournaments import Tournament
 from invoker import ReplyObject, Command
 from user import User
 from plugins.moderation import ModerationHandler
+from data.tiers import oldgenNUBanlists
 
 
 class Room:
@@ -177,6 +178,9 @@ def tour(bot, cmd, params, user, room):
     if room.isPM: return reply.response("You can't use this command in a pm.")
     if not room.isWhitelisted(user): return reply.response('You are not allowed to use this command. (Requires whitelisting by a Room Owner)')
     if not bot.canStartTour(room): return reply.response("I don't have the rank required to start a tour :(")
+    if params in {'gscnu', 'advnu'}:
+        gen, name = ('gen3ou', 'ADV NU') if params == 'advnu' else ('gen2ou', 'GSC NU')
+        params = 'new {gen}, elimination\n/tour rules {bans}\n/tour name {name}'.format(gen = gen, bans = oldgenNUBanlists[params], name = name)
     return reply.response('/tour {rest}\n/modnote From {user}'.format(rest = params, user = user.name))
 
 def gettourwl(bot, cmd, params, user, room):
