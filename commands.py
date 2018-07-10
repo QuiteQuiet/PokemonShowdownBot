@@ -79,6 +79,7 @@ def setbroadcast(robot, cmd, params, user):
 
 def links(robot, cmd, params):
     params = params.lower()
+    if not params: params = 'nu'
     if params in Links[cmd]:
         return ReplyObject(Links[cmd][params], True)
     return ReplyObject('{tier} is not a supported format for {command}'.format(tier = params if params else "''", command = cmd), True)
