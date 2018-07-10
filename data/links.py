@@ -13,7 +13,7 @@ Links = {
     'ou':'http://www.smogon.com/forums/threads/3538596/',
     'uu':'http://www.smogon.com/forums/threads/3538856/',
     'ru':'http://www.smogon.com/forums/threads/3538971/',
-    'nu':'http://www.smogon.com/forums/threads/3631363/',
+    'nu':'http://www.smogon.com/forums/threads/3637061/',
     'pu':'http://www.smogon.com/forums/threads/3523350/',
     'lc':'http://www.smogon.com/forums/threads/3505710/'
     },
@@ -40,7 +40,7 @@ Links = {
    'ou':'http://www.smogon.com/forums/threads/3524713/',
    'uu':'http://www.smogon.com/forums/threads/3532349/',
    'ru':'http://www.smogon.com/forums/threads/3523954/',
-   'nu':'http://www.smogon.com/forums/threads/3607234/',
+   'nu':'http://www.smogon.com/forums/threads/3632727/',
    'pu':'http://www.smogon.com/forums/threads/3537423/',
    'lc':'http://www.smogon.com/forums/threads/3526527/'
     },
@@ -64,5 +64,6 @@ YoutubeLinks = {
     'kiyo':'Use Adblock: http://www.youtube.com/user/gottagokiyo',
     'raseri':'NUTL Content: http://www.youtube.com/user/SmogonRaseri',
     'teddeh': "Some dude who said he's a girl: http://www.youtube.com/user/MrTeddehh",
-    'disjunction':'This guy is bad: '
+    'disjunction':'This guy is bad: ',
+    'yoshizilla315': "NU lives every week!: https://www.youtube.com/channel/UCFyInjfBzT38TSAKgHVQgkg"	
 }
