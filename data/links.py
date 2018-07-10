@@ -64,6 +64,5 @@ YoutubeLinks = {
     'kiyo':'Use Adblock: http://www.youtube.com/user/gottagokiyo',
     'raseri':'NUTL Content: http://www.youtube.com/user/SmogonRaseri',
     'teddeh': "Some dude who said he's a girl: http://www.youtube.com/user/MrTeddehh",
-    'disjunction':'This guy is bad: ',
-    'yoshizilla315': "NU lives every week!: https://www.youtube.com/channel/UCFyInjfBzT38TSAKgHVQgkg"	
+    'disjunction':'This guy is bad: '
 }
