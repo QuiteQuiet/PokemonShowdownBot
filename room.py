@@ -187,6 +187,7 @@ def gettourwl(bot, cmd, params, user, room):
     reply = ReplyObject('', True, True)
     targetRoom = bot.getRoom(params)
     if not targetRoom: targetRoom = room
+    user = targetRoom.getUser(user.id)
     if not user.hasRank('@'): return reply.response('You don\'t have permission to view the tour whitelist for {}'.format(targetRoom.title))
     if not targetRoom.tourwhitelist: return reply.response('No whitelist for room {}'.format(targetRoom.title))
     if bot.canStartTour(room) and len(targetRoom.tourwhitelist) > 5:
