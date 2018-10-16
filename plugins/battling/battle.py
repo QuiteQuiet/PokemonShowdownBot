@@ -82,6 +82,7 @@ class Battle:
         self.field = {}
         self.spectating = False
         self.ladderGame = False
+        self.hackmons = True # Assume hackmons until told otherwise
 
     def setMe(self, me, pId):
         self.me.name = me
@@ -91,6 +92,8 @@ class Battle:
         self.other.id = pId
     def isLadderMatch(self):
         self.ladderGame = True
+    def isNotHackmons(self):
+        self.hackmons = False
     def setFieldCond(self, cond):
         # TODO: do this
         pass

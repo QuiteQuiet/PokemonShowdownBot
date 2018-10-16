@@ -151,8 +151,11 @@ class BattleHandler:
             if 'forceSwitch' in request and request['forceSwitch'][0]:
                 self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
 
+        elif 'rule' == msg[1]:
+            if msg[2].startswith('Species Clause') or msg[2].startswith('Endless Battle Clause'):
+                btl.isNotHackmons()
         elif 'poke' == msg[1]:
-            if not self.activeBattles[battle].me.id == msg[2]:
+            if not btl.me.id == msg[2]:
                 species = self.getSpecies(msg[3])
                 stats = {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}
                 moves = ['','','','']

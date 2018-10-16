@@ -106,13 +106,13 @@ def getAction(battle, playing):
     active = battle.me.active
     moves = battle.myActiveData[0]['moves']
     if playing == 'gen7challengecup1v1':
-        return getMove(moves, active, battle.other.active), 'move'
+        return getMove(moves, active, battle.other.active, battle), 'move'
     else:
         act = pickAction(battle, battle.me, battle.other.active)
         if act == 'switch':
             return getSwitch(battle.me.team, active.species, battle.other.active), 'switch'
         else:
-            return getMove(moves, active, battle.other.active), 'move'
+            return getMove(moves, active, battle.other.active, battle), 'move'
 
 def calcMatchup(me, other):
     score = 0
@@ -146,11 +146,18 @@ def pickAction(battle, me, other):
     if 'trapped' in battle.myActiveData[0] or me.active.trapped:
         return 'move'
     return 'switch'
-def getMove(moves, active, opponent):
+def getMove(moves, active, opponent, battle):
     action = ''
     move = getCC1v1Move(moves, active, opponent)
     if 'isZ' in move and active.side.canZmove:
-        action += '{} zmove'.format(move['baseMove'])
+        if battle.hackmons:
+            # Call this move by its 1-indexed index not name
+            for i, val in enumerate(moves):
+                if val['id'] == move['id']:
+                    action += '{}'.format(i + 1)
+                    break
+        else:
+            action += '{} zmove'.format(move['baseMove'])
     else:
         action += move['id']
     if active.canMega:
