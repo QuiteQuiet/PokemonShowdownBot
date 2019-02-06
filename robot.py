@@ -128,7 +128,7 @@ class PokemonShowdownBot:
             self.send('|/avatar {num}'.format(num = self.details['avatar']))
         print('{name}: Successfully logged in.'.format(name = self.name))
         for room in self.details['joinRooms']:
-            print('Autojoining room {}'.format(room))
+            print('{name}: Autojoining room {room}'.format(name = self.name, room = room))
             self.joinRoom(room, self.details['joinRooms'][room])
 
     def joinRoom(self, room, data = None):
