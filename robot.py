@@ -44,6 +44,7 @@ class PokemonShowdownBot:
         self.id = self.toId(self.name)
         self.rooms = {}
         self.commandchar = self.details['command']
+        self.startTime = None
         self.intro()
         self.splitMessage = onMessage if onMessage else self.onMessage
         self.url = url
@@ -124,6 +125,7 @@ class PokemonShowdownBot:
             print('crashing now; have a nice day :)')
             exit()
 
+        self.startTime = datetime.datetime.now()
         if int(self.details['avatar']) >= 0:
             self.send('|/avatar {num}'.format(num = self.details['avatar']))
         print('{name}: Successfully logged in.'.format(name = self.name))

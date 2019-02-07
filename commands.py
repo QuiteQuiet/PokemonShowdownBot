@@ -21,6 +21,7 @@
 from random import randint, choice
 import re
 import math # For funsies
+import datetime
 
 from invoker import ReplyObject, Command
 
@@ -76,6 +77,19 @@ def setbroadcast(robot, cmd, params, user):
             return ReplyObject('Broadcast rank set to {rank}. (This is not saved on reboot)'.format(rank = params if not params == ' ' else 'none'), True)
         return ReplyObject('You are not allowed to set broadcast rank. (Requires #)')
     return ReplyObject('{rank} is not a valid rank'.format(rank = params if not params == ' ' else 'none'))
+
+def uptime(robot):
+    mods = [86400, 3600, 60]
+    seconds = (datetime.datetime.now() - robot.startTime).total_seconds()
+    uptime = []
+    for mod in mods:
+        unit, seconds = divmod(seconds, mod)
+        uptime.append(int(unit))
+
+    uptime[0] = '{} day{}, '.format(uptime[0], 's' if uptime[0] > 1 else '') if uptime[0] > 0 else ''
+    uptime[1] = '{} hour{} and '.format(uptime[1], 's' if uptime[1] > 1 else '') if uptime[1] > 0 else ''
+    uptime[2] = '{} minute{}.'.format(uptime[2], 's' if uptime[2] != 1 else '')
+    return ReplyObject('Current uptime is: {uptime}'.format(uptime = ''.join(uptime)), True, broadcast = True)
 
 def links(robot, cmd, params):
     params = params.lower()
@@ -202,6 +216,7 @@ commands = [
     Command(['savedetails'], savedetails),
     Command(['newautojoin'], newautojoin),
     Command(['setbroadcast'], setbroadcast),
+    Command(['uptime'], uptime),
     Command([l for l in Links], links),
     Command([t for t in tiers], randpoke),
     Command([t.replace('poke','team') for t in tiers], randteam),
