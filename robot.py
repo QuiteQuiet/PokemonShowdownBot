@@ -75,7 +75,7 @@ class PokemonShowdownBot:
         self.ws = None
 
     def listen(self):
-        self.ws.run_forever(ping_interval = 120, ping_interval = 40)
+        self.ws.run_forever(ping_interval = 120, ping_timeout = 40)
 
     def loadDefaults(self):
         import shutil
