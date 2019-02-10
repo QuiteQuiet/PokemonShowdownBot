@@ -107,6 +107,33 @@ class Tournament:
         with open('plugins/tournament-rankings.yaml', 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
 
+def tourHandler(self, room, *params):
+    if 'create' in params[0]:
+        room.createTour(self.ws, params[1], self.bh)
+
+        if room.loading: return
+        # Tour was created, join it if in supported formats
+        if self.details['joinTours'] and room.tour.format in self.bh.supportedFormats:
+            room.tour.joinTour()
+    elif 'end' == params[0]:
+        if not room.loading:
+            winners, tier = room.getTourWinner(params[1])
+            if self.name in winners:
+                message = 'I won the {form} tournament :o'.format(form = tier)
+                if len(winners) > 1:
+                    winners.remove(self.name)
+                    message += '\nCongratulations to {others} for also winning :)'.format(others = ', '.join(winners))
+                self.say(room.title, message)
+            else:
+                self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)))
+        room.endTour()
+    elif 'forceend' in params[0]:
+        room.endTour()
+    else:
+        # This is for general tournament updates
+        if not room.tour or room.loading: return
+        room.tour.onUpdate(params)
+
 def oldgentour(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not room.tour: return reply.response('No tour is currently active, so this command is disabled.')
@@ -151,6 +178,11 @@ def getranking(bot, cmd, msg, user, room):
         return reply.response('No format given')
     except KeyError:
         return reply.response('The room has no data about the format {}'.format(parts[0]))
+
+# Exports
+handlers = {
+    'tournament': tourHandler
+}
 
 commands = [
     Command(['oldgentour'], oldgentour),

@@ -16,8 +16,12 @@ import requests
 import json
 import yaml
 from time import sleep
+from collections import defaultdict
 import datetime
 import re
+import importlib
+import pkgutil
+import traceback
 
 from room import Room
 from user import User
@@ -30,7 +34,7 @@ guidechar = ' '
 class PokemonShowdownBot:
     ''' Controls the most basic aspects of connecting to Pokemon Showdown as well as commands '''
 
-    def __init__(self, url, onMessage = None):
+    def __init__(self, url):
         global guidechar
         try:
             with open("details.yaml", 'r') as yaml_file:
@@ -46,7 +50,8 @@ class PokemonShowdownBot:
         self.commandchar = self.details['command']
         self.startTime = None
         self.intro()
-        self.splitMessage = onMessage if onMessage else self.onMessage
+        self.handlers = defaultdict(list)
+        self.collectHandlers()
         self.url = url
         #websocket.enableTrace(True)
         self.openConnection()
@@ -64,7 +69,7 @@ class PokemonShowdownBot:
     def openConnection(self):
         if not self.url: return
         self.ws = websocket.WebSocketApp(self.url,
-                                         on_message = self.splitMessage,
+                                         on_message = self.onMessage,
                                          on_error = self.onError,
                                          on_close = self.onClose)
         self.ws.on_open = self.onOpen
@@ -75,7 +80,7 @@ class PokemonShowdownBot:
         self.ws = None
 
     def listen(self):
-        self.ws.run_forever(ping_interval = 120, ping_timeout = 40)
+        self.ws.run_forever(ping_interval = 120)
 
     def loadDefaults(self):
         import shutil
@@ -98,6 +103,7 @@ class PokemonShowdownBot:
         self.ws.send(msg)
 
     def login(self, challenge, challengekeyid):
+        print('Attempting to log in...')
         if self.name == 'username' and self.details['password'] == 'password':
             print('Error: Login details still at default; will not proceed with execution!')
             exit()
@@ -221,13 +227,76 @@ class PokemonShowdownBot:
         with open('details.yaml', 'w') as yf:
             yaml.dump(details, yf, default_flow_style = False, explicit_start = True)
 
-    # Default onMessage if none is given (This only support logging in, nothing else)
-    # To get any actual use from the bot, create a custom onMessage function.
+    def _iterPackages(self):
+        for importer, modname, ispkg in pkgutil.walk_packages(path = ['.'], onerror = lambda x: None):
+            yield importer, modname, ispkg
+
+    def addHandler(self, name, func):
+        self.handlers[name].append(func)
+
+    def collectHandlers(self):
+        print('Loading handlers...')
+        self.addHandler('challstr', lambda s, r, cid, cstr: self.login(cstr, cid))
+        self.addHandler('updateuser', lambda s, r, u, n, a: self.updateUser(u, n))
+
+        failedTrees = []
+        for importer, modname, ispkg in self._iterPackages():
+            # skip subtrees of a failed import
+            if [subtree for subtree in failedTrees if modname.startswith(subtree)]: continue
+            try:
+                importedModule = importlib.import_module(modname)
+                try:
+                    # Look through the module and see if any handlers have been defined
+                    handlers = getattr(importedModule, 'handlers')
+                    try:
+                        for protocol, func in handlers.items():
+                            self.addHandler(protocol, func)
+                    except TypeError as e:
+                        # The module had a `commands` entry that was of an unexpected type
+                        # Mainly a safeguard towards importing native Python packages by mistake
+                        print('Module {} had an incompatible type for `handlers`; type(handlers) == {}; Skipping subtree...'.format(modname, type(handlers)))
+                        failedTrees.append(modname)
+                    print('Loaded {count} handlers from {module}'.format(count = len(handlers), module = modname))
+                except AttributeError:
+                    # Module contains no handlers, this is expected and should be ignored
+                    pass
+            except ImportError as e:
+                # Something went horribly wrong
+                print(modname)
+                traceback.print_tb(e.__traceback__)
+                print(e)
+
     def onMessage(self, ws, message):
         if not message: return
-        parts = message.split('|')
-        if parts[1] == 'challstr':
-            print('Attempting to log in...')
-            self.login(message[3], message[2])
-        elif parts[1] == 'updateuser':
-            self.updateUser(parts[2], parts[3])
+        roomName = ''
+        if '\n' in message:
+            message = message.split('\n')
+            if message[0].startswith('>'):
+                roomName = message[0][1:]
+            message.pop(0)
+        else:
+            message = [message]
+
+        room = self.getRoom(roomName)
+        # we got messages from a room we aren't in?
+        if not room:
+            if not roomName:
+                room = Room('Empty')
+            else:
+                room = self.rooms[roomName] = Room(roomName)
+
+        for msg in message:
+            if not msg.startswith('|'): continue
+            _, identifier, *params = self.escapeMessage(msg).split('|')
+            identifier = identifier.lower()
+
+            try:
+                # Go through handlers and resolve them one by one
+                for handler in self.handlers[identifier]:
+                    handler(self, room, *params)
+            except KeyError:
+                pass # expected to happen a lot
+            except Exception as e:
+                traceback.print_tb(e.__traceback__)
+                print(e)
+                print('MESSAGE THAT CAUSED IT:\n{}'.format(msg))

@@ -50,15 +50,18 @@ class BattleHandler:
     def respond(self, battle, msg):
         self.send('{room}|{msg}'.format(room = battle, msg = msg))
 
+    def newBattle(self, name):
+        self.activeBattles[name] = Battle(name)
+
     def lead(self, battle, poke, rqid):
         self.send('{room}|/team {mon}|{rqid}'.format(room = battle, mon = poke, rqid = rqid))
     def act(self, battle, action, move, rqid):
         self.send('{room}|/choose {act} {move}|{rqid}'.format(room = battle, act = action, move = str(move), rqid = rqid))
 
-    def makeMove(self, battle, roomname):
+    def makeMove(self, battle):
         try:
-            action, actionType = getAction(battle, roomname.split('-')[1])
-            self.act(roomname, actionType, action, battle.rqid)
+            action, actionType = getAction(battle, battle.name.split('-')[1])
+            self.act(battle.name, actionType, action, battle.rqid)
         # There's a lot of very quiet bugs in the BattleLogic.getAction code
         # so catch all the exceptions to get information about them.
         except Exception as e:
@@ -72,6 +75,7 @@ class BattleHandler:
         else:
             self.respond(battle.name, 'I guess that was expected...')
         print('Battle: {outcome} against {opponent}'.format(outcome = 'Won' if won else 'Lost', opponent = battle.other.name))
+
     def getRandomTeam(self, metagame):
         try:
             teamCount = len(self.teams[metagame])
@@ -102,186 +106,208 @@ class BattleHandler:
         pokemon = pokemon.split('-')[0]
         return pokemon
 
-    def parse(self, battle, message):
-        if not message: return
-        if not message.startswith('|'): return
-        if battle in self.activeBattles and message.startswith('|init'): return
+def init(robot, room, roomtype):
+    if roomtype == 'battle': robot.bh.newBattle(room.title)
 
-        msg = message.split('|')
+def title(robot, room, title):
+    if robot.name in title:
+        print('Battle: New battle between {}'.format(title))
 
-        if 'init' == msg[1] and 'battle' == msg[2]:
-            self.activeBattles[battle] = Battle(battle)
-        if 'deinit' == msg[1]:
-            room = self.activeBattles.pop(battle)
-            if self.ladderFormat and room.ladderGame:
-                # Look for a new battle since the last one ended
-                self.send('|/utm {}'.format(self.getRandomTeam(self.ladderFormat)))
-                self.send('|/search {}'.format(self.ladderFormat))
+def deinit(robot, room):
+    handler = robot.bh
+    battle = handler.activeBattles.pop(room.title)
+    if handler.ladderFormat and battle.ladderGame:
+        # Look for a new battle since the last one ended
+        robot.send('|/utm {}'.format(handler.getRandomTeam(handler.ladderFormat)))
+        robot.send('|/search {}'.format(handler.ladderFormat))
 
-        if 'rated' == msg[1]:
-            self.activeBattles[battle].isLadderMatch()
+# Decorator for all the battle protocol functions
+def battleprotocol(func):
+    def wrapper(robot, room, *params):
+        battle = robot.bh.activeBattles[room.title] if room.title in robot.bh.activeBattles else None
+        if not battle or battle.spectating: return
+        func(robot, robot.bh, battle, *params)
+    return wrapper
 
-        btl = self.activeBattles[battle] if battle in self.activeBattles else None
-        if not btl or btl.spectating: return
-        if 'request' == msg[1]:
-            try:
-                # This is where all the battle picking happen
-                request = json.loads(msg[2])
-            except ValueError as e:
-                return e
-            if 'rqid' in request:
-                self.activeBattles[battle].rqid = request['rqid']
-            sidedata = request['side']
-            teamSlot = 1
-            for poke in sidedata['pokemon']:
-                btl.me.updateTeam(
-                    Pokemon(self.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
-                            poke['stats'],poke['moves'],poke['baseAbility'],poke['item'], False, teamSlot, btl.me))
-                teamSlot += 1
-            if 'active' in request:
-                btl.myActiveData = request['active']
-                for pokemon in request['side']['pokemon']:
-                    if pokemon['active']:
-                        btl.me.setActive(btl.me.getPokemon(self.getSpecies(pokemon['details'])))
-                if 'canMegaEvo' in request['active'][0]:
-                    btl.me.active.canMega = btl.me.canMegaPokemon
-                if 'canUltraBurst' in request['active'][0]:
-                    btl.me.active.canUltraBurst = btl.me.canUltraBurst
+@battleprotocol
+def request(robot, bh, battle, data):
+    try:
+        # This is where all the battle picking happen
+        request = json.loads(data)
+    except ValueError as e:
+        return e
+    if 'rqid' in request:
+        battle.rqid = request['rqid']
+    sidedata = request['side']
+    teamSlot = 1
+    for poke in sidedata['pokemon']:
+        battle.me.updateTeam(
+            Pokemon(bh.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
+                    poke['stats'],poke['moves'],poke['baseAbility'],poke['item'], False, teamSlot, battle.me))
+        teamSlot += 1
+    if 'active' in request:
+        battle.myActiveData = request['active']
+        for pokemon in request['side']['pokemon']:
+            if pokemon['active']:
+                battle.me.setActive(battle.me.getPokemon(bh.getSpecies(pokemon['details'])))
+        if 'canMegaEvo' in request['active'][0]:
+            battle.me.active.canMega = battle.me.canMegaPokemon
+        if 'canUltraBurst' in request['active'][0]:
+            battle.me.active.canUltraBurst = battle.me.canUltraBurst
 
-            if 'forceSwitch' in request and request['forceSwitch'][0]:
-                self.act(battle, 'switch', getSwitch(btl.me.team, btl.me.active.species, btl.other.active), btl.rqid)
+    if 'forceSwitch' in request and request['forceSwitch'][0]:
+        bh.act(battle.name, 'switch', getSwitch(battle.me.team, battle.me.active.species, battle.other.active), battle.rqid)
 
-        elif 'rule' == msg[1]:
-            if msg[2].startswith('Species Clause') or msg[2].startswith('Endless Battle Clause'):
-                btl.isNotHackmons()
-        elif 'poke' == msg[1]:
-            if not btl.me.id == msg[2]:
-                species = self.getSpecies(msg[3])
-                stats = {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}
-                moves = ['','','','']
-                hasMega = True if 'hasMega' in Pokedex[species] else False
-                btl.other.updateTeam(
-                    Pokemon(species, msg[3], '100/100', False, stats, moves, Pokedex[species]['abilities']['0'], '', hasMega, len(self.activeBattles[battle].other.team) + 1, btl.other))
-        elif 'player' == msg[1]:
-            if len(msg) < 4: return
-            if msg[3] == self.botName:
-                btl.setMe(msg[3], msg[2])
-                self.respond(battle, '/timer on')
-            else:
-                btl.setOther(msg[3], msg[2])
-        elif 'teampreview' == msg[1]:
-            if not btl.me.id:
-                btl.spectating = True
-            else:
-                poke = getLead(btl.me.team, btl.other.team)
-                self.lead(battle, poke, btl.rqid)
-        elif 'turn' == msg[1]:
-            self.makeMove(btl, battle)
-        elif 'switch' == msg[1]:
-            if msg[2].startswith(btl.me.id):
-                lastActive = btl.me.active
-                newActive = btl.me.getPokemon(self.getSpecies(msg[3]))
-                btl.me.setActive(newActive)
-                btl.me.changeTeamSlot(lastActive, btl.me.active)
-            else:
-                mon = self.getSpecies(msg[3])
-                if mon not in btl.other.team:
-                    btl.other.updateTeam(Pokemon(self.getSpecies(msg[3]), msg[3], '100/100', False,
-                                {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '', False, len(btl.other.team)+1, btl.other))
-                btl.other.setActive(btl.other.getPokemon(mon))
-        elif msg[1] in ['win', 'tie']:
-            self.handleOutcome(btl, msg[2] == self.botName)
-            self.respond(battle, '/leave')
+@battleprotocol
+def rated(robot, bh, battle, rating):
+    if not rating.startswith('Tournament'):
+        battle.isLadderMatch()
 
-        # In-battle events
-        # Most of these events just keep track of how the game is progressing
-        # but as a lot of information about the own team is sent by the request for action
-        elif '-mega' == msg[1]:
-            mega = msg[3] + '-Mega'
-            if msg[3] in ['Charizard', 'Mewtwo']:
-                mega += '-' + msg[4].split()[1]
-            if msg[2].startswith(btl.me.id):
-                btl.me.removeBaseForm(msg[3], mega)
-                btl.me.canMegaPokemon = False
-                btl.me.active.canMega = False
-            else:
-                btl.other.removeBaseForm(msg[3], mega)
-                btl.other.canMegaPokemon = False
-                btl.other.active.canMega = False
-        elif '-ultra' == msg[1]:
-            ultraburst = msg[3] + '-Ultra'
-            if msg[2].startswith(btl.me.id):
-                btl.me.removeBaseForm(msg[3], ultraburst)
-                btl.me.canUltraBurst = False
-                btl.me.active.canUltraBurst = False
-            else:
-                btl.other.removeBaseForm(msg[3], ultraburst)
-                btl.other.canUltraBurst = False
-                btl.other.active.canUltraBurst = False
+@battleprotocol
+def rule(robot, bh, battle, rule):
+    if rule.startswith('Species Clause') or rule.startswith('Endless Battle Clause'):
+        battle.isNotHackmons()
 
-        elif '-zmove' == msg[1] or '-zpower' == msg[1]:
-            if msg[2].startswith(btl.me.id):
-                btl.me.usedZmove()
-            else:
-                btl.other.usedZmove()
+@battleprotocol
+def pokemon(robot, bh, battle, id, pokemon, item = ''):
+    if not battle.me.id == id:
+        species = bh.getSpecies(pokemon)
+        stats = {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}
+        moves = ['','','','']
+        hasMega = True if 'hasMega' in Pokedex[species] else False
+        battle.other.updateTeam(
+            Pokemon(
+                species, pokemon, '100/100', False,
+                stats, moves, Pokedex[species]['abilities']['0'],
+                '', hasMega, len(battle.other.team) + 1, battle.other))
 
-        # This keeps track of what moves the opponent has revealed and the last used move from either side
-        elif 'move' == msg[1]:
-            move = re.sub(r'[^a-zA-Z0-9]', '', msg[3]).lower()
-            if not msg[2].startswith(btl.me.id):
-                if move not in btl.other.active.moves:
-                    btl.other.active.moves.append(move)
-                btl.other.active.markLastUsedMove(move)
-            else:
-                btl.me.active.markLastUsedMove(move)
+@battleprotocol
+def player(robot, bh, battle, pid, name, avatar = ''):
+    if name == robot.name:
+        battle.setMe(name, pid)
+        bh.respond(battle.name, '/timer on')
+    else:
+        battle.setOther(name, pid)
 
-        # Boosting moves
-        elif '-boost' == msg[1]:
-            stat = msg[3]
-            if msg[2].startswith(btl.me.id):
-                btl.me.active.boosts[stat] += int(msg[4])
-            else:
-                btl.other.active.boosts[stat] += int(msg[4])
-        elif '-unboost' == msg[1]:
-            stat = msg[3]
-            if msg[2].startswith(btl.me.id):
-                btl.me.active.boosts[stat] -= int(msg[4])
-            else:
-                btl.other.active.boosts[stat] -= int(msg[4])
+@battleprotocol
+def teampreview(robot, bh, battle, *args):
+    if not battle.me.id:
+        battle.spectating = True
+    else:
+        poke = getLead(battle.me.team, battle.other.team)
+        bh.lead(battle.name, poke, battle.rqid)
 
-        # Because of how they're treated, taking damage and healing it are done the same things to
-        elif msg[1] in ['-heal','-damage']:
-            parts = msg[3].split()
-            if not msg[2].startswith(btl.me.id):
-                btl.other.active.setCondition(parts[0], parts[1] if ' ' in msg[3] else '')
-                if '[from]' in message:
-                    thing = msg[4][len('[from] '):]
-                    if 'item:' in thing:
-                        btl.other.active.item = thing[len('item: '):]
-                    elif 'ability' in thing:
-                        pass
-        elif '-status' == msg[1]:
-            if not msg[2].startswith(btl.me.id):
-                btl.other.active.setCondition(btl.other.active.condition, msg[3])
+@battleprotocol
+def turn(robot, bh, battle, number):
+    bh.makeMove(battle)
 
-        # hack to make sure the game progresses if we're trapped and still try to switch
-        elif 'callback' == msg[1]:
-            # split to account for shorter messages
-            if 'trapped' == msg[2]:
-                btl.me.active.trapped = True
-                # Figure out what ability trapped us (nothing have more than one ability that can trap)
-                # This doesn't account for trapping moves but that's okay
-                trappingAbilities = ['Shadow Tag', 'Arena Trap', 'Magnet Pull']
-                otherActiveAbilities = Pokedex[btl.other.active.species]['abilities']
-                for option in otherActiveAbilities:
-                    if otherActiveAbilities[option] in trappingAbilities:
-                        btl.other.active.ability = otherActiveAbilities[option]
-                print('{battle}| {active} is trapped, trying something else'.format(battle = battle, active = btl.me.active.species))
-                self.makeMove(btl, battle) # Try again
+@battleprotocol
+def switch(robot, bh, battle, pid, details, hpstatus):
+    if pid.startswith(battle.me.id):
+        lastActive = battle.me.active
+        newActive = battle.me.getPokemon(bh.getSpecies(details))
+        battle.me.setActive(newActive)
+        battle.me.changeTeamSlot(lastActive, battle.me.active)
+    else:
+        mon = bh.getSpecies(details)
+        if mon not in battle.other.team:
+            battle.other.updateTeam(Pokemon(bh.getSpecies(details), details, '100/100', False,
+                        {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '',
+                        False, len(battle.other.team) + 1, battle.other))
+        battle.other.setActive(battle.other.getPokemon(mon))
 
-        elif 'faint' == msg[1]:
-            if not msg[2].startswith(btl.me.id):
-                btl.other.active.setCondition('0', 'fnt')
+@battleprotocol
+def end(robot, bh, battle, winner):
+    bh.handleOutcome(battle, winner == robot.name)
+    bh.respond(battle.name, '/leave')
+
+@battleprotocol
+def mega(robot, bh, battle, pid, pokemon, megastone):
+    megapoke = pokemon + '-Mega'
+    if pokemon in ['Charizard', 'Mewtwo']:
+        megapoke += '-' + megastone.split()[1]
+    side = battle.me if pid.startswith(battle.me.id) else battle.other
+    side.removeBaseForm(pokemon, megapoke)
+    side.canMegaPokemon = False
+    side.active.canMega = False
+
+@battleprotocol
+def burst(robot, bh, battle, pid, pokemon, stone):
+    ultraburst = 'Necrozma-Ultra'
+    side = battle.me if pid.startswith(battle.me.id) else battle.other
+    # Find the necrozma (works for species clause metas only!)
+    for p in side.team:
+        if p.startswith(pokemon):
+            pokemon = p
+    side.removeBaseForm(pokemon, ultraburst)
+    side.canUltraBurst = False
+    side.active.canUltraBurst = False
+
+@battleprotocol
+def zmove(robot, bh, battle, pid):
+    if pid.startswith(battle.me.id):
+        battle.me.usedZmove()
+    else:
+        battle.other.usedZmove()
+
+@battleprotocol
+def move(robot, bh, battle, pid, usedmove, target, modifier = '', animation = ''):
+    moveid = robot.toId(usedmove)
+    if not pid.startswith(battle.me.id):
+        if moveid not in battle.other.active.moves:
+            battle.other.active.moves.append(moveid)
+        battle.other.active.markLastUsedMove(moveid)
+    else:
+        battle.me.active.markLastUsedMove(moveid)
+
+@battleprotocol
+def boost(robot, bh, battle, pid, stat, amount):
+    if pid.startswith(battle.me.id):
+        battle.me.active.boosts[stat] += int(amount)
+    else:
+        battle.other.active.boosts[stat] += int(amount)
+
+@battleprotocol
+def unboost(robot, bh, battle, pid, stat, amount):
+    if pid.startswith(battle.me.id):
+        battle.me.active.boosts[stat] -= int(amount)
+    else:
+        battle.other.active.boosts[stat] -= int(amount)
+
+@battleprotocol
+def heal(robot, bh, battle, pid, hpstatus, by = '', help = ''):
+    hp, status = (hpstatus.split() + [''])[:2] # Always get 2 values back from the split operation
+    if not pid.startswith(battle.me.id):
+        battle.other.active.setCondition(hp, status)
+        if '[from]' == by:
+            thing = by[len('[from] '):]
+            if 'item:' in thing:
+                battle.other.active.item = thing[len('item: '):]
+            elif 'ability' in thing:
+                pass
+
+@battleprotocol
+def status(robot, bh, battle, pid, condition, cause = '', of = ''):
+    if not pid.startswith(battle.me.id):
+        battle.other.active.setCondition(battle.other.active.condition, condition)
+
+@battleprotocol
+def faint(robot, bh, battle, pid):
+    if not pid.startswith(battle.me.id):
+        battle.other.active.setCondition('0', 'fnt')
+
+@battleprotocol
+def error(robot, bh, battle, cause, *information):
+    if '[Invalid choice]' == cause:
+        battle.me.active.trapped = True
+        # Only reason for an invalid choice should be because we're trapped...
+        trappingAbilities = ['Shadow Tag', 'Arena Trap', 'Magnet Pull']
+        otherActiveAbilities = Pokedex[battle.other.active.species]['abilities']
+        for option in otherActiveAbilities:
+            if otherActiveAbilities[option] in trappingAbilities:
+                battle.other.active.ability = otherActiveAbilities[option]
+        print('{battle}| {active} got invalid choice, trying something else'.format(battle = battle, active = battle.me.active.species))
+        bh.makeMove(battle) # Try again
 
 def startLaddering(bot, cmd, msg, user):
     reply = ReplyObject('', reply = True)
@@ -327,6 +353,40 @@ def acceptTeam(bot, cmd, msg):
     with open('plugins/battling/teams.yaml', 'w+') as file:
         yaml.dump(bot.bh.teams, file, default_flow_style = False, explicit_start = True)
     return reply.response('Saved that team for you so that I can play with it :)')
+
+# Exports
+handlers = {
+    'init': init,
+    'title': title,
+    'deinit': deinit,
+    'rated': rated,
+    'request': request,
+    'rule': rule,
+    'poke': pokemon,
+    'player': player,
+    'teampreview': teampreview,
+    'turn': turn,
+    'switch': switch,
+    'win': end,
+    'tie': end,
+    # In-battle events
+    # Most of these events just keep track of how the game is progressing
+    # as a lot of information about the own team is sent by the request for action
+    '-mega': mega,
+    '-burst': burst,
+    '-zmove': zmove,
+    '-zpower': zmove,
+    # This keeps track of what moves the opponent has revealed and the last used move from either side
+    'move': move,
+    '-boost': boost,
+    '-unboost': unboost,
+    # Because of how they're treated, taking damage and healing are the same thing
+    '-heal': heal,
+    '-damage': heal,
+    '-status': status,
+    '-faint': faint,
+    'error': error
+}
 
 commands = [
     Command(['storeteam'], acceptTeam),

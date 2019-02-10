@@ -63,9 +63,9 @@ class Room:
     def doneLoading(self):
         self.loading = False
 
-    def isHistory(self, message):
+    def isHistory(self, timestamp, message):
         if not self.loading: return False
-        if int(message[2]) > self.joinTime:
+        if int(timestamp) > self.joinTime:
             self.loading = False
         return self.loading
 

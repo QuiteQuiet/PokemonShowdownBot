@@ -47,7 +47,16 @@ class Workshop(GenericGame):
     def hasHostingRights(self, user):
         return self.host == user.id or user.hasRank('@')
 
-def handler(bot, cmd, msg, user, room):
+
+def timestampWorkshopHandler(self, room, timestamp, user, *text):
+    user = room.getUser(self.toId(user))
+    if type(room.activity) == Workshop:
+        room.activity.logSession(room.title, user.rank + user.name, '|'.join(text))
+
+def workshopHandler(self, room, user, *text):
+    timestampWorkshopHandler(self, room, 0, user, *text) # timestamp doesn't matter here
+
+def commands(bot, cmd, msg, user, room):
     reply = ReplyObject('', True)
     if msg.startswith('new'):
         if not user.hasRank('@'): return reply.response("You don't have permission to start workshops (Requires @)")
@@ -75,4 +84,10 @@ def handler(bot, cmd, msg, user, room):
         return reply.response('Workshop session ended')
     return reply.response('Unrecognized command: {cmd}'.format(cmd = msg if msg else 'nothing'))
 
-commands = [Command(['workshop', 'ws'], handler)]
+handler = {
+    'c': workshopHandler,
+    'chat': workshopHandler,
+    'c:': timestampWorkshopHandler
+}
+
+commands = [Command(['workshop', 'ws'], commands)]
