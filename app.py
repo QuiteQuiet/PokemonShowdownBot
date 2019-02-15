@@ -4,7 +4,6 @@ import time
 from robot import PokemonShowdownBot, Room, User
 from invoker import CommandInvoker
 from plugins.messages import MessageDatabase
-from plugins.workshop import Workshop
 
 
 class PSBot(PokemonShowdownBot):
@@ -49,17 +48,13 @@ class PSBot(PokemonShowdownBot):
         Raises:
             None.
         """
-        if room and room.loading: return
+        if room.loading: return
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
             room.doneLoading()
         user = User(message, message[0], self.isOwner(message))
         if not room.addUser(user):
             return self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
-
-        # If the user have a message waiting, tell them that in a pm
-        if self.usernotes.shouldNotifyMessage(user.id):
-            self.sendPm(user.id, self.usernotes.pendingMessages(user.id))
 
     def addExtraHandlers(self):
         """Adds several handlers for chat messages that we need for this to function

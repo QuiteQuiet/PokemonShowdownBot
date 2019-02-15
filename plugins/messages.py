@@ -87,6 +87,13 @@ class MessageDatabase:
     def removeAllMessages(self, to):
         return self.messages.pop(to, None)
 
+def join(self, room, user):
+    user = user[1:]
+    # If the user have a message waiting, tell them that in a pm
+    if self.usernotes.shouldNotifyMessage(user):
+        self.sendPm(user, self.usernotes.pendingMessages(user))
+
+
 # Commands
 def tell(bot, cmd, msg, user):
     reply = ReplyObject()
@@ -123,6 +130,10 @@ def untell(bot, cmd, msg, user):
     if not notes.hasMessage(msg): return reply.response('This user has no waiting messages')
     if not notes.removeMessage(msg, user.id): return reply.response('You have no message to this user waiting')
     return reply.response('Message removed')
+
+handlers = {
+    'j': join
+}
 
 commands = [
     Command(['tell'], tell),
