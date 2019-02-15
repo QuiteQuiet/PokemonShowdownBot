@@ -147,12 +147,6 @@ class PSBot(PokemonShowdownBot):
                 else:
                     self.sendPm(user.id, 'Please pm the command for a response.')
 
-            # Test room punishments after commands
-            anything = room.moderation.shouldAct(message, user, timestamp)
-            if anything and self.canPunish(room):
-                action, reason = room.moderation.getAction(room, user, anything, timestamp)
-                self.takeAction(room.title, user, action, reason)
-
         def chat(self, room, user, *text):
             timestampchat(self, room, time.time(), user, *text)
 

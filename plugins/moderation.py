@@ -2,7 +2,7 @@ from invoker import ReplyObject, Command
 
 import re
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 import urllib
 import yaml
 
@@ -248,6 +248,22 @@ class ModerationHandler:
                 return 'badlink'
         return False
 
+# Handlers
+def timestampModerationHandler(self, room, timestamp, user, *text):
+    if room.loading: return
+
+    user = room.getUser(self.toId(user))
+    text = '|'.join(text)
+    # Test room punishments after commands
+    anything = room.moderation.shouldAct(text, user, timestamp)
+    if anything and self.canPunish(room):
+        action, reason = room.moderation.getAction(room, user, anything, timestamp)
+        self.takeAction(room.title, user, action, reason)
+
+def moderationHandler(self, room, user, *text):
+    # Not completely accurate but close enough...
+    timestampModerationHandler(self, room, int(datetime.now(tz=timezone.utc).timestamp()), user, *text)
+
 
 # Commands
 def moderate(bot, cmd, msg, user, room):
@@ -279,6 +295,13 @@ def unbanthing(bot, cmd, msg, user, room):
     if not error:
         return reply.response('Removed {thing} from the banlist {room}\n/modnote {user} removed {thing} from the blacklist'.format(thing = msg, room = room.title, user = user.name))
     return reply.response(error)
+
+# Exports
+handlers = {
+    'c': moderationHandler,
+    'chat': moderationHandler,
+    'c:': timestampModerationHandler
+}
 
 commands = [
     Command(['moderate'], moderate),
