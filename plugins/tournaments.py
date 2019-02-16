@@ -1,6 +1,8 @@
 import json
 import yaml
 import re
+import requests
+import textwrap
 from random import randint
 from invoker import ReplyObject, Command
 
@@ -39,12 +41,21 @@ class Tournament:
         self.room = room
         self.format = tourFormat
         self.players = []
+        self.winner = None
+        self.runnerUp = None
+        self.finals = None
         self.hasStarted = False
         self.loggedParticipation = False
         self.bh = battleHandler
 
+    def send(self, room, message):
+        self.ws.send('{room}|{msg}'.format(room = room, msg = message))
+
     def sendTourCmd(self, cmd):
-        self.ws.send('{room}|/tour {cmd}'.format(room = self.room.title, cmd = cmd))
+        self.send(self.room.title, '/tour {}'.format(cmd))
+    def join(self, room):
+        self.send('/join', room)
+
     def joinTour(self):
         self.sendTourCmd('join')
     def leaveTour(self):
@@ -60,7 +71,7 @@ class Tournament:
             self.ws.send('|/utm {}'.format(team))
     def onUpdate(self, msg):
         if 'updateEnd' in msg : return
-        elif 'join'in msg:
+        elif 'join' in msg:
             self.players.append(Tournament.toId(msg[1]))
         elif 'leave' in msg:
             self.players.remove(Tournament.toId(msg[1]))
@@ -76,6 +87,18 @@ class Tournament:
                 self.acceptChallenge()
             elif 'isStarted' in info:
                 self.hasStarted = info['isStarted']
+            elif info['bracketData']['rootNode']['state'] == 'inprogress':
+                self.finals = info['bracketData']['rootNode']['room']
+                self.join(self.finals)
+        elif 'battleend' in msg and self.finals:
+            self.winner, self.runnerUp = msg[1:2]
+            if msg[3] != 'win':
+                self.winner, self.runnerUp = self.runnerUp, self.winner
+
+            finalsroom = self.finals
+            self.send(self.finals, '/savereplay')
+            self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
+            self.send(finalsroom, '/leave')
 
     def logParticipation(self):
         with open('plugins/tournament-rankings.yaml', 'a+') as yf:
@@ -143,6 +166,32 @@ def oldgentour(bot, cmd, msg, user, room):
     if room.tour.format[0:4] in pastGens: warning = "/wall Please note that bringing Pokemon that aren't **{gen} NU** will disqualify you\n".format(gen = pastGens[room.tour.format[0:4]])
     return reply.response(warning + "/wall Sample teams here: http://www.smogon.com/forums/threads/3562659/")
 
+def tourhistory(bot, cmd, msg, user, room):
+    reply = ReplyObject('', True)
+    history = ''
+    for tour in room.pastTours:
+        history += """
+            Winner: {winner}
+            Runner-Up: {runnerup}
+            # of Participants: {players}
+            Finals: {replay}\n""".format(
+                winner = tour.winner,
+                runnerup = tour.runnerUp,
+                players = len(tour.players),
+                replay = tour.finals
+            )
+
+    r = requests.post('https://pastebin.com/api/api_post.php',
+                    data = {
+                        'api_dev_key': bot.apikeys['pastebin'],
+                        'api_option':'paste',
+                        'api_paste_code': textwrap.dedent(history),
+                        'api_paste_private': 0,
+                        'api_paste_expire_date':'N'})
+    if 'Bad API request' in r.text:
+        return reply.response('Something went wrong ({error})'.format(error = r.text))
+    return reply.response(r.text)
+
 def getranking(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not user.hasRank('%') and not room.isPM: reply.response('Listing the rankings require Room Driver (%) or higher.')
@@ -186,5 +235,6 @@ handlers = {
 
 commands = [
     Command(['oldgentour'], oldgentour),
+    Command(['tourhistory'], tourhistory),
     Command(['showranking', 'leaderboard'], getranking)
 ]
