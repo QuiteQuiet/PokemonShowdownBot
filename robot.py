@@ -143,6 +143,7 @@ class PokemonShowdownBot:
         if room in self.rooms: return
         self.send('|/join ' + room)
         self.rooms[room] = Room(room, data)
+
     def leaveRoom(self, room):
         ''' Attempts to leave a PS room '''
         if room not in self.rooms:

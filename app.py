@@ -9,11 +9,6 @@ from plugins.messages import MessageDatabase
 class PSBot(PokemonShowdownBot):
     """Mainly a wrapper class for the Robot class, implementing required methods.
 
-    This implements the major method required: spitMessage. Also manages the
-    delegation of tasks to their respective handlers. Most of the underlying
-    functionality and/or function calls can be found in the inherited class
-    PokemonShowdownBot in robot.py.
-
     You should expect to be somewhat familiar with the PS protocols outlined here:
     https://github.com/Zarel/Pokemon-Showdown/blob/master/PROTOCOL.md
 
@@ -22,7 +17,7 @@ class PSBot(PokemonShowdownBot):
     class look cleaner.
 
     Attributes:
-        do: Command method, handles command behaviour (i.e. ~git returns a url to this project)
+        invoker: Command method, handles command behaviour (i.e. ~git returns a url to this project)
         usernotes: MessageDatabase, which handles/logs all PMs sent from users
     """
     def __init__(self):

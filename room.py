@@ -4,12 +4,13 @@
 import json
 import time
 from collections import deque
-from plugins.tournaments import Tournament
+
 from invoker import ReplyObject, Command
 from user import User
+from plugins.tournaments import Tournament
 from plugins.moderation import ModerationHandler
+from plugins.eventscheduler import EventScheduler
 from data.tiers import oldgenNUBanlists
-
 
 class Room:
     """ Contains all important information for a pokemon showdown room.
@@ -56,9 +57,11 @@ class Room:
         self.allowGames = data['allow games']
         self.tour = None
         self.activity = None
+        self.pastTours = deque([], maxlen=10)
         self.tourwhitelist = data['tourwhitelist']
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
         self.moderation = ModerationHandler(data['moderate'], self)
+        self.scheduler = EventScheduler(self)
 
     def doneLoading(self):
         self.loading = False
@@ -108,6 +111,7 @@ class Room:
         if self.tour: self.tour.logWin(winner)
         return winner, things['format']
     def endTour(self):
+        self.pastTours.append(self.tour)
         self.tour = None
 
 # Commands

@@ -71,3 +71,9 @@ Users can be added to a room specific whitelist that allows them to start tours 
 - `tourwl [name]` : Add [name] to the whitelist for this room, as long as they're not on the list already.
 - `untourwl [name]` : Remove [name] from the whitelist for this room.
 - `tour [message]` : Pipes everything in [message] and outputs `/tour [message]`. (`/tour` syntax required for anything to work)
+
+#### Event Scheduling ####
+The chatbot can be scheduled to run a specific set of commands at some point in the future, once or on an user-defined interval. This can be configured on a per-room basis by Room Owners for an unlimited (not really, but within reason it practically is) set of scheduled jobs.
+
+- `initevents`: Has to be done prior to scheduling any form of job execution. It sets up some important context that is needed for any job that will run.
+- `addevent [time]|[periodicity]|[job]`: Adds a new event that will have its first execution at [time], and will then repeat once every [periodicity] days. It currently only allows you to specify periodicity by days. [time] can only be specified in the exact format: `YYYY/MM/DD HH:MM` with a 24 hour clock and GMT+0 as timezone. At [time] it will execute all instruction in [job]. This can either be a simple command such as `/rank chaos` or a more complex set of instructions. [jobs] can also be set of instruction in a paste from an url that the `PasteImporter` supports (hastebin.com/raw/, pastebin.com/raw/, or gist.githubusercontent.com/). It will read and interpret each line as its own command in this case.
