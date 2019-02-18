@@ -40,6 +40,7 @@ class Tournament:
         self.ws = ws
         self.room = room
         self.format = tourFormat
+        self.title = self.format
         self.players = []
         self.winner = None
         self.runnerUp = None
@@ -49,12 +50,13 @@ class Tournament:
         self.bh = battleHandler
 
     def send(self, room, message):
+        print('{room}|{msg}'.format(room = room, msg = message))
         self.ws.send('{room}|{msg}'.format(room = room, msg = message))
 
     def sendTourCmd(self, cmd):
         self.send(self.room.title, '/tour {}'.format(cmd))
     def join(self, room):
-        self.send('/join', room)
+        self.send(room, '/join')
 
     def joinTour(self):
         self.sendTourCmd('join')
@@ -79,6 +81,8 @@ class Tournament:
             self.logParticipation()
         elif 'update' in msg:
             info = json.loads(msg[1])
+            if 'format' in info:
+                self.title = info['format']
             if 'challenges' in info and info['challenges']:
                 self.pickTeam()
                 self.sendChallenge(info['challenges'][0])
@@ -87,18 +91,20 @@ class Tournament:
                 self.acceptChallenge()
             elif 'isStarted' in info:
                 self.hasStarted = info['isStarted']
-            elif info['bracketData']['rootNode']['state'] == 'inprogress':
-                self.finals = info['bracketData']['rootNode']['room']
-                self.join(self.finals)
+            try:
+                if info['bracketData']['rootNode']['state'] == 'inprogress':
+                    self.finals = info['bracketData']['rootNode']['room']
+                    self.join(self.finals)
+            except (KeyError, TypeError):
+                pass # Expected to happen a lot
         elif 'battleend' in msg and self.finals:
-            self.winner, self.runnerUp = msg[1:2]
+            self.winner, self.runnerUp = msg[1:3]
             if msg[3] != 'win':
                 self.winner, self.runnerUp = self.runnerUp, self.winner
 
             finalsroom = self.finals
             self.send(self.finals, '/savereplay')
             self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
-            self.send(finalsroom, '/leave')
 
     def logParticipation(self):
         with open('plugins/tournament-rankings.yaml', 'a+') as yf:
@@ -157,6 +163,11 @@ def tourHandler(self, room, *params):
         if not room.tour or room.loading: return
         room.tour.onUpdate(params)
 
+def queryresponse(robot, room, query, data):
+    if query == 'savereplay':
+        roomName = 'battle-{room}'.format(room = json.loads(data)['id'])
+        robot.leaveRoom(roomName)
+
 def oldgentour(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not room.tour: return reply.response('No tour is currently active, so this command is disabled.')
@@ -169,12 +180,16 @@ def oldgentour(bot, cmd, msg, user, room):
 def tourhistory(bot, cmd, msg, user, room):
     reply = ReplyObject('', True)
     history = ''
+    if msg:
+        room = bot.getRoom(msg)
     for tour in room.pastTours:
         history += """
+            Name: {name}
             Winner: {winner}
             Runner-Up: {runnerup}
             # of Participants: {players}
             Finals: {replay}\n""".format(
+                name = tour.title,
                 winner = tour.winner,
                 runnerup = tour.runnerUp,
                 players = len(tour.players),
@@ -230,7 +245,8 @@ def getranking(bot, cmd, msg, user, room):
 
 # Exports
 handlers = {
-    'tournament': tourHandler
+    'tournament': tourHandler,
+    'queryresponse': queryresponse
 }
 
 commands = [

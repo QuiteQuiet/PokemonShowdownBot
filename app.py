@@ -176,7 +176,7 @@ class PSBot(PokemonShowdownBot):
         self.addHandler('chat', chat)
         self.addHandler('c:', timestampchat)
         self.addHandler('pm', pm)
-        self.addHandler('popup', lambda self, r, popup: print(popup.replace('||', '\n\t')))
+        self.addHandler('popup', lambda self, r, *popup: print('|'.join(popup).replace('||', '\n\t')))
         self.addHandler('updatechallenges', updatechallenges)
         self.addHandler('raw', raw)
         self.addHandler('users', users)

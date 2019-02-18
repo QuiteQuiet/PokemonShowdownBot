@@ -83,6 +83,9 @@ def addEvent(robot, cmd, params, user, room):
     reply = ReplyObject('', reply = True, pmreply = True)
     if not user.hasRank('#'): return reply.response("Permission denied, only Room Owners (#) and up can use this command.")
 
+    with open('added-jobs.csv', 'a+') as jobs:
+        jobs.write('{user},{job}\n'.format(user = user.id, job = params))
+
     date, frequency, joblist = params.replace('| ', '|').split('|')
     # Validate date string format first
     if not EventScheduler.validateDateString(date): return reply.response('Invald date format. Expected format is YYYY/MM/DD HH:MM.')

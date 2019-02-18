@@ -45,7 +45,7 @@ class BattleHandler:
                  yaml.dump(self.teams, file, default_flow_style = False, explicit_start = True)
 
     def send(self, msg):
-        print(msg)
+        #print(msg) # uncomment if debugging
         self.ws.send(msg)
     def respond(self, battle, msg):
         self.send('{room}|{msg}'.format(room = battle, msg = msg))
