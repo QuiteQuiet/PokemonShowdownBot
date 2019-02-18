@@ -74,6 +74,7 @@ class EventScheduler:
             time.sleep(.5) # Don't spam too much
 
         # Reschedule next run in periodicity days
+        periodicity = int(periodicity)
         if periodicity > 0:
             newJobTime = datetime.strptime(jobtime, '%Y/%m/%d %H:%M') + timedelta(days=periodicity)
             timestamp = calendar.timegm(newJobTime.timetuple())
