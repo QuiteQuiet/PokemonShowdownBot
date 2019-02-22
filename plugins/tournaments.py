@@ -56,7 +56,7 @@ class Tournament:
     def sendTourCmd(self, cmd):
         self.send(self.room.title, '/tour {}'.format(cmd))
     def join(self, room):
-        self.send(room, '/join')
+        self.send('', '/join {}'.format(room))
 
     def joinTour(self):
         self.sendTourCmd('join')
@@ -163,7 +163,8 @@ def tourHandler(self, room, *params):
         if not room.tour or room.loading: return
         room.tour.onUpdate(params)
 
-def queryresponse(robot, room, query, data):
+def queryresponse(robot, room, query, *data):
+    data = '|'.join(data)
     if query == 'savereplay':
         roomName = 'battle-{room}'.format(room = json.loads(data)['id'])
         robot.leaveRoom(roomName)
@@ -183,8 +184,7 @@ def tourhistory(bot, cmd, msg, user, room):
     if msg:
         room = bot.getRoom(msg)
     for tour in room.pastTours:
-        history += """
-            Name: {name}
+        history += """Name: {name}
             Winner: {winner}
             Runner-Up: {runnerup}
             # of Participants: {players}
