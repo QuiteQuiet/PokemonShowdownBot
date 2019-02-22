@@ -194,10 +194,7 @@ def gettourwl(bot, cmd, params, user, room):
     user = targetRoom.getUser(user.id)
     if not user.hasRank('@'): return reply.response('You don\'t have permission to view the tour whitelist for {}'.format(targetRoom.title))
     if not targetRoom.tourwhitelist: return reply.response('No whitelist for room {}'.format(targetRoom.title))
-    if bot.canStartTour(room) and len(targetRoom.tourwhitelist) > 5:
-        return reply.response('!code - {}'.format('\n- '.join(targetRoom.tourwhitelist)))
-    else:
-        return reply.response('Whitelisted users in {room}: {users}'.format(room = targetRoom.title, users = ', '.join(targetRoom.tourwhitelist)))
+    return reply.response('Whitelisted users in {room}: {users}'.format(room = targetRoom.title, users = ', '.join(targetRoom.tourwhitelist)))
 
 
 def tourwl(bot, cmd, params, user, room):
@@ -215,8 +212,14 @@ def tourwl(bot, cmd, params, user, room):
         ReplyObject.
     """
     reply = ReplyObject('', True)
+    targetRoom = room
+    params = params.replace(', ', ',').split(',')
+    if len(params) > 1:
+        targetRoom = bot.getRoom(params[0])
+        user = targetRoom.getUser(user.id)
+        params.pop(0)
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
-    target = bot.toId(params)
+    target = bot.toId(params[0])
     if not room.addToWhitelist(target): return reply.response('This user is already whitelisted in that room.')
     bot.saveDetails()
     return reply.response('{name} added to the whitelist in this room.'.format(name = params))
@@ -236,8 +239,14 @@ def untourwl(bot, cmd, params, user, room):
         ReplyObject.
     """
     reply = ReplyObject('', True)
+    targetRoom = room
+    params = params.replace(', ', ',').split(',')
+    if len(params) > 1:
+        targetRoom = bot.getRoom(params[0])
+        user = targetRoom.getUser(user.id)
+        params.pop(0)
     if not user.hasRank('#'): return reply.response('You do not have permission to change this. (Requires #)')
-    target = bot.toId(params)
+    target = bot.toId(params[0])
     if not room.delFromWhitelist(target): return reply.response('This user is not whitelisted in that room.')
     bot.saveDetails()
     return reply.response('{name} removed from the whitelist in this room.'.format(name = params))

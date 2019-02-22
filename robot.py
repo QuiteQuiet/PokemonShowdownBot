@@ -129,7 +129,7 @@ class PokemonShowdownBot:
         if not result == '1':
             print('login failed, still guest')
             print('crashing now; have a nice day :)')
-            exit()
+            exit(1)
 
         self.startTime = datetime.datetime.now()
         if int(self.details['avatar']) >= 0:
