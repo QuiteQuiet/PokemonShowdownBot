@@ -184,7 +184,8 @@ def tourhistory(bot, cmd, msg, user, room):
     if msg:
         room = bot.getRoom(msg)
     for tour in room.pastTours:
-        history += """Name: {name}
+        history += """
+            Name: {name}
             Winner: {winner}
             Runner-Up: {runnerup}
             # of Participants: {players}
@@ -193,8 +194,7 @@ def tourhistory(bot, cmd, msg, user, room):
                 winner = tour.winner,
                 runnerup = tour.runnerUp,
                 players = len(tour.players),
-                replay = tour.finals
-            )
+                replay = tour.finals)
 
     r = requests.post('https://pastebin.com/api/api_post.php',
                     data = {

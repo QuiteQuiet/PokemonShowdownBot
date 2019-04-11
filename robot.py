@@ -238,7 +238,7 @@ class PokemonShowdownBot:
     def collectHandlers(self):
         print('Loading handlers...')
         self.addHandler('challstr', lambda s, r, cid, cstr: self.login(cstr, cid))
-        self.addHandler('updateuser', lambda s, r, u, n, a: self.updateUser(u, n))
+        self.addHandler('updateuser', lambda s, r, u, n, a, e: self.updateUser(u, n))
 
         failedTrees = []
         for importer, modname, ispkg in self._iterPackages():

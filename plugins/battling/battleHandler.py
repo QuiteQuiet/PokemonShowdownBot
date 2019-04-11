@@ -261,14 +261,14 @@ def move(robot, bh, battle, pid, usedmove, target, modifier = '', animation = ''
         battle.me.active.markLastUsedMove(moveid)
 
 @battleprotocol
-def boost(robot, bh, battle, pid, stat, amount):
+def boost(robot, bh, battle, pid, stat, amount, modifier = ''):
     if pid.startswith(battle.me.id):
         battle.me.active.boosts[stat] += int(amount)
     else:
         battle.other.active.boosts[stat] += int(amount)
 
 @battleprotocol
-def unboost(robot, bh, battle, pid, stat, amount):
+def unboost(robot, bh, battle, pid, stat, amount, modifier = ''):
     if pid.startswith(battle.me.id):
         battle.me.active.boosts[stat] -= int(amount)
     else:
