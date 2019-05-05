@@ -43,6 +43,8 @@ class ReplyObject:
 
     Attributes:
         text: str, the content of the reply.
+        samePlace: bool, if the response will always be in pm or where the command
+        was said.
         ignoreEscaping: bool, default every reply is escaped to not allow
         arbitrary commands to be executed through replies. Some commands require
         to be able to use PS commands, which is when this should be overwritten.
@@ -53,11 +55,12 @@ class ReplyObject:
         permission to pm the command and instead return the result of the action.
         isException: bool, if a command throws an exception this will be true.
     """
-    def __init__(self, res = '', reply = False, escape = False, broadcast = False, game = False, pmreply = False):
+    def __init__(self, res = '', reply = False, escape = False, broadcast = False, game = False, pmreply = False, ignoreml = False):
         self.text = str(res)
         self.samePlace = reply
         self.ignoreEscaping = escape
         self.ignoreBroadcastPermission = broadcast
+        self.ignoreMultiline = ignoreml
         self.gameCommand = game
         self.canPmReply = pmreply
         self.isException = isinstance(res, Exception)
@@ -68,6 +71,7 @@ class ReplyObject:
                 and self.samePlace == other.samePlace
                 and self.ignoreEscaping == other.ignoreEscaping
                 and self.ignoreBroadcastPermission == other.ignoreBroadcastPermission
+                and self.ignoreMultiline == other.ignoreMultiline
                 and self.gameCommand == other.gameCommand
                 and self.canPmReply == other.canPmReply
                 and self.isException == other.isException

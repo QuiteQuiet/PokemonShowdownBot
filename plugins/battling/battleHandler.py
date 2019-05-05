@@ -202,7 +202,7 @@ def turn(robot, bh, battle, number):
     bh.makeMove(battle)
 
 @battleprotocol
-def switch(robot, bh, battle, pid, details, hpstatus):
+def switch(robot, bh, battle, pid, details, hpstatus, cause = ''):
     if pid.startswith(battle.me.id):
         lastActive = battle.me.active
         newActive = battle.me.getPokemon(bh.getSpecies(details))

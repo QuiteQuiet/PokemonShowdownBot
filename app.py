@@ -130,10 +130,10 @@ class PSBot(PokemonShowdownBot):
                 if self.userHasPermission(user, self.details['broadcastrank']) or res.ignoreBroadcastPermission:
                     if not res.ignoreEscaping:
                         res.text = self.escapeText(res.text)
-                    self.reply(room.title, user, res.text, res.samePlace)
+                    self.reply(room.title, user, res.text, res.samePlace, res.ignoreMultiline)
 
                 elif res.canPmReply:
-                    self.sendPm(user.id, self.escapeText(res.text))
+                    self.sendPm(user.id, self.escapeText(res.text), res.ignoreMultiline)
                 else:
                     self.sendPm(user.id, 'Please pm the command for a response.')
 
@@ -161,7 +161,7 @@ class PSBot(PokemonShowdownBot):
                 response = self.invoker.execute(self, command, params, user, Room('pm'))
 
                 if not response.text or response.text == 'NoAnswer': return
-                self.sendPm(user.id, response.text)
+                self.sendPm(user.id, response.text, response.ignoreMultiline)
 
         # Add handlers
         self.addHandler('deinit', lambda self, r:  self.rooms.pop(r.title, None))

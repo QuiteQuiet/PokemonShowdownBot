@@ -157,22 +157,26 @@ class PokemonShowdownBot:
             roomName = alias[roomName]
         return self.rooms[roomName] if roomName in self.rooms else None
 
-    def say(self, room, msg):
-        if '\n' in msg:
+    def say(self, room, msg, ignoreMultiline):
+        if '\n' in msg and not ignoreMultiline:
             for m in msg.split('\n'):
                 self.send('{room}|{text}'.format(room = room, text = m))
         else:
             self.send('{room}|{text}'.format(room = room, text = msg))
-    def sendPm(self, user, msg):
+    def sendPm(self, user, msg, ignoreMultiline = False):
         if '\n' in msg:
-            for m in msg.split('\n'):
-                self.send('|/pm {usr}, {text}'.format(usr = user, text = m))
+            if not ignoreMultiline:
+                for m in msg.split('\n'):
+                    self.send('|/pm {usr}, {text}'.format(usr = user, text = m))
+            else:
+                msg = msg.replace('\n', '\n/pm {},'.format(user))
+                self.send('|/pm {usr}, {text}'.format(usr = user, text = msg))
         else:
             self.send('|/pm {usr}, {text}'.format(usr = user, text = msg))
 
-    def reply(self, room, user, response, samePlace):
+    def reply(self, room, user, response, samePlace, ignoreMultiline = False):
         if samePlace:
-            self.say(room, response)
+            self.say(room, response, ignoreMultiline)
         else:
             self.sendPm(user.id, response)
 
@@ -199,6 +203,8 @@ class PokemonShowdownBot:
         self.send('{room}|/{act} {user}, {reason}'.format(room = room, act = action, user = user.id, reason = reason))
 
     # Rank checks
+    def canBroadcast(self, room):
+        return User.compareRanks(room.rank, '+')
     def canPunish(self, room):
         return User.compareRanks(room.rank, '%')
     def canBan(self, room):
@@ -269,6 +275,7 @@ class PokemonShowdownBot:
 
     def onMessage(self, ws, message):
         if not message: return
+
         roomName = ''
         if '\n' in message:
             message = message.split('\n')

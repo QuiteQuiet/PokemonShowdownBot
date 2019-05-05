@@ -3,6 +3,8 @@
 # be treated differently.
 import json
 import time
+import sys
+import requests
 from collections import deque
 
 from invoker import ReplyObject, Command
@@ -10,6 +12,7 @@ from user import User
 from plugins.tournaments import Tournament
 from plugins.moderation import ModerationHandler
 from plugins.eventscheduler import EventScheduler
+from plugins.activityTracker import ActivityTracker
 from data.tiers import oldgenNUBanlists
 
 class Room:
@@ -62,6 +65,7 @@ class Room:
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
         self.moderation = ModerationHandler(data['moderate'], self)
         self.scheduler = EventScheduler(self)
+        self.activityTracker = ActivityTracker(25)
 
     def doneLoading(self):
         self.loading = False
@@ -92,6 +96,7 @@ class Room:
 
     def logChat(self, user, message, time):
         self.chatlog.append({'user': user, 'message': message, 'timestamp': time})
+        self.activityTracker.countActivity(self, user)
 
     def isWhitelisted(self, user):
         return user.hasRank('%') or user.id in self.tourwhitelist
@@ -251,11 +256,54 @@ def untourwl(bot, cmd, params, user, room):
     bot.saveDetails()
     return reply.response('{name} removed from the whitelist in this room.'.format(name = params))
 
+def getactivity(bot, cmd, params, user, room):
+    """ Independent command for getting the activity of user(s) in a room.
+
+    Args:
+        bot: PokemonShowdownBot, the instance of PokemonShowdownBot that called this function.
+        cmd: string, the command that was send.
+        room: Room, the room object that the command was sent from.
+        params: string, the name of the user.
+        user: User, the user object of the user who sent the command.
+    Returns:
+        ReplyObject.
+    """
+    reply = ReplyObject('', escape = True, pmreply = True, ignoreml = True)
+    params = params.replace(', ', ',').split(',')
+    targetRoom = room
+    if room.isPM or bot.getRoom(params[0]):
+        targetRoom = bot.getRoom(params.pop(0))
+    user = params.pop(0) if not params[0].isdigit() or params[0] != 'all' else ''
+    user = bot.toId(user)
+    period = 30 if len(params) == 0 else sys.maxsize if params[0] == 'all' else int(params.pop(0))
+
+    activityData = targetRoom.activityTracker.getActivityForPeriod(period, targetRoom, user)
+    if len(activityData) == 0:
+        return reply.response('No activity data found for room {room}'.format(room = targetRoom.title))
+    lines = ['Activity in {room} for {user} the last {period} days:'.format(room = targetRoom.title, period = period, user = '{} in'.format(user))]
+    for entry, count in activityData.items():
+        lines.append('  {datename}: {count} lines'.format(datename = entry, count = count))
+    if bot.canBroadcast(room):
+        return reply.response('!code ' + '\n'.join(lines))
+    else:
+        r = requests.post('https://pastebin.com/api/api_post.php',
+            data = {
+                'api_dev_key': bot.apikeys['pastebin'],
+                'api_option':'paste',
+                'api_paste_code': '\n'.join(lines),
+                'api_paste_private': 0,
+                'api_paste_expire_date':'N'
+                })
+        if 'Bad API request' in r.text:
+            return reply.response('Something went wrong ({error})'.format(error = r.text))
+        return reply.response(r.text)
+
 commands = [
     Command(['leave'], leaveroom),
     Command(['allowgames'], allowgames),
     Command(['tour', '!tour'], tour),
     Command(['tourwhitelist', 'tourwl'], tourwl),
     Command(['untourwhitelist', 'untourwl'], untourwl),
-    Command(['gettourwhitelist', 'gettourwl'], gettourwl)
+    Command(['gettourwhitelist', 'gettourwl'], gettourwl),
+    Command(['getactivity'], getactivity)
 ]
