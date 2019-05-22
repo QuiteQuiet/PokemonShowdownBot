@@ -136,25 +136,25 @@ class Tournament:
         with open('plugins/tournament-rankings.yaml', 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
 
-def tourHandler(self, room, *params):
+def tourHandler(robot, room, *params):
     if 'create' in params[0]:
-        room.createTour(self.ws, params[1], self.bh)
+        room.createTour(robot.ws, params[1], robot.bh)
 
         if room.loading: return
         # Tour was created, join it if in supported formats
-        if self.details['joinTours'] and room.tour.format in self.bh.supportedFormats:
+        if robot.details['joinTours'] and room.tour.format in robot.bh.supportedFormats:
             room.tour.joinTour()
     elif 'end' == params[0]:
         if not room.loading:
             winners, tier = room.getTourWinner(params[1])
-            if self.name in winners:
+            if robot.name in winners:
                 message = 'I won the {form} tournament :o'.format(form = tier)
                 if len(winners) > 1:
-                    winners.remove(self.name)
+                    winners.remove(robot.name)
                     message += '\nCongratulations to {others} for also winning :)'.format(others = ', '.join(winners))
-                self.say(room.title, message)
+                robot.say(room.title, message, False)
             else:
-                self.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)))
+                robot.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)), False)
         room.endTour()
     elif 'forceend' in params[0]:
         room.endTour()

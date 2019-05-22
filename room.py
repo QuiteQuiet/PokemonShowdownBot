@@ -273,7 +273,7 @@ def getactivity(bot, cmd, params, user, room):
     targetRoom = room
     if room.isPM or bot.getRoom(params[0]):
         targetRoom = bot.getRoom(params.pop(0))
-    user = params.pop(0) if not params[0].isdigit() or params[0] != 'all' else ''
+    user = '' if len(params) == 0 or params[0].isdigit() or params[0] == 'all' else params.pop(0)
     user = bot.toId(user)
     period = 30 if len(params) == 0 else sys.maxsize if params[0] == 'all' else int(params.pop(0))
 
@@ -281,7 +281,7 @@ def getactivity(bot, cmd, params, user, room):
     if len(activityData) == 0:
         return reply.response('No activity data found for room {room}'.format(room = targetRoom.title))
     lines = ['Activity in {room} for {user} the last {period} days:'.format(room = targetRoom.title, period = period, user = '{} in'.format(user))]
-    for entry, count in activityData.items():
+    for entry, count in activityData:
         lines.append('  {datename}: {count} lines'.format(datename = entry, count = count))
     if bot.canBroadcast(room):
         return reply.response('!code ' + '\n'.join(lines))

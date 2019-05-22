@@ -59,11 +59,15 @@ class ActivityTracker:
             for user in data[room.title]:
                 if targetUser == user:
                     combinedActivity[date.strftime('%Y-%m-%d')] += data[room.title][user]
-                else:
+                elif not targetUser:
                     combinedActivity[user] += data[room.title][user]
             date = date - timedelta(1)
             data = self.loadActivity(date.strftime('%Y-%m-%d'))
             period -= 1
-        return combinedActivity
-
+        if not targetUser:
+            # No target user, sort by lines
+            return sorted(combinedActivity.items(), key=lambda e: e[1], reverse=True)
+        else:
+            # Have a target user, sort by date
+            return sorted(combinedActivity.items(), key=lambda e: e[0], reverse=True)
 
