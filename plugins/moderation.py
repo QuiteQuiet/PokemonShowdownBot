@@ -253,6 +253,8 @@ def timestampModerationHandler(self, room, timestamp, user, *text):
     if room.loading: return
 
     user = room.getUser(self.toId(user))
+    if not user: return
+
     text = '|'.join(text)
     # Test room punishments after commands
     anything = room.moderation.shouldAct(text, user, timestamp)
