@@ -125,6 +125,7 @@ class PokemonShowdownBot:
             return False
 
     def updateUser(self, name, result):
+        name = self.removeAfkMessage(name)
         if self.name not in name: return
         if not result == '1':
             print('login failed, still guest')
@@ -183,6 +184,8 @@ class PokemonShowdownBot:
     # Helpful functions
     def toId(self, thing):
         return re.sub(r'[^a-zA-Z0-9,]', '', thing).lower()
+    def removeAfkMessage(self, user):
+        return user.split('@')[0]
     def escapeText(self, line):
         if line[0] == '/':
             return '/' + line

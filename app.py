@@ -85,13 +85,16 @@ class PSBot(PokemonShowdownBot):
         # Joined new room
         def users(self, room, users):
             for user in users.split(',')[1:]:
-                room.addUser(User(user[1:], user[0], self.isOwner(user)))
+                rank = user[0]
+                user = self.removeAfkMessage(user[1:])
+                room.addUser(User(user, rank, self.isOwner(user)))
             # If PS doesn't tell us we joined, this still give us our room rank
             room.rank = users[users.index(self.name) - 1]
 
         def leave(self, room, user):
             if room.loading: return
-            if self.userIsSelf(user[1:]):
+            user = self.removeAfkMessage(user[1:])
+            if self.userIsSelf(user):
                 # This is just a failsafe in case the bot is forcibly removed from a room.
                 # Any other memory release required is handeled by the room destruction
                 self.rooms.pop(room.title, None)
@@ -101,13 +104,15 @@ class PSBot(PokemonShowdownBot):
 
         def rename(self, room, new, old):
             if room.loading: return
+            rank = new[0]
+            new = self.removeAfkMessage(new[1:])
             # Keep track of your own rank
             # When demoting / promoting a user the server sends a |N| message to update the userlist
-            if self.userIsSelf(new[1:]):
-                room.rank = new[0]
-            newUser = User(new[1:], new[0], self.isOwner(new))
+            if self.userIsSelf(new):
+                room.rank = rank
+            newUser = User(new, rank, self.isOwner(new))
             room.renamedUser(self.toId(old), newUser)
-            self.handleJoin(room, new)
+            self.handleJoin(room, rank + new)
 
         # Chat messages
         def timestampchat(self, room, timestamp, user, *text):
