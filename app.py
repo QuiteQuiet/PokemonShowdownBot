@@ -82,6 +82,12 @@ class PSBot(PokemonShowdownBot):
             if message.startswith('<div class="infobox"> You joined '):
                 room.doneLoading()
 
+        def popup(self, room, *popup):
+            popup = '|'.join(popup).replace('||', '\n\t')
+            print('{}: {}'.format(room, popup))
+            if popup.startswith('You have been inactive'):
+                self.send('|/back')
+
         # Joined new room
         def users(self, room, users):
             for user in users.split(',')[1:]:
@@ -181,7 +187,7 @@ class PSBot(PokemonShowdownBot):
         self.addHandler('chat', chat)
         self.addHandler('c:', timestampchat)
         self.addHandler('pm', pm)
-        self.addHandler('popup', lambda self, r, *popup: print('|'.join(popup).replace('||', '\n\t')))
+        self.addHandler('popup', popup)
         self.addHandler('updatechallenges', updatechallenges)
         self.addHandler('raw', raw)
         self.addHandler('users', users)
