@@ -182,7 +182,7 @@ def pokemon(robot, bh, battle, id, pokemon, item = ''):
                 '', hasMega, len(battle.other.team) + 1, battle.other))
 
 @battleprotocol
-def player(robot, bh, battle, pid, name, avatar = ''):
+def player(robot, bh, battle, pid, name, avatar = '', *rest):
     if name == robot.name:
         battle.setMe(name, pid)
         bh.respond(battle.name, '/timer on')
