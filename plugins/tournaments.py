@@ -1,4 +1,5 @@
 import json
+import os
 import yaml
 import re
 import requests
@@ -107,7 +108,9 @@ class Tournament:
             self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
 
     def logParticipation(self):
-        with open('plugins/tournament-rankings.yaml', 'a+') as yf:
+        rankPath = 'plugins/{room}/{format}'.format(room = self.room.title, format = self.format)
+        os.makedirs(rankPath, exist_ok = True)
+        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
             yf.seek(0, 0)
             data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
             if not data: data = {}
@@ -121,19 +124,21 @@ class Tournament:
                 else:
                     roomFormatData[player]['entered'] = roomFormatData[player]['entered'] + 1
             data[self.room.title][self.format] = roomFormatData
-        with open('plugins/tournament-rankings.yaml', 'w') as yf:
+        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
         self.loggedParticipation = True
 
     def logWin(self, winner):
         if not self.loggedParticipation: return # This may happen if the bot joins midway through a tournament
-        with open('plugins/tournament-rankings.yaml', 'a+') as yf:
+        rankPath = 'plugins/{room}/{format}'.format(room = self.room.title, format = self.format)
+        os.makedirs(rankPath, exist_ok = True)
+        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
             yf.seek(0, 0)
             data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
             for user in winner:
                 userData = data[self.room.title][self.format][Tournament.toId(user)]
                 userData['won'] = userData['won'] + 1
-        with open('plugins/tournament-rankings.yaml', 'w') as yf:
+        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
 
 def tourHandler(robot, room, *params):
@@ -210,21 +215,24 @@ def tourhistory(bot, cmd, msg, user, room):
 def getranking(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
     if not user.hasRank('%') and not room.isPM: reply.response('Listing the rankings require Room Driver (%) or higher.')
-    # format is room (optional), format, user (if ever, also optional)
-    with open('plugins/tournament-rankings.yaml', 'r+') as yf:
-        yf.seek(0, 0)
-        data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
 
+    # format is room (optional), format, user (if ever, also optional)
     parts = list(map(bot.toId, msg.split(',')))
     roomTitle = ''
-    try:
-        roomData = data[parts[0]]
+    if os.path.exists('plugins/stats/{room}'.format(room=parts[0])):
         roomTitle = parts.pop(0)
-    except KeyError:
-        roomData = data[room.title] if room.title in data else None
-    try:
-        formatData = roomData[parts[0]]
-        format = parts.pop(0)
+    elif os.path.exists('plugins/stats/{room}'.format(room=room.title)):
+        roomTitle = room.title
+    else:
+        return reply.response('The room {} has no data about rankings'.format(msg.split(',')[0]))
+
+    if not parts:
+        return reply.response('No format given')
+
+    if os.path.exists('plugins/stats/{room}/{format}'.format(room=roomTitle, format=parts[0])):
+        formatName = parts.pop(0)
+        with open('plugins/stats/{}/{}/tournament-rankings.yaml'.format(roomTitle, formatName), 'r+') as yf:
+            formatData = yaml.load(yf, Loader = yaml.CLoader)
         try:
             userData = formatData[parts[0]]
             return reply.response('{user} has played {games} and won {wins} ({winrate:.1f}% win rate)'.format(user = parts[0], games = userData['entered'], wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
@@ -235,12 +243,8 @@ def getranking(bot, cmd, msg, user, room):
             else:
                 return reply.response('Cannot show full rankings in this room')
         except KeyError:
-            return reply.response('{user} has no data for {tier} in {room}'.format(user = parts[0], tier = format, room = roomTitle if roomTitle else room.title))
-    except TypeError:
-        return reply.response('The room {} has no data about rankings'.format(msg.split(',')[0]))
-    except IndexError:
-        return reply.response('No format given')
-    except KeyError:
+            return reply.response('{user} has no data for {tier} in {room}'.format(user = parts[0], tier = format, room = roomTitle))
+    else:
         return reply.response('The room has no data about the format {}'.format(parts[0]))
 
 # Exports

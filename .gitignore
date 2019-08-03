@@ -8,8 +8,8 @@ __pycache__/
 details.yaml
 plugins/scoreboard.yaml
 plugins/bans.yaml
-plugins/tournament-rankings.yaml
 plugins/battling/teams.yaml
+plugins/stats/*
 
 # logs
 logs/
