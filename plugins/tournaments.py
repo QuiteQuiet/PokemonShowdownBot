@@ -1,6 +1,10 @@
 import json
 import os
 import yaml
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 import re
 import requests
 import textwrap
@@ -112,7 +116,7 @@ class Tournament:
         os.makedirs(rankPath, exist_ok = True)
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
             yf.seek(0, 0)
-            data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
+            data = yaml.load(yf, Loader = Loader)
             if not data: data = {}
             if self.room.title not in data: data[self.room.title] = {}
             if self.format not in data[self.room.title]: data[self.room.title][self.format] = {}
@@ -134,7 +138,7 @@ class Tournament:
         os.makedirs(rankPath, exist_ok = True)
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
             yf.seek(0, 0)
-            data = yaml.load(yf, Loader = yaml.CLoader) # This file might be large, and CLoader has better performance
+            data = yaml.load(yf, Loader = Loader)
             for user in winner:
                 userData = data[self.room.title][self.format][Tournament.toId(user)]
                 userData['won'] = userData['won'] + 1
@@ -232,7 +236,7 @@ def getranking(bot, cmd, msg, user, room):
     if os.path.exists('plugins/stats/{room}/{format}'.format(room=roomTitle, format=parts[0])):
         formatName = parts.pop(0)
         with open('plugins/stats/{}/{}/tournament-rankings.yaml'.format(roomTitle, formatName), 'r+') as yf:
-            formatData = yaml.load(yf, Loader = yaml.CLoader)
+            formatData = yaml.load(yf, Loader = Loader)
         try:
             userData = formatData[parts[0]]
             return reply.response('{user} has played {games} and won {wins} ({winrate:.1f}% win rate)'.format(user = parts[0], games = userData['entered'], wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))

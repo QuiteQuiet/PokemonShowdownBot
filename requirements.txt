@@ -1,6 +1,6 @@
 PyYAML == 4.2b1
-requests == 2.22.0
+requests >= 2.21.0
 simplejson == 3.6.5
 websocket-client == 0.23.0
 pytest == 3.1.2
-lxml==3.3.3
+lxml == 3.3.3
