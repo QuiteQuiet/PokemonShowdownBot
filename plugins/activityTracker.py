@@ -54,16 +54,18 @@ class ActivityTracker:
     def getActivityForPeriod(self, period, room, targetUser):
         combinedActivity = defaultdict(int)
         date = datetime.today()
-        data = self.loadActivity(date.strftime('%Y-%m-%d'))
-        while period > 0 and data:
-            for user in data[room.title]:
-                if targetUser == user:
-                    combinedActivity[date.strftime('%Y-%m-%d')] += data[room.title][user]
-                elif not targetUser:
-                    combinedActivity[user] += data[room.title][user]
+        for _ in range(period):
+            dateStr = date.strftime('%Y-%m-%d')
+            data = self.loadActivity(dateStr)
+            if data:
+                for user in data[room.title]:
+                    if targetUser == user:
+                        combinedActivity[dateStr] += data[room.title][user]
+                    elif not targetUser:
+                        combinedActivity[user] += data[room.title][user]
+            if targetUser and not dateStr in combinedActivity:
+                combinedActivity[dateStr] = 0
             date = date - timedelta(1)
-            data = self.loadActivity(date.strftime('%Y-%m-%d'))
-            period -= 1
         if not targetUser:
             # No target user, sort by lines
             return sorted(combinedActivity.items(), key=lambda e: e[1], reverse=True)
