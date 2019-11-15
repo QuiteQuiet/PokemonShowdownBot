@@ -12,5 +12,8 @@ plugins/battling/teams.yaml
 plugins/stats/*
 */tournament-rankings.yaml
 
+# Room specific
+plugins/neverused
+
 # logs
 logs/
