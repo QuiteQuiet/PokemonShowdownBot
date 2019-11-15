@@ -10,6 +10,7 @@ plugins/scoreboard.yaml
 plugins/bans.yaml
 plugins/battling/teams.yaml
 plugins/stats/*
+*/tournament-rankings.yaml
 
 # logs
 logs/

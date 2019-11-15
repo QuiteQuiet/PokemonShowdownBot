@@ -230,6 +230,10 @@ def getCC1v1Move(moves, pokemon, opponent):
         # This begins a score system for the moves, naively trying to pick the best moves without calculating damage
         # Based on the move's base power
         values[moveid] = move['basePower'] if not 'calculateBasePower' in move else move['calculateBasePower'](Pokedex[mySpecies], Pokedex[oppSpecies])
+        try:
+            values[moveid] = move['modifyBasePower'](values[moveid], pokemon, opponent)
+        except KeyError:
+            pass # expected
 
         if moveid in blacklist or moveid in chargemoves:
             values[moveid] = 0
