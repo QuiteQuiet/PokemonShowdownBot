@@ -13,6 +13,8 @@ class Pokemon:
         self.teamSlot = slot
         self.side = side
         self.canMega = canMegaEvo and self.side.canMegaPokemon
+        self.dynamaxed = False
+        self.volatiles = set()
         self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
         self.lastMoveUsed = None
         self.trapped = False
@@ -31,7 +33,7 @@ class Pokemon:
         self.status = status
 
     def isChoiceLocked(self):
-        return self.lastMoveUsed and self.item.startswith('choice')
+        return self.lastMoveUsed and self.item.startswith('choice') and not self.dynamaxed
 
 class Player:
     def __init__(self):
@@ -40,6 +42,7 @@ class Player:
         self.canZmove = True
         self.canMegaPokemon = True
         self.canUltraBurst = True
+        self.canDynamax = True
         self.active = None
         self.team = {}
         self.side = {}
@@ -76,12 +79,14 @@ class Battle:
     def __init__(self, name):
         self.rqid = 1
         self.name = name
+        self.generation = 8 # Default generation
         self.myActiveData = {}
         self.me = Player()
         self.other = Player()
         self.field = {}
         self.spectating = False
         self.ladderGame = False
+        self.allowDynamax = True # Default dynamax allowed
         self.hackmons = True # Assume hackmons until told otherwise
 
     def setMe(self, me, pId):
@@ -94,6 +99,10 @@ class Battle:
         self.ladderGame = True
     def isNotHackmons(self):
         self.hackmons = False
+    def dynamaxAllowed(self, isAllowed):
+        self.allowDynamax = isAllowed
+        self.me.canDynamax = isAllowed
+        self.other.canDynamax = isAllowed
     def setFieldCond(self, cond):
         # TODO: do this
         pass

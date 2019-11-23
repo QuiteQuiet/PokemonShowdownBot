@@ -6,8 +6,8 @@ from random import randint
 from invoker import ReplyObject, Command
 from data.pokedex import Pokedex
 from plugins.pasteImporter import PasteImporter
-from plugins.battling.battle import Battle, Pokemon
-from plugins.battling.battleLogic import getAction, getSwitch, getLead
+from .battle import Battle, Pokemon
+from .battleLogic import getAction, getSwitch, getLead
 # This currently only work in singles and not doubles / triples
 class BattleHandler:
 
@@ -32,7 +32,13 @@ class BattleHandler:
         self.ladderFormat = False
         self.teams = {}
         self.activeBattles = {}
-        self.supportedFormats = ['gen7challengecup1v1', 'gen7hackmonscup', 'battlefactory', 'gen7randombattle']
+        self.supportedFormats = ['battlefactory',
+                                 'gen7challengecup1v1',
+                                 'gen7hackmonscup',
+                                 'gen7randombattle',
+                                 'gen8challengecup1v1',
+                                 'gen8hackmonscup',
+                                 'gen8randombattle']
 
         try:
             with open('plugins/battling/teams.yaml', 'r') as file:
@@ -156,7 +162,7 @@ def request(robot, bh, battle, data):
             battle.me.active.canUltraBurst = battle.me.canUltraBurst
 
     if 'forceSwitch' in request and request['forceSwitch'][0]:
-        bh.act(battle.name, 'switch', getSwitch(battle.me.team, battle.me.active.species, battle.other.active), battle.rqid)
+        bh.act(battle.name, 'switch', getSwitch(battle.me, battle.me.active, battle.other.active), battle.rqid)
 
 @battleprotocol
 def rated(robot, bh, battle, rating):
@@ -167,6 +173,14 @@ def rated(robot, bh, battle, rating):
 def rule(robot, bh, battle, rule):
     if rule.startswith('Species Clause') or rule.startswith('Endless Battle Clause'):
         battle.isNotHackmons()
+    if rule.startswith('Dynamax Clause'):
+        battle.dynamaxAllowed(False)
+
+@battleprotocol
+def generation(robot, bh, battle, gen):
+    battle.generation = int(gen)
+    if battle.generation < 8:
+        battle.dynamaxAllowed(False)
 
 @battleprotocol
 def pokemon(robot, bh, battle, id, pokemon, item = ''):
@@ -205,10 +219,14 @@ def turn(robot, bh, battle, number):
 def switch(robot, bh, battle, pid, details, hpstatus, cause = ''):
     if pid.startswith(battle.me.id):
         lastActive = battle.me.active
+        if lastActive:
+            lastActive.dynamax = False
         newActive = battle.me.getPokemon(bh.getSpecies(details))
         battle.me.setActive(newActive)
         battle.me.changeTeamSlot(lastActive, battle.me.active)
     else:
+        if battle.other.active:
+            battle.other.active.dynamax = False
         mon = bh.getSpecies(details)
         if mon not in battle.other.team:
             battle.other.updateTeam(Pokemon(bh.getSpecies(details), details, '100/100', False,
@@ -222,6 +240,27 @@ def end(robot, bh, battle, winner):
     bh.respond(battle.name, '/leave')
 
 @battleprotocol
+def tie(robot, bh, battle):
+    bh.handleOutcome(battle, False)
+    bh.respond(battle.name, '/leave')
+
+# |-start|POKEMON|EFFECT
+@battleprotocol
+def start(robot, bh, battle, pid, effect, *rest):
+    if effect == 'Dynamax':
+        side = battle.me if pid.startswith(battle.me.id) else battle.other
+        side.active.dynamaxed = True
+        side.canDynamax = False
+
+# |-end|POKEMON|EFFECT
+@battleprotocol
+def endEffect(robot, bh, battle, pid, effect, *rest):
+    if effect == 'Dynamax':
+         side = battle.me if pid.startswith(battle.me.id) else battle.other
+         side.active.dynamaxed = False
+
+# |-mega|POKEMON|SPECIES|MEGASTONE
+@battleprotocol
 def mega(robot, bh, battle, pid, pokemon, megastone):
     megapoke = pokemon + '-Mega'
     if pokemon in ['Charizard', 'Mewtwo']:
@@ -231,6 +270,7 @@ def mega(robot, bh, battle, pid, pokemon, megastone):
     side.canMegaPokemon = False
     side.active.canMega = False
 
+# |-burst|POKEMON|SPECIES|ITEM
 @battleprotocol
 def burst(robot, bh, battle, pid, pokemon, stone):
     ultraburst = 'Necrozma-Ultra'
@@ -242,6 +282,20 @@ def burst(robot, bh, battle, pid, pokemon, stone):
     side.removeBaseForm(pokemon, ultraburst)
     side.canUltraBurst = False
     side.active.canUltraBurst = False
+
+# |-primal|POKEMON|SPECIES|MEGASTONE
+@battleprotocol
+def primal(robot, bh, battle, pid, pokemon, megastone):
+    primalpoke = pokemon + '-Primal'
+    side = battle.me if pid.startswith(battle.me.id) else battle.other
+    side.removeBaseForm(pokemon, primalpoke)
+
+@battleprotocol
+def formechange(robot, bh, battle, pid, forme, *rest):
+    if forme.endswith('Gmax'):
+        side = battle.me if pid.startswith(battle.me.id) else battle.other
+        side.active.dynamaxed = 'gmax'
+        side.canDynamax = False
 
 @battleprotocol
 def zmove(robot, bh, battle, pid):
@@ -360,6 +414,7 @@ handlers = {
     'title': title,
     'deinit': deinit,
     'rated': rated,
+    'gen': generation,
     'request': request,
     'rule': rule,
     'poke': pokemon,
@@ -368,14 +423,21 @@ handlers = {
     'turn': turn,
     'switch': switch,
     'win': end,
-    'tie': end,
+    'tie': tie,
     # In-battle events
     # Most of these events just keep track of how the game is progressing
     # as a lot of information about the own team is sent by the request for action
     '-mega': mega,
     '-burst': burst,
+    '-primal': primal,
     '-zmove': zmove,
     '-zpower': zmove,
+    # Dynamaxing goes by -start and -end events
+    # Other volatile statuses (confusion, taunt, substitute, etc.) also use this
+    '-start': start,
+    '-end': endEffect,
+    # Gmaxing currently only thing handled here
+    '-formechange': formechange,
     # This keeps track of what moves the opponent has revealed and the last used move from either side
     'move': move,
     '-boost': boost,

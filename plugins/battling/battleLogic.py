@@ -6,7 +6,6 @@ from data.pokedex import Pokedex
 from data.types import Types
 
 blacklist = {'focuspunch','fakeout','snore','dreameater','lastresort','explosion','selfdestruct','synchronoise','belch','trumphcard','wringout'}
-chargemoves = {'hyperbeam','gigaimpact','frenzyplant','blastburn','hydrocannon','rockwrecker','roaroftime','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash','skyattack','skydrop','solarbeam'}
 zmoves = {'fairiumz':'twinkletackle',
     'groundiumz':'tectonicrage',
     'flyiniumz':'supersonicskystrike',
@@ -43,6 +42,27 @@ zmoves = {'fairiumz':'twinkletackle',
     'solganiumz':'searingsunrazesmash',
     'ultranecroziumz':'lightthatburnsthesky'
 }
+dynamaxmoves = {
+    "Flying": 'maxairstream',
+    "Dark": 'maxdarkness',
+    "Fire": 'maxflare',
+    "Bug": 'maxflutterby',
+    "Water": 'maxgeyser',
+    "Status": 'maxguard',
+    "Ice": 'maxhailstorm',
+    "Fighting": 'maxknuckle',
+    "Electric": 'maxlightning',
+    "Psychic": 'maxmindstorm',
+    "Poison": 'maxooze',
+    "Grass": 'maxovergrowth',
+    "Ghost": 'maxphantasm',
+    "Ground": 'maxquake',
+    "Rock": 'maxrockfall',
+    "Fairy": 'maxstarfall',
+    "Steel": 'maxsteelspike',
+    "Normal": 'maxstrike',
+    "Dragon": 'maxwyrmwind',
+}
 waterImmune = ['Dry Skin','Water Absorb','Storm Drain']
 grassImmune = ['Sap Sipper']
 fireImmune = ['Flash Fire']
@@ -54,7 +74,7 @@ def getUsableZmove(pokemon):
     zmovedata = deepcopy(Moves[zmoves[pokemon.item]])
     if zmovedata['basePower'] == 1:
         for move in pokemon.moves:
-            if 'hiddenpower' in  move:
+            if 'hiddenpower' in move:
                 move = move[:-2] if not move == 'hiddenpower' else move
             for var in ('return', 'frustration'):
                 if move.startswith(var):
@@ -97,6 +117,72 @@ def getUsableZmove(pokemon):
     # Shouldn't ever get here, but just in case do an explicit return with a specific falsy value
     return False
 
+def getDynamaxMoves(pokemon, canDynamax=False):
+    if not pokemon.dynamaxed and not canDynamax:
+        return []
+    maxmoves = []
+    for move in pokemon.moves:
+        if 'hiddenpower' in move:
+            move = move[:-2] if not move == 'hiddenpower' else move
+        for var in ('return', 'frustration'):
+            if move.startswith(var):
+                move = var
+        baseMoveData = Moves[move]
+        maxmove = dynamaxmoves[baseMoveData['type']]
+        if baseMoveData['category'] == 'Status':
+            maxmove = dynamaxmoves['Status']
+        if pokemon.dynamaxed == 'gmax':
+            try:
+                gmaxmove = Pokedex[pokemon.species + '-Gmax']['gmaxMove']
+                if Moves[gmaxmove]['type'] == baseMoveData['type']:
+                    maxmove = gmaxmove
+            except KeyError:
+                # Charizard-Gmax doesn't have a gmax move? Use the regular max moves then
+                pass
+        # Copy to not affect the data
+        maxmove = deepcopy(Moves[maxmove])
+        maxmove['baseMove'] = move
+
+        maxmove['category'] = baseMoveData['category']
+        if baseMoveData['category'] != 'Status':
+            try:
+                gmaxPower = baseMoveData['gmaxPower']
+            except KeyError:
+                # No gmax power set, calculate it
+                basePower = baseMoveData['basePower']
+                moveType = maxmove['type']
+                if not basePower:
+                    gmaxPower = 100
+                if moveType in ('Fighting', 'Poison'):
+                    if basePower >= 150:
+                        gmaxPower = 100
+                    elif basePower >= 75:
+                        gmaxPower = 95
+                    elif basePower >= 65:
+                        gmaxPower = 85
+                    elif basePower >= 45:
+                        gmaxPower = 75
+                    else:
+                        gmaxPower = 10
+                else:
+                    if basePower >= 150:
+                        gmaxPower = 150
+                    elif basePower >= 110:
+                        gmaxPower = 140
+                    elif basePower >= 75:
+                        gmaxPower = 130
+                    elif basePower >= 65:
+                        gmaxPower = 120
+                    elif basePower >= 55:
+                        gmaxPower = 110
+                    elif basePower >= 45:
+                        gmaxPower = 100
+                    else:
+                        gmaxPower = 90
+            maxmove['basePower'] = gmaxPower
+        maxmoves.append(maxmove)
+    return maxmoves
+
 def getBaseSpecies(species):
     if species in Pokedex: return species
     species = species.split('-')[0]
@@ -105,12 +191,12 @@ def getBaseSpecies(species):
 def getAction(battle, playing):
     active = battle.me.active
     moves = battle.myActiveData[0]['moves']
-    if playing == 'gen7challengecup1v1':
+    if playing.endswith('challengecup1v1'):
         return getMove(moves, active, battle.other.active, battle), 'move'
     else:
         act = pickAction(battle, battle.me, battle.other.active)
         if act == 'switch':
-            return getSwitch(battle.me.team, active.species, battle.other.active), 'switch'
+            return getSwitch(battle.me, active.species, battle.other.active), 'switch'
         else:
             return getMove(moves, active, battle.other.active, battle), 'move'
 
@@ -124,6 +210,8 @@ def calcMatchup(me, other):
         zmove = getUsableZmove(me)
         if zmove:
             score += calcScore(zmove, me, other.species)
+        for m in getDynamaxMoves(me, canDynamax=me.side.canDynamax):
+            score += calcScore(m, me, other.species)
     return score
 def pickAction(battle, me, other):
     matchups = {}
@@ -158,6 +246,10 @@ def getMove(moves, active, opponent, battle):
                     break
         else:
             action += '{} zmove'.format(move['baseMove'])
+    elif 'isMax' in move:
+        action += move['baseMove']
+        if not active.dynamaxed:
+            action += ' dynamax'
     else:
         action += move['id']
     if active.canMega:
@@ -165,8 +257,9 @@ def getMove(moves, active, opponent, battle):
     if active.canUltraBurst:
         action += ' ultra'
     return action
-def getSwitch(myTeam, myActive, opponent):
+def getSwitch(mySide, myActiveSpecies, opponent):
     scores = {}
+    myTeam = mySide.team
     for poke in myTeam:
         scores[poke] = 0
         if myTeam[poke].status == 'fnt':
@@ -175,15 +268,20 @@ def getSwitch(myTeam, myActive, opponent):
         moves = myTeam[poke].moves
         for move in moves:
             scores[poke] += calcScore(move, myTeam[poke], opponent.species)
+        zmove = getUsableZmove(myTeam[poke])
+        if zmove:
+            scores[poke] += calcScore(zmove, myTeam[poke], opponent.species)
+        for move in getDynamaxMoves(myTeam[poke], canDynamax=mySide.canDynamax):
+            scores[poke] += calcScore(move, myTeam[poke], other.species)
     m = max(scores.values())
     picks = [poke for poke,score in scores.items() if score == m]
     pick = 0
     if len(picks) == 1:
-        if myActive not in picks:
+        if myActiveSpecies not in picks:
             pick = myTeam[picks[0]].teamSlot
     else:
-        if myActive in picks:
-            picks.remove(myActive)
+        if myActiveSpecies in picks:
+            picks.remove(myActiveSpecies)
         pick = myTeam[choice(picks)].teamSlot
     if pick <= 1:
         notFaintedMons = []
@@ -198,20 +296,27 @@ def getCC1v1Move(moves, pokemon, opponent):
 
     # Copy this list so we don't ruin the original one when we append the Z-Move
     movescopy = []
-    for move in moves:
-        if 'pp' in move and move['pp'] <= 0: continue # Skip 0 pp moves
-        if 'disabled' in move and move['disabled']: continue
-        m = move['move'].replace(' ','').lower()
-        for fault in ['-', "'"]:
-            m = m.replace(fault,'')
-        if m == 'recharge': return {'id': m}
-        for var in ['return', 'frustration']:
-            if m.startswith(var):
-                m = var
-        movescopy.append(Moves[m])
-    zmove = getUsableZmove(pokemon)
-    if zmove:
-        movescopy.append(zmove)
+    if not pokemon.dynamaxed:
+        for move in moves:
+            if 'pp' in move and move['pp'] <= 0: continue # Skip 0 pp moves
+            if 'disabled' in move and move['disabled']: continue
+            m = move['move'].replace(' ','').lower()
+            for fault in ['-', "'"]:
+                m = m.replace(fault,'')
+            if m == 'recharge': return {'id': m}
+            for var in ['return', 'frustration']:
+                if m.startswith(var):
+                    m = var
+            movescopy.append(Moves[m])
+
+            zmove = getUsableZmove(pokemon)
+            if zmove:
+                movescopy.append(zmove)
+
+    # Dynamaxed Pokemon have different moves they use
+    # This is also going to decide if we should dynamax
+    movescopy += getDynamaxMoves(pokemon, pokemon.side.canDynamax)
+
     if pokemon.isChoiceLocked() and not movescopy[0]['id'] == 'struggle':
         movescopy = [Moves[pokemon.lastMoveUsed]]
 
@@ -235,7 +340,8 @@ def getCC1v1Move(moves, pokemon, opponent):
         except KeyError:
             pass # expected
 
-        if moveid in blacklist or moveid in chargemoves:
+        chargeMove = 'recharge' in Moves[moveid]['flags'] or 'charge' in Moves[moveid]['flags']
+        if moveid in blacklist or chargeMove or 'mindBlownRecoil' in Moves[moveid]:
             values[moveid] = 0
             continue
 
@@ -246,6 +352,8 @@ def getCC1v1Move(moves, pokemon, opponent):
         # Stat drops and raises
         boostTable = [1, 1.5, 2, 2.5, 3, 3.5, 4]
         category = 'atk' if move['category'] == 'Physical' else 'spa'
+        if 'useAlternativeOffensiveStat' in move:
+            category = move['useAlternativeOffensiveStat']
         if pokemon.boosts[category] > 0 or opponent.boosts[category] < 0:
             values[moveid] *= boostTable[pokemon.boosts[category]]
         if pokemon.boosts[category] < 0 or opponent.boosts[category] > 0:
@@ -294,6 +402,11 @@ def getLead(team, opposing):
         for opp in opposing:
             for move in moves:
                 scores[mon] += calcScore(move, team[mon], opp)
+            zmove = getUsableZmove(team[mon])
+            if zmove:
+                scores[mon] += calcScore(zmove, team[mon], opp)
+            for move in getDynamaxMoves(team[mon], canDynamax=team[mon].side.canDynamax):
+                scores[mon] += calcScore(move, team[mon], opp)
     m = max(scores.values())
     options = [poke for poke,score in scores.items() if score == m]
     if len(options) > 0:
@@ -332,7 +445,7 @@ def calcScore(move, mon, opponents):
         eff *= Types[opp['types'][1]][move['type']]
     score *= eff
     # Ability
-    if mon.ability == 'sheerforce' and not move['secondary'] == False:
+    if mon.ability == 'sheerforce' and move['secondary']:
         score *= 1.2
     if mon.ability == 'strongjaw' and 'bite' in move['flags']:
         score *= 1.5

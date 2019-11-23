@@ -1,5 +1,12 @@
 import math
 
+from data.pokedex import Pokedex
+
+def getBaseSpecies(species):
+    if species in Pokedex: return species
+    species = species.split('-')[0]
+    return species
+
 def relativeWeightBasedBasePower(attacker, defender):
 	aWeight = attacker['weightkg']
 	dWeight = defender['weightkg']
@@ -40,3 +47,27 @@ def variableBasedOnHpRatioRemaining(cur, attacker, _):
     if ratio < 17: return 80
     if ratio < 33: return 40
     return 20
+
+def doublesAgainstDynamax(cur, _, defender):
+    return cur * 2 if defender.dynamaxed else cur
+
+def doublesIfMovingFirst(cur, attacker, defender):
+    # Approximation, but good enough
+    atkSpeed = Pokedex[getBaseSpecies(attacker.species)]['baseStats']['spe']
+    defSpeed = Pokedex[getBaseSpecies(defender.species)]['baseStats']['spe']
+    boostTable = [1, 1.5, 2, 2.5, 3, 3.5, 4]
+    if attacker.boosts['spe'] > 0:
+        atkSpeed *= boostTable[attacker.boosts['spe']]
+    if defender.boosts['spe'] > 0:
+        defSpeed *= boostTable[defender.boosts['spe']]
+    if attacker.boosts['spe'] < 0:
+        atkSpeed /= boostTable[attacker.boosts['spe']]
+    if defender.boosts['spe'] < 0:
+        defSpeed /= boostTable[defender.boosts['spe']]
+    if attacker.item == 'choicescarf':
+        atkSpeed *= 1.5
+    if defender.item == 'choicescarf':
+        defSpeed *= 1.5
+    if atkSpeed > defSpeed:
+        return cur * 2
+    return cur
