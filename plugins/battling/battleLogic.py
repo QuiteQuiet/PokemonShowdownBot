@@ -272,7 +272,7 @@ def getSwitch(mySide, myActiveSpecies, opponent):
         if zmove:
             scores[poke] += calcScore(zmove, myTeam[poke], opponent.species)
         for move in getDynamaxMoves(myTeam[poke], canDynamax=mySide.canDynamax):
-            scores[poke] += calcScore(move, myTeam[poke], other.species)
+            scores[poke] += calcScore(move, myTeam[poke], opponent.species)
     m = max(scores.values())
     picks = [poke for poke,score in scores.items() if score == m]
     pick = 0
