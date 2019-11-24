@@ -156,14 +156,16 @@ def getDynamaxMoves(pokemon, canDynamax=False):
                 if moveType in ('Fighting', 'Poison'):
                     if basePower >= 150:
                         gmaxPower = 100
-                    elif basePower >= 75:
+                    elif basePower >= 110:
                         gmaxPower = 95
+                    elif basePower >= 75:
+                        gmaxPower = 90
                     elif basePower >= 65:
                         gmaxPower = 85
                     elif basePower >= 45:
                         gmaxPower = 75
                     else:
-                        gmaxPower = 10
+                        gmaxPower = 70
                 else:
                     if basePower >= 150:
                         gmaxPower = 150
