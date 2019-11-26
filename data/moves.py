@@ -4094,7 +4094,7 @@ Moves = {
 		"category": "Physical",
 		"desc": "Leaves the target with at least 1 HP.",
 		"shortDesc": "Always leaves the target with at least 1 HP.",
-		"id": "Falseswipe",
+		"id": "falseswipe",
 		"name": "False Swipe",
 		"pp": 40,
 		"priority": 0,
