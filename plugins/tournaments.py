@@ -112,35 +112,31 @@ class Tournament:
             self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
 
     def logParticipation(self):
-        rankPath = 'plugins/{room}/{format}'.format(room = self.room.title, format = self.format)
+        rankPath = 'plugins/stats/{room}/{format}'.format(room = self.room.title, format = self.format)
         os.makedirs(rankPath, exist_ok = True)
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
             yf.seek(0, 0)
             data = yaml.load(yf, Loader = Loader)
             if not data: data = {}
-            if self.room.title not in data: data[self.room.title] = {}
-            if self.format not in data[self.room.title]: data[self.room.title][self.format] = {}
-            roomFormatData = data[self.room.title][self.format]
             for player in self.players:
                 player = Tournament.toId(player)
-                if player not in roomFormatData:
-                    roomFormatData[player] = {'entered': 1, 'won': 0}
+                if player not in data:
+                    data[player] = {'entered': 1, 'won': 0}
                 else:
-                    roomFormatData[player]['entered'] = roomFormatData[player]['entered'] + 1
-            data[self.room.title][self.format] = roomFormatData
+                    data[player]['entered'] = data[player]['entered'] + 1
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
         self.loggedParticipation = True
 
     def logWin(self, winner):
         if not self.loggedParticipation: return # This may happen if the bot joins midway through a tournament
-        rankPath = 'plugins/{room}/{format}'.format(room = self.room.title, format = self.format)
+        rankPath = 'plugins/stats/{room}/{format}'.format(room = self.room.title, format = self.format)
         os.makedirs(rankPath, exist_ok = True)
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
             yf.seek(0, 0)
             data = yaml.load(yf, Loader = Loader)
             for user in winner:
-                userData = data[self.room.title][self.format][Tournament.toId(user)]
+                userData = data[Tournament.toId(user)]
                 userData['won'] = userData['won'] + 1
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
