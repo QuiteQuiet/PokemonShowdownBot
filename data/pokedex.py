@@ -146,6 +146,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Red",
 		"eggGroups": ["Monster", "Dragon"],
+		"gmaxMove": "gmaxwildfire",
 	},
 	"Squirtle": {
 		"num": 7,
@@ -716,6 +717,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Yellow",
 		"eggGroups": ["Field", "Fairy"],
+		"gmaxMove": "gmaxvoltcrash",
 	},
 	"Raichu": {
 		"num": 26,
@@ -2015,6 +2017,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Purple",
 		"eggGroups": ["Amorphous"],
+		"gmaxMove": "gmaxterror",
 	},
 	"Onix": {
 		"num": 95,
@@ -13824,6 +13827,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Purple",
 		"eggGroups": ["Flying"],
+		"gmaxMove": "gmaxwindrage",
 	},
 	"Blipbug": {
 		"num": 824,
@@ -13995,6 +13999,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Green",
 		"eggGroups": ["Monster", "Water 1"],
+		"gmaxMove": "gmaxstonesurge",
 	},
 	"Yamper": {
 		"num": 835,
@@ -14075,6 +14080,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Black",
 		"eggGroups": ["Mineral"],
+		"gmaxMove": "gmaxvolcalith",
 	},
 	"Applin": {
 		"num": 840,
@@ -14117,6 +14123,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Green",
 		"eggGroups": ["Grass", "Dragon"],
+		"gmaxMove": "gmaxtartness",
 	},
 	"Appletun": {
 		"num": 842,
@@ -14147,6 +14154,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Green",
 		"eggGroups": ["Grass", "Dragon"],
+		"gmaxMove": "gmaxsweetness",
 	},
 	"Silicobra": {
 		"num": 843,
@@ -14312,6 +14320,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Purple",
 		"eggGroups": ["Human-Like"],
+		"gmaxMove": "gmaxstunshock",
 	},
 	"Sizzlipede": {
 		"num": 850,
