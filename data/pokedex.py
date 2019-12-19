@@ -14842,6 +14842,7 @@ Pokedex = {
 		"weightkg": 0,
 		"color": "Green",
 		"eggGroups": ["Field", "Mineral"],
+		"gmaxMove": "gmaxsteelsurge",
 	},
 	"Dracozolt": {
 		"num": 880,

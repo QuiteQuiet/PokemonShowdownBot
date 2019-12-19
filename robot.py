@@ -114,7 +114,7 @@ class PokemonShowdownBot:
                     'challengekeyid': challengekeyid,
                     'challenge': challenge
                     }
-        r = requests.post('http://play.pokemonshowdown.com/action.php', data=payload)
+        r = requests.post('http://play.pokemonshowdown.com/~~showdown/action.php', data=payload)
         assertion = json.loads(r.text[1:])['assertion']
 
         if assertion:

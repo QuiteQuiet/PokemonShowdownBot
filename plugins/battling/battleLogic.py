@@ -137,7 +137,7 @@ def getDynamaxMoves(pokemon, canDynamax=False):
                 if Moves[gmaxmove]['type'] == baseMoveData['type']:
                     maxmove = gmaxmove
             except KeyError:
-                # Charizard-Gmax doesn't have a gmax move? Use the regular max moves then
+                # If a Gmax doesn't have their Gmax move yet
                 pass
         # Copy to not affect the data
         maxmove = deepcopy(Moves[maxmove])
@@ -249,7 +249,11 @@ def getMove(moves, active, opponent, battle):
         else:
             action += '{} zmove'.format(move['baseMove'])
     elif 'isMax' in move:
-        action += move['baseMove']
+        try:
+            action += move['baseMove']
+        except KeyError:
+            print(moves)
+            print(move)
         if not active.dynamaxed:
             action += ' dynamax'
     else:

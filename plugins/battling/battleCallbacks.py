@@ -31,7 +31,7 @@ def noItemBoost(cur, attacker, _):
     return cur
 
 def targetStatusBoosted(cur, _, target):
-    if defender.condition or defender.ability == "Comatose": return cur * 2
+    if target.condition or target.ability == "Comatose": return cur * 2
     return cur
 
 def variableBasedOnHpPercentageRemaining(cur, attacker, _):
