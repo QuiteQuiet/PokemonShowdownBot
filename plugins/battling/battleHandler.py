@@ -285,7 +285,7 @@ def burst(robot, bh, battle, pid, pokemon, stone):
 
 # |-primal|POKEMON|SPECIES|MEGASTONE
 @battleprotocol
-def primal(robot, bh, battle, pid, pokemon, megastone):
+def primal(robot, bh, battle, pid, pokemon='', megastone=''):
     primalpoke = pokemon + '-Primal'
     side = battle.me if pid.startswith(battle.me.id) else battle.other
     side.removeBaseForm(pokemon, primalpoke)

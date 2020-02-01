@@ -140,17 +140,17 @@ def getDynamaxMoves(pokemon, canDynamax=False):
                 # If a Gmax doesn't have their Gmax move yet
                 pass
         # Copy to not affect the data
-        maxmove = deepcopy(Moves[maxmove])
-        maxmove['baseMove'] = move
+        maxmoveCopy = deepcopy(Moves[maxmove])
+        maxmoveCopy['baseMove'] = move
 
-        maxmove['category'] = baseMoveData['category']
+        maxmoveCopy['category'] = baseMoveData['category']
         if baseMoveData['category'] != 'Status':
             try:
                 gmaxPower = baseMoveData['gmaxPower']
             except KeyError:
                 # No gmax power set, calculate it
                 basePower = baseMoveData['basePower']
-                moveType = maxmove['type']
+                moveType = maxmoveCopy['type']
                 if not basePower:
                     gmaxPower = 100
                 if moveType in ('Fighting', 'Poison'):
@@ -181,8 +181,8 @@ def getDynamaxMoves(pokemon, canDynamax=False):
                         gmaxPower = 100
                     else:
                         gmaxPower = 90
-            maxmove['basePower'] = gmaxPower
-        maxmoves.append(maxmove)
+            maxmoveCopy['basePower'] = gmaxPower
+        maxmoves.append(maxmoveCopy)
     return maxmoves
 
 def getBaseSpecies(species):
@@ -251,9 +251,10 @@ def getMove(moves, active, opponent, battle):
     elif 'isMax' in move:
         try:
             action += move['baseMove']
-        except KeyError:
+        except KeyError as e:
             print(moves)
             print(move)
+            print(e)
         if not active.dynamaxed:
             action += ' dynamax'
     else:

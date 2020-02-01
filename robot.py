@@ -158,7 +158,7 @@ class PokemonShowdownBot:
             roomName = alias[roomName]
         return self.rooms[roomName] if roomName in self.rooms else None
 
-    def say(self, room, msg, ignoreMultiline):
+    def say(self, room, msg, ignoreMultiline = False):
         if '\n' in msg and not ignoreMultiline:
             for m in msg.split('\n'):
                 self.send('{room}|{text}'.format(room = room, text = m))
