@@ -8,6 +8,7 @@ except ImportError:
 import re
 import requests
 import textwrap
+from datetime import datetime
 from random import randint
 from invoker import ReplyObject, Command
 
@@ -51,6 +52,7 @@ class Tournament:
         self.runnerUp = None
         self.finals = None
         self.hasStarted = False
+        self.startTime = None
         self.loggedParticipation = False
         self.bh = battleHandler
 
@@ -83,6 +85,7 @@ class Tournament:
         elif 'leave' in msg:
             self.players.remove(Tournament.toId(msg[1]))
         elif 'start' in msg:
+            self.startTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.logParticipation()
         elif 'update' in msg:
             info = json.loads(msg[1])
@@ -194,11 +197,13 @@ def tourhistory(bot, cmd, msg, user, room):
             Winner: {winner}
             Runner-Up: {runnerup}
             # of Participants: {players}
+            Time: {starttime}
             Finals: {replay}\n""".format(
                 name = tour.title,
                 winner = tour.winner,
                 runnerup = tour.runnerUp,
                 players = len(tour.players),
+                starttime = tour.startTime,
                 replay = tour.finals)
 
     r = requests.post('https://pastebin.com/api/api_post.php',
