@@ -24,18 +24,24 @@ class Tournament:
         htmlString += '<tr><th style="border: 1px solid black;">Rank</th>'
         htmlString += '<th style="border: 1px solid black;">Name</th>'
         htmlString += '<th style="border: 1px solid black;">Tours</th>'
-        htmlString += '<th style="border: 1px solid black;">Wins</th>'
-        htmlString += '<th style="border: 1px solid black;">Win%</th></tr>'
+        htmlString += '<th style="border: 1px solid black;">Game Won</th>'
+        htmlString += '<th style="border: 1px solid black;">Tour Wins</th>'
+        htmlString += '<th style="border: 1px solid black;">Tour Win%</th></tr>'
         top10 = sorted(data.items(), key = lambda x: (x[1]['won'], x[1]['won'] / x[1]['entered']), reverse = True)[:10]
         rank = 1
         for person in top10:
             wins = person[1]['won']
             if wins < 1: continue
             entered = person[1]['entered']
+            try:
+                gamewins = person[1]['gamewins']
+            except KeyError:
+                gamewins = 'N/A'
             htmlString += '<tr style="{style} text-align: center;">'.format(style = 'background-color: #333333; color: #AAAAAA;' if rank % 2 == 0 else 'background-color: #AAAAAA; color: #333333;')
             htmlString += '<td>{rank}</td>'.format(rank = rank)
             htmlString += '<td>{player}</td>'.format(player = person[0]) if not person[0] == 'bb8nu' else '<td style="color: #CD853F">BB-8-NU</td>'
             htmlString += '<td>{played}</td>'.format(played = entered)
+            htmlString += '<td>{gameswon}</td>'.format(gameswon = gamewins)
             htmlString += '<td>{won}</td>'.format(won = wins)
             htmlString += '<td>{percent:.1f}</td></tr>'.format(percent = (wins / entered) * 100)
             rank += 1
@@ -48,6 +54,7 @@ class Tournament:
         self.format = tourFormat
         self.title = self.format
         self.players = []
+        self.gameWinners = {}
         self.winner = None
         self.runnerUp = None
         self.finals = None
@@ -105,14 +112,20 @@ class Tournament:
                     self.join(self.finals)
             except (KeyError, TypeError):
                 pass # Expected to happen a lot
-        elif 'battleend' in msg and self.finals:
-            self.winner, self.runnerUp = msg[1:3]
+        elif 'battleend' in msg:
+            winner, runnerUp = msg[1:3]
             if msg[3] != 'win':
-                self.winner, self.runnerUp = self.runnerUp, self.winner
+                winner, runnerUp = runnerUp, winner
+            # Count everyone's individual wins
+            try:
+                self.gameWinners[winner] += 1
+            except KeyError:
+                self.gameWinners[winner] = 1
 
-            finalsroom = self.finals
-            self.send(self.finals, '/savereplay')
-            self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
+            if self.finals:
+                finalsroom = self.finals
+                self.send(self.finals, '/savereplay')
+                self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
 
     def logParticipation(self):
         rankPath = 'plugins/stats/{room}/{format}'.format(room = self.room.title, format = self.format)
@@ -124,23 +137,29 @@ class Tournament:
             for player in self.players:
                 player = Tournament.toId(player)
                 if player not in data:
-                    data[player] = {'entered': 1, 'won': 0}
+                    data[player] = {'entered': 1, 'gamewins': 0, 'won': 0}
                 else:
                     data[player]['entered'] = data[player]['entered'] + 1
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
         self.loggedParticipation = True
 
-    def logWin(self, winner):
+    def logWins(self, winner):
         if not self.loggedParticipation: return # This may happen if the bot joins midway through a tournament
         rankPath = 'plugins/stats/{room}/{format}'.format(room = self.room.title, format = self.format)
         os.makedirs(rankPath, exist_ok = True)
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
             yf.seek(0, 0)
             data = yaml.load(yf, Loader = Loader)
+            # Tournament winner
             for user in winner:
+                data[Tournament.toId(user)]['won'] += 1
+            # Game winners
+            for user in self.gameWinners:
                 userData = data[Tournament.toId(user)]
-                userData['won'] = userData['won'] + 1
+                if 'gamewins' not in userData:
+                    userData['gamewins'] = 0
+                userData['gamewins'] += self.gameWinners[user]
         with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
 
@@ -240,7 +259,11 @@ def getranking(bot, cmd, msg, user, room):
             formatData = yaml.load(yf, Loader = Loader)
         try:
             userData = formatData[parts[0]]
-            return reply.response('{user} has played {games} and won {wins} ({winrate:.1f}% win rate)'.format(user = parts[0], games = userData['entered'], wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
+            try:
+                gamewins = userData['gamewins']
+            except KeyError:
+                gamewins = 'N/A'
+            return reply.response('{user} has played {games}, won {ind} games, and {wins} tours ({winrate:.1f}% tour win rate)'.format(user = parts[0], games = userData['entered'], ind = gamewins, wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
         except IndexError:
             rankingsTable = Tournament.buildRankingsTable(formatData, format)
             if bot.canHtml(room):

@@ -113,7 +113,7 @@ class Room:
     def getTourWinner(self, msg):
         things = json.loads(msg)
         winner = things['results'][0]
-        if self.tour: self.tour.logWin(winner)
+        if self.tour: self.tour.logWins(winner)
         return winner, things['format']
     def endTour(self):
         self.pastTours.append(self.tour)
