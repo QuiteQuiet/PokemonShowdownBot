@@ -174,8 +174,9 @@ def pokedex(robot, cmd, params, user, room):
         return ReplyObject('{cmd} is not a valid command'.format(cmd = cmd), True)
     if cmd in substitutes:
         cmd = substitutes[cmd]
-    if params not in ('rb', 'gs', 'rs', 'dp', 'bw', 'xy', 'sm'):
-        params = 'sm'
+    generations = ('rb', 'gs', 'rs', 'dp', 'bw', 'xy', 'sm', 'ss')
+    if params not in generations:
+        params = generations[-1]
     if robot.canHtml(room):
         return ReplyObject('/addhtmlbox <a href="http://www.smogon.com/dex/{gen}/pokemon/{mon}/">{capital} analysis</a>'.format(gen = params, mon = cmd, capital = cmd.title()), True, True)
     return ReplyObject('Analysis: http://www.smogon.com/dex/{gen}/pokemon/{mon}/'.format(gen = params, mon = cmd), reply = True, pmreply = True)
