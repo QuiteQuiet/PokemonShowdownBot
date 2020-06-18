@@ -30,6 +30,11 @@ def noItemBoost(cur, attacker, _):
         return cur * 2
     return cur
 
+def requiresOpponentItem(cur, _, defender):
+    if not defender.item:
+        return 0
+    return cur
+
 def targetStatusBoosted(cur, _, target):
     if target.condition or target.ability == "Comatose": return cur * 2
     return cur
