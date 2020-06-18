@@ -452,8 +452,12 @@ def calcScore(move, mon, opponents):
         eff *= Types[opp['types'][1]][move['type']]
     score *= eff
     # Ability
-    if mon.ability == 'sheerforce' and move['secondary']:
-        score *= 1.2
+    try:
+        if mon.ability == 'sheerforce' and move['secondary']:
+            score *= 1.2
+    except KeyError as e:
+        print(move)
+        raise e
     if mon.ability == 'strongjaw' and 'bite' in move['flags']:
         score *= 1.5
     if mon.ability in ['hugepower','purepower', 'adaptability']:
