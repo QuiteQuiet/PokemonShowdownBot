@@ -2073,7 +2073,7 @@ Moves = {
 	},
 	"coaching": {
 		"num": 811,
-		"accuracy": true,
+		"accuracy": True,
 		"basePower": 0,
 		"category": "Status",
 		"desc": "Raises the target's Attack and Defense by 1 stage.",
@@ -4732,7 +4732,7 @@ Moves = {
 		"pp": 20,
 		"priority": 0,
 		"flags": {"contact", "protect", "mirror"},
-		"selfSwitch": true,
+		"selfSwitch": True,
 		"secondary": None,
 		"target": "normal",
 		"type": "Water",
@@ -7864,7 +7864,7 @@ Moves = {
 	},
 	"junglehealing": {
 		"num": 816,
-		"accuracy": true,
+		"accuracy": True,
 		"basePower": 0,
 		"category": "Status",
 		"desc": "Each Pokemon on the user's side restores 1/4 of its maximum HP, rounded half up.",
