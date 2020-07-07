@@ -119,7 +119,7 @@ def title(robot, room, title):
     if robot.name in title:
         print('Battle: New battle between {}'.format(title))
 
-def deinit(robot, room):
+def deinit(robot, room, *extra):
     handler = robot.bh
     battle = handler.activeBattles.pop(room.title)
     if handler.ladderFormat and battle.ladderGame:

@@ -175,7 +175,7 @@ class PSBot(PokemonShowdownBot):
                 self.sendPm(user.id, response.text, response.ignoreMultiline)
 
         # Add handlers
-        self.addHandler('deinit', lambda self, r:  self.rooms.pop(r.title, None))
+        self.addHandler('deinit', lambda self, r, *a:  self.rooms.pop(r.title, None))
         self.addHandler('noinit', lambda self, r:  self.rooms.pop(r.title, None))
         self.addHandler('j', lambda self, r, name: self.handleJoin(r, name))
         self.addHandler('join', lambda self, r, name: self.handleJoin(r, name))
@@ -200,8 +200,8 @@ if __name__ == '__main__':
         psb.listen()
         # If we get here, the socket is closed and disconnected
         # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
-        time.sleep(3**(restartCount + 1))
-        print('{} seconds since last disconnect. Retrying connection...'.format(3**(restartCount + 1)))
+        time.sleep(2**(restartCount + 1))
+        print('{} seconds since last disconnect. Retrying connection...'.format(2**(restartCount + 1)))
         psb.openConnection()
         restartCount += 1
         print('Restart Count:', restartCount)
