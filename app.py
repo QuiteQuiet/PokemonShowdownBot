@@ -176,7 +176,7 @@ class PSBot(PokemonShowdownBot):
 
         # Add handlers
         self.addHandler('deinit', lambda self, r, *a:  self.rooms.pop(r.title, None))
-        self.addHandler('noinit', lambda self, r:  self.rooms.pop(r.title, None))
+        self.addHandler('noinit', lambda self, r, *a:  self.rooms.pop(r.title, None))
         self.addHandler('j', lambda self, r, name: self.handleJoin(r, name))
         self.addHandler('join', lambda self, r, name: self.handleJoin(r, name))
         self.addHandler('l', leave)

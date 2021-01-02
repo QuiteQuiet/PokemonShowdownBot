@@ -265,7 +265,7 @@ def getranking(bot, cmd, msg, user, room):
                 gamewins = 'N/A'
             return reply.response('{user} has played {games}, won {ind} games, and {wins} tours ({winrate:.1f}% tour win rate)'.format(user = parts[0], games = userData['entered'], ind = gamewins, wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
         except IndexError:
-            rankingsTable = Tournament.buildRankingsTable(formatData, format)
+            rankingsTable = Tournament.buildRankingsTable(formatData, formatName)
             if bot.canHtml(room):
                 return reply.response('/addhtmlbox {}'.format(rankingsTable))
             else:
