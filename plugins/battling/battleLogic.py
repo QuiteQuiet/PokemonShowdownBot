@@ -332,7 +332,11 @@ def getCC1v1Move(moves, pokemon, opponent):
         return movescopy[0]
     values = {}
     for move in movescopy:
-        moveid = move['id']
+        try:
+            moveid = move['id']
+        except KeyError as e:
+            print(move)
+            raise e
         mySpecies = getBaseSpecies(pokemon.species)
         oppSpecies = getBaseSpecies(opponent.species)
 

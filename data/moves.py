@@ -12948,7 +12948,7 @@ Moves = {
 		"gmaxPower": 130,
 		"contestType": "Beautiful",
 	},
-	"shellsidearm": {
+	"shellslidearm": {
 		"num": 801,
 		"accuracy": 100,
 		"basePower": 90,
@@ -15363,6 +15363,7 @@ Moves = {
 		"pp": 15,
 		"priority": 0,
 		"flags": {"contact", "protect", "mirror"},
+		"secondary": None,
 		"target": "normal",
 		"type": "Dark",
 		"zMovePower": 160,
