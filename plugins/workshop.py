@@ -56,7 +56,7 @@ def timestampWorkshopHandler(self, room, timestamp, user, *text):
 def workshopHandler(self, room, user, *text):
     timestampWorkshopHandler(self, room, 0, user, *text) # timestamp doesn't matter here
 
-def commands(bot, cmd, msg, user, room):
+def workshopCommands(bot, cmd, msg, user, room):
     reply = ReplyObject('', True)
     if msg.startswith('new'):
         if not user.hasRank('@'): return reply.response("You don't have permission to start workshops (Requires @)")
@@ -90,4 +90,4 @@ handler = {
     'c:': timestampWorkshopHandler
 }
 
-commands = [Command(['workshop', 'ws'], commands)]
+commands = [Command(['workshop', 'ws'], workshopCommands)]
