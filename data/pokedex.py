@@ -1860,9 +1860,9 @@ Pokedex = {
 		"evoLevel": 30,
 		"eggGroups": ["Mineral"],
 	},
-	"Farfetch'd": {
+	"Farfetch’d": {
 		"num": 83,
-		"species": "Farfetch'd",
+		"species": "Farfetch’d",
 		"types": ["Normal", "Flying"],
 		"baseStats": {"hp": 52, "atk": 90, "def": 55, "spa": 58, "spd": 62, "spe": 60},
 		"abilities": {"0": "Keen Eye", "1": "Inner Focus", "H": "Defiant"},
@@ -1872,10 +1872,10 @@ Pokedex = {
 		"eggGroups": ["Flying", "Field"],
 		"otherFormes": ["farfetchdgalar"],
 	},
-	"Farfetch'd-Galar": {
+	"Farfetch’d-Galar": {
 		"num": 83,
-		"species": "Farfetch'd-Galar",
-		"baseSpecies": "Farfetch'd",
+		"species": "Farfetch’d-Galar",
+		"baseSpecies": "Farfetch’d",
 		"forme": "Galar",
 		"formeLetter": "G",
 		"types": ["Fighting"],
@@ -14764,9 +14764,9 @@ Pokedex = {
 		"evoLevel": 38,
 		"eggGroups": ["Water 1", "Water 3"],
 	},
-	"Sirfetch'd": {
+	"Sirfetch’d": {
 		"num": 865,
-		"species": "Sirfetch'd",
+		"species": "Sirfetch’d",
 		"types": ["Fighting"],
 		"baseStats": {"hp": 62, "atk": 135, "def": 95, "spa": 68, "spd": 82, "spe": 65},
 		"abilities": {"0": "Steadfast", "H": "Scrappy"},
