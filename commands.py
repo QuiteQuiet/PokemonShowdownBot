@@ -98,6 +98,21 @@ def links(robot, cmd, params):
         return ReplyObject(Links[cmd][params], True)
     return ReplyObject('{tier} is not a supported format for {command}'.format(tier = params if params else "''", command = cmd), True)
 
+def declare(robot, cmd, params, user):
+    if not user.hasRank('%'):
+        return ReplyObject('Only Drivers and up can use this', True)
+    try:
+        declareType, username = params.split(',')
+    except ValueError:
+        return ReplyObject('Missing parameter. Usage: {}declare [type], [user] ({})'.format(robot.commandchar, params))
+
+    declareType = declareType.strip().lower()
+    if declareType == 'teambattle':
+        string = 'A Team Battle is starting soon. PM {} to enter.'.format(user.strip())
+    else:
+        return ReplyObject('Invalid type of declare')
+    return ReplyObject('/declare {}'.format(string), True, True)
+
 def randpoke(robot, cmd):
     pick = list(tiers[cmd])[randint(0,len(tiers[cmd])-1)]
     pNoForm = re.sub('-(?:Mega(?:-(X|Y))?|Primal)','', pick).lower()
@@ -203,6 +218,7 @@ commands = [
     Command(['broadcast'], lambda s: ReplyObject('Rank required to broadcast: {rank}'.format(rank = s.details['broadcastrank']), True)),
     Command(['usage'], lambda: ReplyObject(usageLink, reply = True, pmreply = True)),
     Command(['pick'], lambda s, c, p: ReplyObject(choice(p.split(',')), True)),
+    Command(['teambat', 'teambattle'], lambda: ReplyObject('Team Battles Explaination: https://www.smogon.com/forums/threads/ss-nu-teambats.3678407/', True)),
 
     # Aliasing the pokemon command because users use `analysis [pokemon]` too much
     Command(['analysis', 'dex'], analysis),
@@ -218,6 +234,7 @@ commands = [
     Command(['newautojoin'], newautojoin),
     Command(['setbroadcast'], setbroadcast),
     Command(['uptime'], uptime),
+    Command(['declare'], declare),
     Command([l for l in Links], links),
     Command([t for t in tiers], randpoke),
     Command([t.replace('poke','team') for t in tiers], randteam),
