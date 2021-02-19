@@ -108,7 +108,7 @@ def declare(robot, cmd, params, user):
 
     declareType = declareType.strip().lower()
     if declareType == 'teambattle':
-        string = 'A Team Battle is starting soon. PM {} to enter.'.format(user.strip())
+        string = 'A Team Battle is starting soon. PM {} to enter.'.format(username.strip())
     else:
         return ReplyObject('Invalid type of declare')
     return ReplyObject('/declare {}'.format(string), True, True)
