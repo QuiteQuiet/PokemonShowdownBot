@@ -77,3 +77,16 @@ The chatbot can be scheduled to run a specific set of commands at some point in 
 
 - `initevents`: Has to be done prior to scheduling any form of job execution. It sets up some important context that is needed for any job that will run.
 - `addevent [time]|[periodicity]|[job]`: Adds a new event that will have its first execution at [time], and will then repeat once every [periodicity] days. It currently only allows you to specify periodicity by days. [time] can only be specified in the exact format: `YYYY/MM/DD HH:MM` with a 24 hour clock and GMT+0 as timezone. At [time] it will execute all instruction in [job]. This can either be a simple command such as `/rank chaos` or a more complex set of instructions. [jobs] can also be set of instruction in a paste from an url that the `PasteImporter` supports (hastebin.com/raw/, pastebin.com/raw/, or gist.githubusercontent.com/). It will read and interpret each line as its own command in this case.
+
+#### Leaderboards ####
+Each room is recording the result of all tours that happen; how many participants, who won, how many games each person has played. This is all collected to an all-time leaderboard that can be displayed, or for a specific user.
+
+- `leaderboard [room], [format], [user]`: Display the [room] leaderboard for [format], or the stats for the single [user] in [format]. [room] and [user] are optional, and if ommited will use the current room and no user.
+
+#### Official Tournaments  ####
+Each room can specify a set of formats that will be considered 'official' formats of that room. All tournaments started of that format will be recorded to a separate leaderboard that will be displayed after each tour has finished. This leaderboard can be reset at any point. This will have no impact on the all-time leaderboard, they will coexist independently of each other.
+
+- `addofficial [format]`: Mark [format] as an official format for the room.
+- `officialleaderboard`: Same parameters as `leaderboard`.
+- `resetofficials`: Clear all data for official tournaments.
+- `excludetour`: Exclude a tour that would otherwise have been official from counting towards the official leaderboard.

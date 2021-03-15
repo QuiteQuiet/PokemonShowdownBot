@@ -141,7 +141,7 @@ class CommandInvoker:
             cmd = cmd[1:]
         if cmd in self.cmdInvokers:
             try:
-                command = self.cmdInvokers[cmd].run;
+                command = self.cmdInvokers[cmd].run
                 params = args[:len(inspect.signature(command).parameters)]
                 response = command(*params)
                 if self.cmdInvokers[cmd].hasBroadcastAlt and broadcastAlt and response.text[0] == '/':

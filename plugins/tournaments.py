@@ -1,6 +1,8 @@
 import json
+import glob
 import os
 import yaml
+from collections import defaultdict
 try:
     from yaml import CLoader as Loader
 except ImportError:
@@ -18,16 +20,18 @@ class Tournament:
     def toId(thing): return re.sub(r'[^a-zA-Z4e310-9,]', '', thing).lower()
 
     @staticmethod
-    def buildRankingsTable(data, metagame):
+    def buildRankingsTable(data, metagame, people=10):
         htmlString = '<h1 style="font-size:1em;">{}</h1>'.format(metagame)
-        htmlString += '<table style="border-collapse: collapse; margin: 0; border: 1px solid black; width: 100%;}">'
+        htmlString += '<div style="height: 205px; overflow-y: auto;">'
+        htmlString += '<table style="border-collapse: collapse; margin: 0; border: 1px solid black;">'
         htmlString += '<tr><th style="border: 1px solid black;">Rank</th>'
         htmlString += '<th style="border: 1px solid black;">Name</th>'
         htmlString += '<th style="border: 1px solid black;">Tours</th>'
-        htmlString += '<th style="border: 1px solid black;">Game Won</th>'
-        htmlString += '<th style="border: 1px solid black;">Tour Wins</th>'
+        htmlString += '<th style="border: 1px solid black;">Games Won</th>'
+        htmlString += '<th style="border: 1px solid black;">Game Wins / Tour</th>'
+        htmlString += '<th style="border: 1px solid black;">Tours Won</th>'
         htmlString += '<th style="border: 1px solid black;">Tour Win%</th></tr>'
-        top10 = sorted(data.items(), key = lambda x: (x[1]['won'], x[1]['won'] / x[1]['entered']), reverse = True)[:10]
+        top10 = sorted(data.items(), key = lambda x: (x[1]['won'], x[1]['won'] / x[1]['entered']), reverse = True)[:people]
         rank = 1
         for person in top10:
             wins = person[1]['won']
@@ -38,23 +42,35 @@ class Tournament:
             except KeyError:
                 gamewins = 'N/A'
             htmlString += '<tr style="{style} text-align: center;">'.format(style = 'background-color: #333333; color: #AAAAAA;' if rank % 2 == 0 else 'background-color: #AAAAAA; color: #333333;')
-            htmlString += '<td>{rank}</td>'.format(rank = rank)
-            htmlString += '<td>{player}</td>'.format(player = person[0]) if not person[0] == 'bb8nu' else '<td style="color: #CD853F">BB-8-NU</td>'
-            htmlString += '<td>{played}</td>'.format(played = entered)
-            htmlString += '<td>{gameswon}</td>'.format(gameswon = gamewins)
-            htmlString += '<td>{won}</td>'.format(won = wins)
-            htmlString += '<td>{percent:.1f}</td></tr>'.format(percent = (wins / entered) * 100)
+            htmlString += '<td>{rank}</td>'.format(rank=rank)
+            htmlString += '<td>{player}</td>'.format(player=person[0]) if not person[0] == 'bb8nu' else '<td style="color: #CD853F">BB-8-NU</td>'
+            htmlString += '<td>{played}</td>'.format(played=entered)
+            htmlString += '<td>{gameswon}</td>'.format(gameswon=gamewins)
+            htmlString += '<td>{percent:.1f}</td>'.format(percent=gamewins / entered)
+            htmlString += '<td>{won}</td>'.format(won=wins)
+            htmlString += '<td>{percent:.1f}</td></tr>'.format(percent=(wins / entered) * 100)
             rank += 1
-        htmlString += '</table>'
+        htmlString += '</table></div>'
         return htmlString
 
-    def __init__(self, ws, room, tourFormat, battleHandler):
+    @staticmethod
+    def getTournamentData(room, formatName, official=False):
+        if official:
+            filePath = 'plugins/stats/{}/{}/official-rankings.yaml'.format(room)
+        else:
+            filePath = 'plugins/stats/{}/{}/tournament-rankings.yaml'.format(room, formatName)
+        with open(filePath, 'r+') as yf:
+            formatData = yaml.load(yf, Loader=Loader)
+        return formatData
+
+    def __init__(self, ws, room, tourFormat, battleHandler, official=False):
         self.ws = ws
         self.room = room
         self.format = tourFormat
         self.title = self.format
+        self.official = official
         self.players = []
-        self.gameWinners = {}
+        self.gameWinners = defaultdict(int)
         self.winner = None
         self.runnerUp = None
         self.finals = None
@@ -117,22 +133,19 @@ class Tournament:
             if msg[3] != 'win':
                 winner, runnerUp = runnerUp, winner
             # Count everyone's individual wins
-            try:
-                self.gameWinners[winner] += 1
-            except KeyError:
-                self.gameWinners[winner] = 1
+            self.gameWinners[winner] += 1
 
             if self.finals:
                 finalsroom = self.finals
                 self.send(self.finals, '/savereplay')
                 self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
 
-    def logParticipation(self):
-        rankPath = 'plugins/stats/{room}/{format}'.format(room = self.room.title, format = self.format)
-        os.makedirs(rankPath, exist_ok = True)
-        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
+    def _logParticipationInner(self, fileDir, fileName):
+        os.makedirs(fileDir, exist_ok=True)
+        filePath = '{path}/{file}'.format(path=fileDir, file=fileName)
+        with open(filePath, 'a+') as yf:
             yf.seek(0, 0)
-            data = yaml.load(yf, Loader = Loader)
+            data = yaml.load(yf, Loader=Loader)
             if not data: data = {}
             for player in self.players:
                 player = Tournament.toId(player)
@@ -140,15 +153,24 @@ class Tournament:
                     data[player] = {'entered': 1, 'gamewins': 0, 'won': 0}
                 else:
                     data[player]['entered'] = data[player]['entered'] + 1
-        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
-            yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
+        with open(filePath, 'w') as yf:
+            yaml.dump(data, yf, default_flow_style=False, explicit_start=True)
         self.loggedParticipation = True
 
-    def logWins(self, winner):
+    def logParticipation(self):
+        # All tours
+        filePath = 'plugins/stats/{room}/{format}'.format(room=self.room.title, format=self.format)
+        self._logParticipationInner(filePath, 'tournament-rankings.yaml')
+
+        # Official tours
+        if self.official:
+            self._logParticipationInner(filePath, 'official-rankings.yaml')
+
+    def _logWinsInner(self, winner, fileDir, fileName):
         if not self.loggedParticipation: return # This may happen if the bot joins midway through a tournament
-        rankPath = 'plugins/stats/{room}/{format}'.format(room = self.room.title, format = self.format)
-        os.makedirs(rankPath, exist_ok = True)
-        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'a+') as yf:
+        os.makedirs(fileDir, exist_ok=True)
+        filePath = '{path}/{file}'.format(path=fileDir, file=fileName)
+        with open(filePath, 'a+') as yf:
             yf.seek(0, 0)
             data = yaml.load(yf, Loader = Loader)
             # Tournament winner
@@ -160,8 +182,16 @@ class Tournament:
                 if 'gamewins' not in userData:
                     userData['gamewins'] = 0
                 userData['gamewins'] += self.gameWinners[user]
-        with open('{path}/tournament-rankings.yaml'.format(path = rankPath), 'w') as yf:
+        with open(filePath, 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
+    def logWins(self, winner):
+        # All tours
+        filePath = 'plugins/stats/{room}/{format}'.format(room=self.room.title, format=self.format)
+        self._logWinsInner(winner, filePath, 'tournament-rankings.yaml')
+
+        # Official tours
+        if self.official:
+            self._logWinsInner(winner, filePath, 'official-rankings.yaml')
 
 def tourHandler(robot, room, *params):
     if 'create' in params[0]:
@@ -182,9 +212,18 @@ def tourHandler(robot, room, *params):
                 robot.say(room.title, message, False)
             else:
                 robot.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)), False)
-        room.endTour()
+            if room.tour:
+                room.tour.logWins(winner)
+            html = room.endTour()
+            # HTML existing means we had an official tour
+            if html:
+                robot.say(room.title, '/addhtmlbox {}'.format(html))
     elif 'forceend' in params[0]:
-        room.endTour()
+        html = room.endTour()
+
+        # HTML existing means we had an official tour
+        if html:
+            robot.say(room.title, '/addhtmlbox {}'.format(html))
     else:
         # This is for general tournament updates
         if not room.tour or room.loading: return
@@ -238,10 +277,10 @@ def tourhistory(bot, cmd, msg, user, room):
 
 def getranking(bot, cmd, msg, user, room):
     reply = ReplyObject('', True, True)
-    if not user.hasRank('%') and not room.isPM: reply.response('Listing the rankings require Room Driver (%) or higher.')
+    if not user.hasRank('%') and not room.isPM: return reply.response('Listing the rankings require Room Driver (%) or higher.')
 
     # format is room (optional), format, user (if ever, also optional)
-    parts = list(map(bot.toId, msg.split(',')))
+    parts = list(map(Tournament.toId, msg.split(',')))
     roomTitle = ''
     if os.path.exists('plugins/stats/{room}'.format(room=parts[0])):
         roomTitle = parts.pop(0)
@@ -250,30 +289,56 @@ def getranking(bot, cmd, msg, user, room):
     else:
         return reply.response('The room {} has no data about rankings'.format(msg.split(',')[0]))
 
-    if not parts:
-        return reply.response('No format given')
+    officialTour = cmd == 'officialleaderboard'
 
-    if os.path.exists('plugins/stats/{room}/{format}'.format(room=roomTitle, format=parts[0])):
+    if not parts and not officialTour:
+        return reply.response('No format given')
+    try:
         formatName = parts.pop(0)
-        with open('plugins/stats/{}/{}/tournament-rankings.yaml'.format(roomTitle, formatName), 'r+') as yf:
-            formatData = yaml.load(yf, Loader = Loader)
-        try:
-            userData = formatData[parts[0]]
-            try:
-                gamewins = userData['gamewins']
-            except KeyError:
-                gamewins = 'N/A'
-            return reply.response('{user} has played {games}, won {ind} games, and {wins} tours ({winrate:.1f}% tour win rate)'.format(user = parts[0], games = userData['entered'], ind = gamewins, wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
-        except IndexError:
-            rankingsTable = Tournament.buildRankingsTable(formatData, formatName)
-            if bot.canHtml(room):
-                return reply.response('/addhtmlbox {}'.format(rankingsTable))
-            else:
-                return reply.response('Cannot show full rankings in this room')
-        except KeyError:
-            return reply.response('{user} has no data for {tier} in {room}'.format(user = parts[0], tier = format, room = roomTitle))
+    except IndexError:
+        # Official tours has no format
+        formatName = ''
+
+    if os.path.exists('plugins/stats/{room}/{format}'.format(room=roomTitle, format=formatName)):
+        formatData = Tournament.getTournamentData(roomTitle, formatName, officialTour)
     else:
-        return reply.response('The room has no data about the format {}'.format(parts[0]))
+        return reply.response('The room has no data about the format {}'.format(formatName))
+
+    try:
+        userData = formatData[parts[0]]
+        try:
+            gamewins = userData['gamewins']
+        except KeyError:
+            gamewins = 'N/A'
+        return reply.response('{user} has played {games}, won {ind} games, and {wins} tours ({winrate:.1f}% tour win rate)'.format(user = parts[0], games = userData['entered'], ind = gamewins, wins = userData['won'], winrate = (userData['won'] / userData['entered']) * 100))
+    except IndexError:
+        rankingsTable = Tournament.buildRankingsTable(formatData, formatName)
+        if bot.canHtml(room):
+            return reply.response('/addhtmlbox {}'.format(rankingsTable))
+        else:
+            return reply.response('Cannot show full rankings in this room')
+    except KeyError:
+        return reply.response('{user} has no data for {tier} in {room}'.format(user = parts[0], tier = format, room = roomTitle))
+
+def excludetour(bot, cmd, msg, user, room):
+    reply = ReplyObject('', True, True)
+    if not user.hasRank('%'): return reply.response('Permission denied. Room Driver (%) or higher')
+    if not room.tour: return reply.response('No tournament found')
+    room.tour.official = False
+
+def resetofficials(bot, cmd, msg, user, room):
+    reply = ReplyObject('', True, True)
+    if not user.hasRank('@'): return reply.response('Permission denied. Room Mod (@) or higher')
+
+    fileList = glob.glob('plugins/stats/{room}/*/official-rankings.yaml'.format(room=room.title))
+    if not fileList:
+        return reply.response('No official rankings to clear')
+    try:
+        for f in fileList:
+            os.remove(f)
+        return reply.response('Official rankings reset')
+    except FileNotFoundError:
+        return reply.response('Error while clearing official data')
 
 # Exports
 handlers = {
@@ -284,5 +349,7 @@ handlers = {
 commands = [
     Command(['oldgentour'], oldgentour),
     Command(['tourhistory'], tourhistory),
-    Command(['showranking', 'leaderboard'], getranking)
+    Command(['showranking', 'leaderboard', 'officialleaderboard'], getranking),
+    Command(['excludetour'], excludetour),
+    Command(['resetofficials'], resetofficials)
 ]

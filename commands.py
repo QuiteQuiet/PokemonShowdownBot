@@ -33,7 +33,7 @@ from data.replies import Lines
 
 from user import User
 
-usageLink = r'http://www.smogon.com/stats/2019-01/'
+usageLink = r'http://www.smogon.com/stats/2021-02/'
 
 def URL(): return 'https://github.com/QuiteQuiet/PokemonShowdownBot/'
 

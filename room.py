@@ -50,7 +50,8 @@ class Room:
                 'urls': False
             },
             'allow games':False,
-            'tourwhitelist':[]}
+            'tourwhitelist':[],
+            'officialformats': []}
         self.users = {}
         self.loading = True
         self.joinTime = int(time.time())
@@ -62,6 +63,7 @@ class Room:
         self.activity = None
         self.pastTours = deque([], maxlen=10)
         self.tourwhitelist = data['tourwhitelist']
+        self.officialFormats = set(data['officialformats'])
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
         self.moderation = ModerationHandler(data['moderate'], self)
         self.scheduler = EventScheduler(self)
@@ -109,15 +111,24 @@ class Room:
         self.tourwhitelist.remove(target)
         return True
     def createTour(self, ws, form, battleHandler):
-        self.tour = Tournament(ws, self, form, battleHandler)
+        self.tour = Tournament(ws,
+                               self,
+                               form,
+                               battleHandler,
+                               form in self.officialFormats)
     def getTourWinner(self, msg):
         things = json.loads(msg)
         winner = things['results'][0]
-        if self.tour: self.tour.logWins(winner)
         return winner, things['format']
     def endTour(self):
         self.pastTours.append(self.tour)
-        self.tour = None
+        if self.tour.official:
+            data = Tournament.getTournamentData(self.title, self.tour.format)
+            html = Tournament.buildRankingsTable(data, self.tour.format, 25)
+            self.tour = None
+            return html
+        else:
+            self.tour = None
 
 # Commands
 def leaveroom(bot, cmd, params, user, room):
@@ -298,6 +309,12 @@ def getactivity(bot, cmd, params, user, room):
             return reply.response('Something went wrong ({error})'.format(error = r.text))
         return reply.response(r.text)
 
+def addofficial(bot, cmd, tier, user, room):
+    if not user.hasRank('@'): return ReplyObject('Permission denied. (Requires @)', True)
+    room.officialFormats.add(tier)
+    bot.saveDetails()
+    return ReplyObject('Added {} as official format'.format(tier), True)
+
 commands = [
     Command(['leave'], leaveroom),
     Command(['allowgames'], allowgames),
@@ -305,5 +322,6 @@ commands = [
     Command(['tourwhitelist', 'tourwl'], tourwl),
     Command(['untourwhitelist', 'untourwl'], untourwl),
     Command(['gettourwhitelist', 'gettourwl'], gettourwl),
-    Command(['getactivity'], getactivity)
+    Command(['getactivity'], getactivity),
+    Command(['addofficial'], addofficial)
 ]

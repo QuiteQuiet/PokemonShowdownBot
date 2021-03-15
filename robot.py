@@ -223,19 +223,20 @@ class PokemonShowdownBot:
     def userHasPermission(self, user, rank):
         return self.isOwner(user.id) or User.compareRanks(user.rank, rank)
 
-    def saveDetails(self, newAutojoin = False):
+    def saveDetails(self, newAutojoin=False):
         details = {k:v for k,v in self.details.items() if not k == 'rooms' and not k == 'joinRooms'}
         details['joinRooms'] = {}
-        for e in self.rooms:
-            if e.startswith('groupchat'): continue
-            if not newAutojoin and e not in self.details['joinRooms']: continue
-            room = self.getRoom(e)
-            details['joinRooms'][e] = {'moderate': room.moderation.config,
+        for r in self.rooms:
+            if r.startswith('groupchat'): continue
+            if not newAutojoin and r not in self.details['joinRooms']: continue
+            room = self.getRoom(r)
+            details['joinRooms'][r] = {'moderate': room.moderation.config,
                                         'allow games':room.allowGames,
-                                        'tourwhitelist': room.tourwhitelist
-                                        }
+                                        'tourwhitelist': room.tourwhitelist,
+                                        'officialformats': list(room.officialFormats),
+                                    }
         with open('details.yaml', 'w') as yf:
-            yaml.dump(details, yf, default_flow_style = False, explicit_start = True)
+            yaml.dump(details, yf, default_flow_style=False, explicit_start=True)
 
     def _iterPackages(self):
         for importer, modname, ispkg in pkgutil.walk_packages(path = ['.'], onerror = lambda x: None):
