@@ -219,11 +219,7 @@ def tourHandler(robot, room, *params):
             if html:
                 robot.say(room.title, '/addhtmlbox {}'.format(html))
     elif 'forceend' in params[0]:
-        html = room.endTour()
-
-        # HTML existing means we had an official tour
-        if html:
-            robot.say(room.title, '/addhtmlbox {}'.format(html))
+        room.endTour()
     else:
         # This is for general tournament updates
         if not room.tour or room.loading: return
