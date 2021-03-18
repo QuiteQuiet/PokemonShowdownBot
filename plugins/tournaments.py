@@ -213,7 +213,7 @@ def tourHandler(robot, room, *params):
             else:
                 robot.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)), False)
             if room.tour:
-                room.tour.logWins(winner)
+                room.tour.logWins(winners)
             html = room.endTour()
             # HTML existing means we had an official tour
             if html:

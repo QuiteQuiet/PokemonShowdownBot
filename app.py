@@ -195,12 +195,12 @@ class PSBot(PokemonShowdownBot):
 if __name__ == '__main__':
     psb = PSBot()
     restartCount = 0
-    while restartCount < 10:
+    while restartCount < 100:
         # This function has a loop that runs as long as the websocket is connected
         psb.listen()
         # If we get here, the socket is closed and disconnected
         # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
-        time.sleep(2**(restartCount + 1))
+        time.sleep(2**(restartCount/20))
         print('{} seconds since last disconnect. Retrying connection...'.format(2**(restartCount + 1)))
         psb.openConnection()
         restartCount += 1
