@@ -345,7 +345,7 @@ handlers = {
 commands = [
     Command(['oldgentour'], oldgentour),
     Command(['tourhistory'], tourhistory),
-    Command(['showranking', 'leaderboard', 'officialleaderboard'], getranking),
+    Command(['leaderboard', 'officialleaderboard'], getranking),
     Command(['excludetour'], excludetour),
     Command(['resetofficials'], resetofficials)
 ]

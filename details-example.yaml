@@ -20,6 +20,8 @@ avatar: 0
 # The rooms that should be joined on login. Leave moderate as fale to not enforce punishments.
 # allow games: Specify if chatgames like hangman should be allowed in the room
 # tourwhitelist: If you want to make specific people able to start tournaments without being @, add them to this list
+# officialformats: Formats that should keep a separate, reset-able leaderboard for official tours
+# showrankings: Print the official rankings after an official tour ends.
 joinRooms:
   (room name here):
     moderate:
@@ -33,6 +35,7 @@ joinRooms:
     allow games: False
     tourwhitelist: []
     officialformats: []
+    showrankings: true
 
 # Set if the bot will attempt to join any tornament that is started in the room, if the tiers it got accepts it. Default is False
 joinTours: False

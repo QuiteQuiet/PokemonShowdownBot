@@ -51,7 +51,8 @@ class Room:
             },
             'allow games':False,
             'tourwhitelist':[],
-            'officialformats': []}
+            'officialformats': [],
+            'showrankings':False,}
         self.users = {}
         self.loading = True
         self.joinTime = int(time.time())
@@ -64,6 +65,7 @@ class Room:
         self.pastTours = deque([], maxlen=10)
         self.tourwhitelist = data['tourwhitelist']
         self.officialFormats = set(data['officialformats'])
+        self.showrankings = data['showrankings']
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
         self.moderation = ModerationHandler(data['moderate'], self)
         self.scheduler = EventScheduler(self)
@@ -122,13 +124,13 @@ class Room:
         return winner, things['format']
     def endTour(self):
         self.pastTours.append(self.tour)
-        if self.tour.official:
-            data = Tournament.getTournamentData(self.title, self.tour.format)
+        if self.showranking:
+            data = Tournament.getTournamentData(self.title, self.tour.format, official=self.tour.official)
             html = Tournament.buildRankingsTable(data, self.tour.format, 25)
-            self.tour = None
-            return html
         else:
-            self.tour = None
+            html = None
+        self.tour = None
+        return html
 
 # Commands
 def leaveroom(bot, cmd, params, user, room):
@@ -315,6 +317,19 @@ def addofficial(bot, cmd, tier, user, room):
     bot.saveDetails()
     return ReplyObject('Added {} as official format'.format(tier), True)
 
+def togglerankings(bot, cmd, params, user, room):
+    if not user.hasRank('@'): return ReplyObject('Permission denied. (Require @)', True)
+
+    shouldPrint = cmd == 'showrankings'
+    try:
+        bot.getRoom(params).showrankings = shouldPrint
+        configured = params
+    except AttributeError:
+        room.showrankings = shouldPrint
+        configured = room.title
+    return ReplyObject('Official leaderboards for {room} will {toggle}be printed after tours.'.format(
+                        room=configured, toggle=('now ' if shouldPrint else 'no longer ')), True)
+
 commands = [
     Command(['leave'], leaveroom),
     Command(['allowgames'], allowgames),
@@ -323,5 +338,6 @@ commands = [
     Command(['untourwhitelist', 'untourwl'], untourwl),
     Command(['gettourwhitelist', 'gettourwl'], gettourwl),
     Command(['getactivity'], getactivity),
-    Command(['addofficial'], addofficial)
+    Command(['addofficial'], addofficial),
+    Command(['showrankings', 'hiderankings'], togglerankings)
 ]
