@@ -37,6 +37,7 @@ class BattleHandler:
                                  'gen7hackmonscup',
                                  'gen7randombattle',
                                  'gen8challengecup1v1',
+                                 'gen8challengecup',
                                  'gen8hackmonscup',
                                  'gen8randombattle']
 

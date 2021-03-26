@@ -46,7 +46,10 @@ class Tournament:
             htmlString += '<td>{player}</td>'.format(player=person[0]) if not person[0] == 'bb8nu' else '<td style="color: #CD853F">BB-8-NU</td>'
             htmlString += '<td>{played}</td>'.format(played=entered)
             htmlString += '<td>{gameswon}</td>'.format(gameswon=gamewins)
-            htmlString += '<td>{percent:.1f}</td>'.format(percent=gamewins / entered)
+            try:
+                htmlString += '<td>{percent:.1f}</td>'.format(percent=gamewins / entered)
+            except TypeError:
+                htmlString += '<td>N/A</td>'
             htmlString += '<td>{won}</td>'.format(won=wins)
             htmlString += '<td>{percent:.1f}</td></tr>'.format(percent=(wins / entered) * 100)
             rank += 1

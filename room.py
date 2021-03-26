@@ -62,6 +62,7 @@ class Room:
         self.allowGames = data['allow games']
         self.tour = None
         self.activity = None
+        self.lastCommand = ''
         self.pastTours = deque([], maxlen=10)
         self.tourwhitelist = data['tourwhitelist']
         self.officialFormats = set(data['officialformats'])
@@ -124,7 +125,7 @@ class Room:
         return winner, things['format']
     def endTour(self):
         self.pastTours.append(self.tour)
-        if self.showranking:
+        if self.showrankings:
             data = Tournament.getTournamentData(self.title, self.tour.format, official=self.tour.official)
             html = Tournament.buildRankingsTable(data, self.tour.format, 25)
         else:
@@ -199,7 +200,6 @@ def tour(bot, cmd, params, user, room):
     reply = ReplyObject('', True, True, True)
     if room.isPM: return reply.response("You can't use this command in a pm.")
     if not room.isWhitelisted(user): return reply.response('You are not allowed to use this command. (Requires whitelisting by a Room Owner)')
-    if not bot.canStartTour(room): return reply.response("I don't have the rank required to start a tour :(")
     if params in {'gscnu', 'advnu'}:
         gen, name = ('gen3ou', 'ADV NU') if params == 'advnu' else ('gen2ou', 'GSC NU')
         params = 'new {gen}, elimination\n/tour rules {bans}\n/tour name {name}'.format(gen = gen, bans = oldgenNUBanlists[params], name = name)
@@ -329,6 +329,17 @@ def togglerankings(bot, cmd, params, user, room):
         configured = room.title
     return ReplyObject('Official leaderboards for {room} will {toggle}be printed after tours.'.format(
                         room=configured, toggle=('now ' if shouldPrint else 'no longer ')), True)
+
+def errorHandler(robot, room, *error):
+    # This should be good enough, we're not in that many rooms
+    for room in robot.rooms.values():
+        if room.lastCommand == 'tour':
+            robot.say(room.title, '|'.join(error))
+
+# Exports
+handlers = {
+    'error': errorHandler,
+}
 
 commands = [
     Command(['leave'], leaveroom),

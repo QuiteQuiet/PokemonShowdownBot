@@ -5080,6 +5080,7 @@ Moves = {
 		"accuracy": 100,
 		"basePower": 90,
 		"category": "Special",
+		"id": "freezingglare",
 		"name": "Freezing Glare",
 		"pp": 10,
 		"priority": 0,
