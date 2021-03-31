@@ -1,5 +1,6 @@
 import json
 import time
+from datetime import datetime
 
 from robot import PokemonShowdownBot, Room, User
 from invoker import CommandInvoker
@@ -136,7 +137,7 @@ class PSBot(PokemonShowdownBot):
                 self.log('Command', message, user.id)
 
                 res = self.invoker.execute(self, command, message[len(command) + 1:].lstrip(), user, room)
-                room.lastCommand = command
+                room.lastCommand = (command, datetime.now())
                 if not res.text or res.text == 'NoAnswer': return
 
                 if self.userHasPermission(user, self.details['broadcastrank']) or res.ignoreBroadcastPermission:

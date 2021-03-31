@@ -21,8 +21,10 @@ class Tournament:
 
     @staticmethod
     def buildRankingsTable(data, metagame, people=10):
+        top10 = sorted(data.items(), key = lambda x: (x[1]['won'], x[1]['won'] / x[1]['entered']), reverse = True)[:people]
+        withWins = sum(person[1]['won'] > 0 for person in top10)
         htmlString = '<h1 style="font-size:1em;">{}</h1>'.format(metagame)
-        htmlString += '<div style="height: 205px; overflow-y: auto;">'
+        htmlString += '<div style="height: {height}px; overflow-y: auto;">'.format(height=max(34 + 17 * withWins, 205))
         htmlString += '<table style="border-collapse: collapse; margin: 0; border: 1px solid black;">'
         htmlString += '<tr><th style="border: 1px solid black;">Rank</th>'
         htmlString += '<th style="border: 1px solid black;">Name</th>'
@@ -31,7 +33,6 @@ class Tournament:
         htmlString += '<th style="border: 1px solid black;">Game Wins / Tour</th>'
         htmlString += '<th style="border: 1px solid black;">Tours Won</th>'
         htmlString += '<th style="border: 1px solid black;">Tour Win%</th></tr>'
-        top10 = sorted(data.items(), key = lambda x: (x[1]['won'], x[1]['won'] / x[1]['entered']), reverse = True)[:people]
         rank = 1
         for person in top10:
             wins = person[1]['won']
@@ -59,7 +60,7 @@ class Tournament:
     @staticmethod
     def getTournamentData(room, formatName, official=False):
         if official:
-            filePath = 'plugins/stats/{}/{}/official-rankings.yaml'.format(room)
+            filePath = 'plugins/stats/{}/{}/official-rankings.yaml'.format(room, formatName)
         else:
             filePath = 'plugins/stats/{}/{}/tournament-rankings.yaml'.format(room, formatName)
         with open(filePath, 'r+') as yf:
@@ -215,18 +216,29 @@ def tourHandler(robot, room, *params):
                 robot.say(room.title, message, False)
             else:
                 robot.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)), False)
-            if room.tour:
-                room.tour.logWins(winners)
+            # Borrow a reference so we can clean up asap
+            tour = room.tour
             html = room.endTour()
             # HTML existing means we had an official tour
             if html:
                 robot.say(room.title, '/addhtmlbox {}'.format(html))
+
+            # This takes a bit, so do it last when we have time
+            tour.logWins(winners)
+
     elif 'forceend' in params[0]:
         room.endTour()
     else:
         # This is for general tournament updates
         if not room.tour or room.loading: return
         room.tour.onUpdate(params)
+
+def rawmessage(robot, room, *message):
+    if not room.tour: return
+    if not room.tour.official: return
+    message = '|'.join(message)
+    if 'Removed bans' in message or 'Added bans' in message:
+        room.tour.official = False
 
 def queryresponse(robot, room, query, *data):
     data = '|'.join(data)
@@ -342,7 +354,8 @@ def resetofficials(bot, cmd, msg, user, room):
 # Exports
 handlers = {
     'tournament': tourHandler,
-    'queryresponse': queryresponse
+    'queryresponse': queryresponse,
+    'raw': rawmessage,
 }
 
 commands = [

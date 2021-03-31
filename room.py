@@ -5,6 +5,7 @@ import json
 import time
 import sys
 import requests
+from datetime import timedelta, datetime
 from collections import deque
 
 from invoker import ReplyObject, Command
@@ -333,7 +334,9 @@ def togglerankings(bot, cmd, params, user, room):
 def errorHandler(robot, room, *error):
     # This should be good enough, we're not in that many rooms
     for room in robot.rooms.values():
-        if room.lastCommand == 'tour':
+        if not room.lastCommand: continue
+        timeDiff = datetime.now() - room.lastCommand[1]
+        if room.lastCommand[0] == 'tour' and timeDiff < timedelta(seconds=5):
             robot.say(room.title, '|'.join(error))
 
 # Exports
