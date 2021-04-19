@@ -44,6 +44,8 @@ class BattleHandler:
         try:
             with open('plugins/battling/teams.yaml', 'r') as file:
                 self.teams = yaml.load(file)
+            if self.teams is None:
+                self.teams = {}
             for meta in self.teams:
                 self.supportedFormats.append(meta)
         except:
@@ -391,10 +393,10 @@ def acceptTeam(bot, cmd, msg):
     if not team:
         return reply.response('Unsupported paste type (probably)')
     # If the pasted team was an importable instead of packed, pack it
-    if not team.startswith('|'):
+    if '|' not in team:
         team = BattleHandler.PSPackTeam(team)
     # Double check so it actually is packed
-    if not team.startswith('|'): return reply.response("This team doesn't look like a valid packed team :(")
+    if '|' not in team: return reply.response("This team doesn't look like a valid packed team :(")
 
     meta = bot.toId(meta)
     if not meta in bot.bh.teams:

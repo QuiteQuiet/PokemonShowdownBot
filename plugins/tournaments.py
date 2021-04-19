@@ -24,7 +24,7 @@ class Tournament:
         top10 = sorted(data.items(), key = lambda x: (x[1]['won'], x[1]['won'] / x[1]['entered']), reverse = True)[:people]
         withWins = sum(person[1]['won'] > 0 for person in top10)
         htmlString = '<h1 style="font-size:1em;">{}</h1>'.format(metagame)
-        htmlString += '<div style="height: {height}px; overflow-y: auto;">'.format(height=max(34 + 17 * withWins, 205))
+        htmlString += '<div style="height: {height}px; overflow-y: auto;">'.format(height=min(34 + 17 * withWins, 205))
         htmlString += '<table style="border-collapse: collapse; margin: 0; border: 1px solid black;">'
         htmlString += '<tr><th style="border: 1px solid black;">Rank</th>'
         htmlString += '<th style="border: 1px solid black;">Name</th>'
@@ -216,15 +216,14 @@ def tourHandler(robot, room, *params):
                 robot.say(room.title, message, False)
             else:
                 robot.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)), False)
-            # Borrow a reference so we can clean up asap
-            tour = room.tour
+
+            # This is a bit slow for large datasets, consider refactoring
+            room.tour.logWins(winners)
             html = room.endTour()
             # HTML existing means we had an official tour
             if html:
                 robot.say(room.title, '/addhtmlbox {}'.format(html))
 
-            # This takes a bit, so do it last when we have time
-            tour.logWins(winners)
 
     elif 'forceend' in params[0]:
         room.endTour()
