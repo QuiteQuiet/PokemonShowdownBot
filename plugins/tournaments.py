@@ -140,7 +140,7 @@ class Tournament:
             self.gameWinners[winner] += 1
 
             if self.finals:
-                finalsroom = self.finals
+                self.runnerUp = runnerUp
                 self.send(self.finals, '/savereplay')
                 self.finals = 'https://replay.pokemonshowdown.com/{}'.format(self.finals[7:]) # len('battle-') == 7
 
@@ -208,6 +208,7 @@ def tourHandler(robot, room, *params):
     elif 'end' == params[0]:
         if not room.loading:
             winners, tier = room.getTourWinner(params[1])
+            room.tours.winner = ', '.join(winners)
             if robot.name in winners:
                 message = 'I won the {form} tournament :o'.format(form = tier)
                 if len(winners) > 1:
