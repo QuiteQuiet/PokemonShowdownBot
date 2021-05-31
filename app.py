@@ -65,18 +65,21 @@ class PSBot(PokemonShowdownBot):
         # A lot of local functions that'll only be used for the handlers
         # are found below.
 
+        def challengeReceived(tier, opponent):
+            if tier in self.bh.supportedFormats:
+                team = self.bh.getRandomTeam(tier)
+                self.send('|/utm {}'.format(team))
+                self.send('|/accept {name}'.format(name=opponent))
+            else:
+                self.sendPm(opponent, "Sorry, I can't accept challenges in that format :(")
+
         # Accept / Decline challenges
         def updatechallenges(self, room, challenges):
             challs = json.loads(challenges)
             if challs['challengesFrom']:
                 opp = [name for name, form in challs['challengesFrom'].items()][0]
                 format = challs['challengesFrom'][opp]
-                if format in self.bh.supportedFormats:
-                    team = self.bh.getRandomTeam(format)
-                    self.send('|/utm {}'.format(team))
-                    self.send('|/accept {name}'.format(name = opp))
-                else:
-                    self.sendPm(opp, "Sorry, I can't accept challenges in that format :(")
+                challengeReceived(format, opp)
 
         def raw(self, room, *rawmessage):
             message = '|'.join(rawmessage)
@@ -85,7 +88,7 @@ class PSBot(PokemonShowdownBot):
 
         def popup(self, room, *popup):
             popup = '|'.join(popup).replace('||', '\n\t')
-            print('{}: {}'.format(room, popup))
+            print('{}: {}'.format(room.title, popup))
             if popup.startswith('You have been inactive'):
                 self.send('|/back')
 
@@ -165,6 +168,11 @@ class PSBot(PokemonShowdownBot):
                         self.log('Invite', message, user.id)
                     else:
                         self.sendPm(user.id, 'Only global voices (+) and up can add me to rooms, sorry :(')
+
+            if message.startswith('/challenge'):
+                # len('/challenge ') ==
+                challengeFormat = message[11:].split('|')[0]
+                challengeReceived(challengeFormat, user.id)
 
             if message.startswith(self.commandchar) and message[1:] and (message[1].isalpha() or message[1] == '!'):
                 command = self.extractCommand(message)

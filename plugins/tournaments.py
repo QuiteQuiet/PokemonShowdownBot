@@ -208,7 +208,7 @@ def tourHandler(robot, room, *params):
     elif 'end' == params[0]:
         if not room.loading:
             winners, tier = room.getTourWinner(params[1])
-            room.tours.winner = ', '.join(winners)
+            room.tour.winner = ', '.join(winners)
             if robot.name in winners:
                 message = 'I won the {form} tournament :o'.format(form = tier)
                 if len(winners) > 1:
