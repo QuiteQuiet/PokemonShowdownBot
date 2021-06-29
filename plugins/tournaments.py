@@ -227,7 +227,7 @@ def tourHandler(robot, room, *params):
             if room.tour.format in alertRoom.formatWatchlist:
                 html = Tournament.alertTournamentString(alertRoom, room.tour.format)
                 if robot.canHtml(alertRoom):
-                    robot.say(alertRoom.title, '/addhtmlbox {}'.format(html))
+                    robot.say(alertRoom, '/addhtmlbox {}'.format(html))
     elif 'end' == params[0]:
         if not room.loading:
             winners, tier = room.getTourWinner(params[1])
@@ -237,16 +237,16 @@ def tourHandler(robot, room, *params):
                 if len(winners) > 1:
                     winners.remove(robot.name)
                     message += '\nCongratulations to {others} for also winning :)'.format(others = ', '.join(winners))
-                robot.say(room.title, message, False)
+                robot.say(room, message, False)
             else:
-                robot.say(room.title, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)), False)
+                robot.say(room, 'Congratulations to {name} for winning :)'.format(name = ', '.join(winners)), False)
 
             # This is a bit slow for large datasets, consider refactoring
             room.tour.logWins(winners)
             html = room.endTour()
             # HTML existing means we had an official tour
             if html:
-                robot.say(room.title, '/addhtmlbox {}'.format(html))
+                robot.say(room, '/addhtmlbox {}'.format(html))
 
 
     elif 'forceend' in params[0]:

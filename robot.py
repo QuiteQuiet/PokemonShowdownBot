@@ -157,12 +157,13 @@ class PokemonShowdownBot:
             roomName = alias[roomName]
         return self.rooms[roomName] if roomName in self.rooms else None
 
-    def say(self, room, msg, ignoreMultiline = False):
+    def say(self, room, msg, ignoreMultiline=False):
+        if room.silent: return
         if '\n' in msg and not ignoreMultiline:
             for m in msg.split('\n'):
-                self.send('{room}|{text}'.format(room = room, text = m))
+                self.send('{room}|{text}'.format(room=room.title, text = m))
         else:
-            self.send('{room}|{text}'.format(room = room, text = msg))
+            self.send('{room}|{text}'.format(room=room.title, text = msg))
     def sendPm(self, user, msg, ignoreMultiline = False):
         if '\n' in msg:
             if not ignoreMultiline:
@@ -232,6 +233,8 @@ class PokemonShowdownBot:
             details['joinRooms'][r] = {'moderate': room.moderation.config,
                                         'allow games':room.allowGames,
                                         'tourwhitelist': room.tourwhitelist,
+                                        'showrankings': room.showrankings,
+                                        'silentmode': room.silent,
                                         'formatwatchlist': list(room.formatWatchlist),
                                         'officialformats': list(room.officialFormats),
                                     }

@@ -146,7 +146,7 @@ class PSBot(PokemonShowdownBot):
                 if self.userHasPermission(user, self.details['broadcastrank']) or res.ignoreBroadcastPermission:
                     if not res.ignoreEscaping:
                         res.text = self.escapeText(res.text)
-                    self.reply(room.title, user, res.text, res.samePlace, res.ignoreMultiline)
+                    self.reply(room, user, res.text, res.samePlace, res.ignoreMultiline)
 
                 elif res.canPmReply:
                     self.sendPm(user.id, self.escapeText(res.text), res.ignoreMultiline)

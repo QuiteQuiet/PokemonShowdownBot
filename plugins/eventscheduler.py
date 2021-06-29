@@ -70,7 +70,7 @@ class EventScheduler:
         instructions = job.split('\n')
 
         for instruction in instructions:
-            self.robot.say(self.room.title, instruction)
+            self.robot.say(self.room, instruction)
             time.sleep(.5) # Don't spam too much
 
         # Reschedule next run in periodicity days

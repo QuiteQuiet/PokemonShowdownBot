@@ -57,6 +57,7 @@ class Room:
         self.officialFormats = set()
         self.formatWatchlist = set()
         self.showrankings = False
+        self.silent = False
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
         moderationDefaults = {
             'anything': False,
@@ -81,6 +82,7 @@ class Room:
             self.officialFormats = set(details['officialformats'])
             self.formatWatchlist = set(details['formatwatchlist'])
             self.showrankings = details['showrankings']
+            self.silent = details['silentmode']
             self.moderation = ModerationHandler(details['moderate'], self)
 
     def isHistory(self, timestamp, message):
@@ -350,7 +352,7 @@ def errorHandler(robot, room, *error):
         if not room.lastCommand: continue
         timeDiff = datetime.now() - room.lastCommand[1]
         if room.lastCommand[0] == 'tour' and timeDiff < timedelta(seconds=5):
-            robot.say(room.title, '|'.join(error))
+            robot.say(room, '|'.join(error))
 
 def setRoomTitle(robot, room, title):
     room.formatedName = title
