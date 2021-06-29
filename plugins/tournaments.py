@@ -67,6 +67,21 @@ class Tournament:
             formatData = yaml.load(yf, Loader=Loader)
         return formatData
 
+    @staticmethod
+    def alertTournamentString(room, tourFormat):
+        gen = tourFormat[:4]
+        tier = tourFormat[4:]
+        gen = '[{}{} {}] '.format(gen[0].upper(), gen[1:2], gen[3])
+        tier = tier.title()
+        if len(tier) == 2: # OU, UU, RU, NU, PU, ZU...
+            tier = tier.upper()
+        tier = gen + tier
+        html = '<a href="/{room}" class="ilink" target="_blank" rel="noopener">'.format(room=room.title)
+        html += '<strong>{tour}</strong> tournament created in <strong>{room}</strong>.'.format(
+            tour=tier, room=room.formatedName)
+        html += '</a>'
+        return html
+
     def __init__(self, ws, room, tourFormat, battleHandler, official=False):
         self.ws = ws
         self.room = room
@@ -205,6 +220,14 @@ def tourHandler(robot, room, *params):
         # Tour was created, join it if in supported formats
         if robot.details['joinTours'] and room.tour.format in robot.bh.supportedFormats:
             room.tour.joinTour()
+
+        # Check if any other room we are in are watching for tournaments in the format
+        for alertRoom in robot.rooms.values():
+            if room.title == alertRoom.title: continue # No self-reports
+            if room.tour.format in alertRoom.formatWatchlist:
+                html = Tournament.alertTournamentString(alertRoom, room.tour.format)
+                if robot.canHtml(alertRoom):
+                    robot.say(alertRoom.title, '/addhtmlbox {}'.format(html))
     elif 'end' == params[0]:
         if not room.loading:
             winners, tier = room.getTourWinner(params[1])

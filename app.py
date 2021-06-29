@@ -44,10 +44,10 @@ class PSBot(PokemonShowdownBot):
         Raises:
             None.
         """
-        if room.loading: return
         if self.userIsSelf(message[1:]):
             room.rank = message[0]
-            room.doneLoading()
+            room.doneLoading(self.details['joinRooms'])
+        if room.loading: return
         user = User(message, message[0], self.isOwner(message))
         if not room.addUser(user):
             return self.takeAction(room.title, user, 'roomban', "You are blacklisted from this room, so please don't come here.")
@@ -84,7 +84,7 @@ class PSBot(PokemonShowdownBot):
         def raw(self, room, *rawmessage):
             message = '|'.join(rawmessage)
             if message.startswith('<div class="infobox"> You joined '):
-                room.doneLoading()
+                room.doneLoading(self.details['joinRooms'])
 
         def popup(self, room, *popup):
             popup = '|'.join(popup).replace('||', '\n\t')

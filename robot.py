@@ -134,21 +134,20 @@ class PokemonShowdownBot:
 
         self.startTime = datetime.datetime.now()
         if int(self.details['avatar']) >= 0:
-            self.send('|/avatar {num}'.format(num = self.details['avatar']))
+            self.send('|/avatar {num}'.format(num=self.details['avatar']))
         print('{name}: Successfully logged in.'.format(name = self.name))
-        for room in self.details['joinRooms']:
-            print('{name}: Autojoining room {room}'.format(name = self.name, room = room))
-            self.joinRoom(room, self.details['joinRooms'][room])
+        for room in self.details['joinRooms'].keys():
+            print('{name}: Autojoining room {room}'.format(name=self.name, room=room))
+            self.joinRoom(room)
 
-    def joinRoom(self, room, data = None):
+    def joinRoom(self, room):
         if room in self.rooms: return
         self.send('|/join ' + room)
-        self.rooms[room] = Room(room, data)
 
     def leaveRoom(self, room):
         ''' Attempts to leave a PS room '''
         if room not in self.rooms:
-            print('Error! {name} not in {room}'.format(name = self.name, room = room))
+            print('Error! {name} not in {room}'.format(name=self.name, room=room))
             return False
         self.send('|/leave ' + room)
         return True
@@ -233,6 +232,7 @@ class PokemonShowdownBot:
             details['joinRooms'][r] = {'moderate': room.moderation.config,
                                         'allow games':room.allowGames,
                                         'tourwhitelist': room.tourwhitelist,
+                                        'formatwatchlist': list(room.formatWatchlist),
                                         'officialformats': list(room.officialFormats),
                                     }
         with open('details.yaml', 'w') as yf:

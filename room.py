@@ -39,42 +39,49 @@ class Room:
         tourwhitelist: list of str, users who are not moderators but who have
                        permission to start a tour.
     """
-    def __init__(self, room, data = None):
-        if not data: data = {
-            'moderate': {
-                'anything': False,
-                'spam': False,
-                'banword': False,
-                'stretching': False,
-                'caps': False,
-                'groupchats': False,
-                'urls': False
-            },
-            'allow games':False,
-            'tourwhitelist':[],
-            'officialformats': [],
-            'showrankings':False,}
+    def __init__(self, room):
+
         self.users = {}
         self.loading = True
         self.joinTime = int(time.time())
         self.title = room
+        self.formatedName = ''
         self.isPM = room.lower() == 'pm'
         self.rank = ' '
-        self.allowGames = data['allow games']
+        self.allowGames = False
         self.tour = None
         self.activity = None
         self.lastCommand = ''
         self.pastTours = deque([], maxlen=10)
-        self.tourwhitelist = data['tourwhitelist']
-        self.officialFormats = set(data['officialformats'])
-        self.showrankings = data['showrankings']
+        self.tourwhitelist = []
+        self.officialFormats = set()
+        self.formatWatchlist = set()
+        self.showrankings = False
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
-        self.moderation = ModerationHandler(data['moderate'], self)
+        moderationDefaults = {
+            'anything': False,
+            'spam': False,
+            'banword': False,
+            'stretching': False,
+            'caps': False,
+            'groupchats': False,
+            'urls': False
+        }
+        self.moderation = ModerationHandler(moderationDefaults, self)
         self.scheduler = EventScheduler(self)
         self.activityTracker = ActivityTracker(25)
 
-    def doneLoading(self):
+    def doneLoading(self, joindata=None):
         self.loading = False
+        # Update with autojoin data after room is loaded if it exists
+        if self.title in joindata:
+            details = joindata[self.title]
+            self.allowGames = details['allow games']
+            self.tourwhitelist = details['tourwhitelist']
+            self.officialFormats = set(details['officialformats'])
+            self.formatWatchlist = set(details['formatwatchlist'])
+            self.showrankings = details['showrankings']
+            self.moderation = ModerationHandler(details['moderate'], self)
 
     def isHistory(self, timestamp, message):
         if not self.loading: return False
@@ -318,6 +325,12 @@ def addofficial(bot, cmd, tier, user, room):
     bot.saveDetails()
     return ReplyObject('Added {} as official format'.format(tier), True)
 
+def trackformat(bot, cmd, tier, user, room):
+    if not user.hasRank('#'): return ReplyObject('Permission denied. (Requires #)', True)
+    room.formatWatchlist.add(tier)
+    bot.saveDetails()
+    return ReplyObject('Added {} as official format'.format(tier), True)
+
 def togglerankings(bot, cmd, params, user, room):
     if not user.hasRank('@'): return ReplyObject('Permission denied. (Require @)', True)
 
@@ -339,9 +352,13 @@ def errorHandler(robot, room, *error):
         if room.lastCommand[0] == 'tour' and timeDiff < timedelta(seconds=5):
             robot.say(room.title, '|'.join(error))
 
+def setRoomTitle(robot, room, title):
+    room.formatedName = title
+
 # Exports
 handlers = {
     'error': errorHandler,
+    'title': setRoomTitle,
 }
 
 commands = [
@@ -353,5 +370,6 @@ commands = [
     Command(['gettourwhitelist', 'gettourwl'], gettourwl),
     Command(['getactivity'], getactivity),
     Command(['addofficial'], addofficial),
-    Command(['showrankings', 'hiderankings'], togglerankings)
+    Command(['trackformat'], trackformat),
+    Command(['showrankings', 'hiderankings'], togglerankings),
 ]
