@@ -68,10 +68,11 @@ class Tournament:
         return formatData
 
     @staticmethod
-    def alertTournamentString(room, tourFormat):
+    def alertTournamentString(room):
+        tourFormat = room.tour.format
         gen = tourFormat[:4]
         tier = tourFormat[4:]
-        gen = '[{}{} {}] '.format(gen[0].upper(), gen[1:2], gen[3])
+        gen = '[{}{} {}] '.format(gen[0].upper(), gen[1:3], gen[3])
         tier = tier.title()
         if len(tier) == 2: # OU, UU, RU, NU, PU, ZU...
             tier = tier.upper()
@@ -225,7 +226,7 @@ def tourHandler(robot, room, *params):
         for alertRoom in robot.rooms.values():
             if room.title == alertRoom.title: continue # No self-reports
             if room.tour.format in alertRoom.formatWatchlist:
-                html = Tournament.alertTournamentString(alertRoom, room.tour.format)
+                html = Tournament.alertTournamentString(room)
                 if robot.canHtml(alertRoom):
                     robot.say(alertRoom, '/addhtmlbox {}'.format(html))
     elif 'end' == params[0]:
