@@ -216,6 +216,9 @@ def teampreview(robot, bh, battle, *args):
 
 @battleprotocol
 def turn(robot, bh, battle, number):
+    # Reality check for non-teampreview gens
+    if not battle.me.id:
+        battle.spectating = True
     bh.makeMove(battle)
 
 @battleprotocol
