@@ -230,7 +230,7 @@ def tourHandler(robot, room, *params):
                 if robot.canHtml(alertRoom):
                     robot.say(alertRoom, '/addhtmlbox {}'.format(html))
     elif 'end' == params[0]:
-        if not room.loading:
+        if not room.loading and room.tour:
             winners, tier = room.getTourWinner(params[1])
             room.tour.winner = ', '.join(winners)
             if robot.name in winners:

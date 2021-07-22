@@ -215,10 +215,13 @@ def teampreview(robot, bh, battle, *args):
         bh.lead(battle.name, poke, battle.rqid)
 
 @battleprotocol
-def turn(robot, bh, battle, number):
+def start(robot, bh, battle, *args):
     # Reality check for non-teampreview gens
     if not battle.me.id:
         battle.spectating = True
+
+@battleprotocol
+def turn(robot, bh, battle, number):
     bh.makeMove(battle)
 
 @battleprotocol
@@ -418,6 +421,7 @@ def acceptTeam(bot, cmd, msg):
 handlers = {
     'init': init,
     'title': title,
+    'start': start,
     'deinit': deinit,
     'rated': rated,
     'gen': generation,
