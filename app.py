@@ -209,9 +209,9 @@ if __name__ == '__main__':
         # This function has a loop that runs as long as the websocket is connected
         psb.listen()
         # If we get here, the socket is closed and disconnected
-        # so we have to reconnect and restart (after waiting a bit of course, say half a minute)
-        time.sleep(2**(restartCount/20))
-        print('{} seconds since last disconnect. Retrying connection...'.format(2**(restartCount + 1)))
+        # so we have to reconnect and restart
+        time.sleep(2**(restartCount / 20))
+        print('{} seconds since last disconnect. Retrying connection...'.format(2**(restartCount / 20)))
         psb.openConnection()
         restartCount += 1
         print('Restart Count:', restartCount)

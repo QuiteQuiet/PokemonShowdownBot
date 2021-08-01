@@ -581,6 +581,7 @@ Moves = {
 		"accuracy": 100,
 		"basePower": 120,
 		"category": "Special",
+		"id": "astralbarrage",
 		"name": "Astral Barrage",
 		"pp": 5,
 		"priority": 0,

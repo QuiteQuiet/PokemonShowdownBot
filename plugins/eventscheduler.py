@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 import sched
 import calendar
 import time
@@ -16,6 +17,10 @@ class EventScheduler:
         self.room = room
         self.scheduler = sched.scheduler(time.time, time.sleep)
         self.thread = None
+
+        # Check if the room already has configured events and set
+        # them up again if that is the case
+        # TODO: do this
 
     @staticmethod
     def validateDateString(datestring):
@@ -44,7 +49,7 @@ class EventScheduler:
 
     def configureEventScheduler(self, robot):
         self.robot = robot
-        self.thread = threading.Thread(target=self.runForever, daemon = True)
+        self.thread = threading.Thread(target=self.runForever, daemon=True)
         return True
 
     def addJob(self, moment, periodicity, job):
@@ -55,11 +60,20 @@ class EventScheduler:
 
         # Schedule first run of this event
         timestamp = calendar.timegm(datetime.strptime(moment.strip(), '%Y/%m/%d %H:%M').timetuple())
-        self.scheduler.enterabs(timestamp, 1, self.runEvent, kwargs={'jobtime':timestamp, 'job': job, 'periodicity': periodicity})
+        self.scheduler.enterabs(timestamp,
+                                1,
+                                self.runEvent,
+                                kwargs={'jobtime':timestamp,
+                                        'job': job,
+                                        'periodicity': float(periodicity)})
 
         if firstJob:
             # Start thread
             self.thread.start()
+
+    def clearEvents(self):
+        # Clears all events from the queue by calling sched.cancel on each event
+        list(map(self.scheduler.queue, self.scheduler.cancel))
 
     def getEvents(self):
         return [(event.time, event.action.__name__) for event in self.scheduler.queue]
@@ -74,29 +88,51 @@ class EventScheduler:
             time.sleep(.5) # Don't spam too much
 
         # Reschedule next run in periodicity days
-        periodicity = int(periodicity)
         if periodicity > 0:
-            newJobTime = datetime.strptime(jobtime, '%Y/%m/%d %H:%M') + timedelta(days=periodicity)
+            if periodicity < 1:
+                newJobTime = datetime.fromtimestamp(jobtime) + timedelta(days=1) / periodicity
+            else:
+                newJobTime = datetime.fromtimestamp(jobtime) + timedelta(days=periodicity)
             timestamp = calendar.timegm(newJobTime.timetuple())
-            self.scheduler.enterabs(timestamp, 1, self.runEvent, kwargs={'jobtime':timestamp, 'job': job, 'periodicity': periodicity})
+            self.scheduler.enterabs(timestamp,
+                                    1,
+                                    self.runEvent,
+                                    kwargs={'jobtime':timestamp,
+                                            'job': job,
+                                            'periodicity': periodicity})
 
 def addEvent(robot, cmd, params, user, room):
     reply = ReplyObject('', reply = True, pmreply = True)
     if not user.hasRank('#'): return reply.response("Permission denied, only Room Owners (#) and up can use this command.")
 
-    with open('added-jobs.csv', 'a+') as jobs:
-        jobs.write('{user},{job}\n'.format(user = user.id, job = params))
+    with open('added-jobs-{}.csv'.format(room.title), 'a+') as jobs:
+        jobs.write('{user},{job}\n'.format(user=user.id, job=params))
 
     date, frequency, joblist = params.replace('| ', '|').split('|')
     # Validate date string format first
-    if not EventScheduler.validateDateString(date): return reply.response('Invald date format. Expected format is YYYY/MM/DD HH:MM.')
+    if not EventScheduler.validateDateString(date):
+        return reply.response('Invald date format. Expected format is YYYY/MM/DD HH:MM.')
 
     room.scheduler.addJob(date, frequency, joblist)
-    return reply.response('New event scheduled for {date}, repeating every {freq} days.'.format(date = date, freq = frequency))
+    return reply.response('New event scheduled for {date}, repeating every {freq} days.'.format(date=date, freq=frequency))
 
+def clearEvents(robot, cmd, params, user, room):
+    reply = ReplyObject('', reply = True, pmreply = True)
+    if not user.hasRank('#'): return reply.response("Permission denied, only Room Owners (#) and up can use this command.")
+
+    try:
+        os.remove('added-jobs-{}.csv'.format(room.title))
+    except FileNotFoundError:
+        # This is fine
+        pass
+
+    room.scheduler.clearEvents()
+
+    return reply.response('All events cleared')
 
 # Exports
 commands = [
     Command(['initevents'], lambda s, c, p, u, r: ReplyObject(r.scheduler.configureEventScheduler(s))),
-    Command(['addevent'], addEvent)
+    Command(['addevent'], addEvent),
+    Command(['clearevents'], clearEvents)
 ]

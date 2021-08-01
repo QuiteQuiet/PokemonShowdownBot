@@ -6,6 +6,7 @@ __pycache__/
 
 #personal files
 details.yaml
+added-jobs*.csv
 plugins/scoreboard.yaml
 plugins/bans.yaml
 plugins/battling/teams.yaml
