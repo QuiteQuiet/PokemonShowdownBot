@@ -48,8 +48,9 @@ class EventScheduler:
                 time.sleep(60) # Only do periodic checks for new jobs
 
     def configureEventScheduler(self, robot):
-        self.robot = robot
-        self.thread = threading.Thread(target=self.runForever, daemon=True)
+        if not self.thread:
+            self.robot = robot
+            self.thread = threading.Thread(target=self.runForever, daemon=True)
         return True
 
     def addJob(self, moment, periodicity, job):
@@ -66,14 +67,16 @@ class EventScheduler:
                                 kwargs={'jobtime':timestamp,
                                         'job': job,
                                         'periodicity': float(periodicity)})
-
         if firstJob:
-            # Start thread
-            self.thread.start()
+            try:
+                self.thread.start()
+            except RuntimeError:
+                # Thread is already running
+                pass
 
     def clearEvents(self):
         # Clears all events from the queue by calling sched.cancel on each event
-        list(map(self.scheduler.queue, self.scheduler.cancel))
+        list(map(self.scheduler.cancel, self.scheduler.queue))
 
     def getEvents(self):
         return [(event.time, event.action.__name__) for event in self.scheduler.queue]
@@ -105,6 +108,10 @@ def addEvent(robot, cmd, params, user, room):
     reply = ReplyObject('', reply = True, pmreply = True)
     if not user.hasRank('#'): return reply.response("Permission denied, only Room Owners (#) and up can use this command.")
 
+    # First event added, create the thread
+    if not room.scheduler.thread:
+        room.scheduler.configureEventScheduler(robot)
+
     with open('added-jobs-{}.csv'.format(room.title), 'a+') as jobs:
         jobs.write('{user},{job}\n'.format(user=user.id, job=params))
 
@@ -132,7 +139,7 @@ def clearEvents(robot, cmd, params, user, room):
 
 # Exports
 commands = [
-    Command(['initevents'], lambda s, c, p, u, r: ReplyObject(r.scheduler.configureEventScheduler(s))),
+    Command(['initevents'], lambda s, c, p, u, r: ReplyObject()),
     Command(['addevent'], addEvent),
     Command(['clearevents'], clearEvents)
 ]

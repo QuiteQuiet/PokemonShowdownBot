@@ -1,6 +1,9 @@
 import requests
 from lxml import html
 
+class PasteImporterException(Exception):
+    pass
+
 class PasteImporter:
     """Class that can read a select number of pastes from different sites
     and return the content of the paste.
@@ -10,7 +13,7 @@ class PasteImporter:
     """
     @staticmethod
     def getPasteContent(url):
-        if not url: return None
+        if not url: raise PasteImporterException('Not an URL')
 
         page = requests.get(url)
         if 'hastebin.com/raw' in page.url:
@@ -27,4 +30,4 @@ class PasteImporter:
             return ''.join([node.text_content() for node in htmlTree.xpath('/html/body/main/div/pre')])
         else:
             # This is not a supported type of pastebin service
-            return None
+            raise PasteImporterException('Unsupported URL')
