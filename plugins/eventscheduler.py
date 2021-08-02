@@ -60,13 +60,14 @@ class EventScheduler:
             job = PasteImporter.getPasteContent(job)
 
         # Schedule first run of this event
-        timestamp = calendar.timegm(datetime.strptime(moment.strip(), '%Y/%m/%d %H:%M').timetuple())
+        periodicity = float(periodicity)
+        timestamp = self.getNextStartTime(datetime.strptime(moment.strip(), '%Y/%m/%d %H:%M'), periodicity)
         self.scheduler.enterabs(timestamp,
                                 1,
                                 self.runEvent,
                                 kwargs={'jobtime':timestamp,
                                         'job': job,
-                                        'periodicity': float(periodicity)})
+                                        'periodicity': periodicity})
         if firstJob:
             try:
                 self.thread.start()
@@ -77,6 +78,29 @@ class EventScheduler:
     def clearEvents(self):
         # Clears all events from the queue by calling sched.cancel on each event
         list(map(self.scheduler.cancel, self.scheduler.queue))
+
+    def getNextStartTime(self, startTime, periodicity):
+        '''Find the next valid start time after the current time
+
+        Args:
+            startTime: (datetime) Starttime for the first run
+                                  of the event.
+            periodicity: (float)  Period for how often the event
+                                  should run.
+        '''
+        if periodicity <= 0: return startTime
+
+        currentTime = datetime.now()
+        if periodicity < 1:
+            delta = timedelta(days=1) * periodicity
+        else:
+            delta = timedelta(days=periodicity)
+
+        nextValidTime = startTime
+        while currentTime >= nextValidTime:
+            nextValidTime += delta
+
+        return calendar.timegm(nextValidTime.timetuple())
 
     def getEvents(self):
         return [(event.time, event.action.__name__) for event in self.scheduler.queue]
@@ -90,22 +114,18 @@ class EventScheduler:
             self.robot.say(self.room, instruction)
             time.sleep(.5) # Don't spam too much
 
-        # Reschedule next run in periodicity days
         if periodicity > 0:
-            if periodicity < 1:
-                newJobTime = datetime.fromtimestamp(jobtime) + timedelta(days=1) / periodicity
-            else:
-                newJobTime = datetime.fromtimestamp(jobtime) + timedelta(days=periodicity)
-            timestamp = calendar.timegm(newJobTime.timetuple())
-            self.scheduler.enterabs(timestamp,
+            # Reschedule next run in periodicity days
+            nextStart = self.getNextStartTime(datetime.utcfromtimestamp(jobtime), periodicity)
+            self.scheduler.enterabs(nextStart,
                                     1,
                                     self.runEvent,
-                                    kwargs={'jobtime':timestamp,
+                                    kwargs={'jobtime':nextStart,
                                             'job': job,
                                             'periodicity': periodicity})
 
 def addEvent(robot, cmd, params, user, room):
-    reply = ReplyObject('', reply = True, pmreply = True)
+    reply = ReplyObject('', reply=True, pmreply=True)
     if not user.hasRank('#'): return reply.response("Permission denied, only Room Owners (#) and up can use this command.")
 
     # First event added, create the thread
@@ -139,7 +159,6 @@ def clearEvents(robot, cmd, params, user, room):
 
 # Exports
 commands = [
-    Command(['initevents'], lambda s, c, p, u, r: ReplyObject()),
     Command(['addevent'], addEvent),
     Command(['clearevents'], clearEvents)
 ]

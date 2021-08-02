@@ -46,20 +46,9 @@ def testSpam2():
     assert test_room.moderation.isSpam('6', test_user, datetime.utcfromtimestamp(9)), 'should be spam now'
 
 def testConfig():
-    test_room = Room('test', {
-        'moderate': {
-            'room': 'test',
-                'anything': True,
-                'spam': False,
-                'banword': False,
-                'stretching': False,
-                'caps': True,
-                'groupchats': False,
-                'urls': False
-            },
-        'allow games':False,
-        'tourwhitelist':[]}
-    )
+    test_room = Room('test')
+    test_room.moderation.config['anything'] = True
+    test_room.moderation.config['caps'] = True
     test_user = User('user')
     assert 'caps' == test_room.moderation.shouldAct('OIOIOIOIOIOIOIOI', test_user, 0), 'should be punished for caps not stretching'
 
