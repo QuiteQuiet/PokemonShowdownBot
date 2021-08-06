@@ -146,6 +146,8 @@ class Tournament:
                 if info['bracketData']['rootNode']['state'] == 'inprogress':
                     self.finals = info['bracketData']['rootNode']['room']
                     self.join(self.finals)
+                    if not self.room.silent:
+                        self.send(self.room.title, '/wall Come watch the finals: <<{}>>'.format(self.finals))
             except (KeyError, TypeError):
                 pass # Expected to happen a lot
         elif 'battleend' in msg:

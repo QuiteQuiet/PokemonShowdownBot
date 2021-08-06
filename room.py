@@ -213,7 +213,7 @@ def tour(bot, cmd, params, user, room):
     if params in {'gscnu', 'advnu'}:
         gen, name = ('gen3ou', 'ADV NU') if params == 'advnu' else ('gen2ou', 'GSC NU')
         params = 'new {gen}, elimination\n/tour rules {bans}\n/tour name {name}'.format(gen = gen, bans = oldgenNUBanlists[params], name = name)
-    return reply.response('/tour {rest}\n/modnote From {user}'.format(rest = params, user = user.name))
+    return reply.response('/tour {rest}'.format(rest=params))
 
 def gettourwl(bot, cmd, params, user, room):
     reply = ReplyObject('', True, True)

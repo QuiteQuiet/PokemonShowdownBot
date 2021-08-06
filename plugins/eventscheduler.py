@@ -144,7 +144,7 @@ def addEvent(robot, cmd, params, user, room):
     return reply.response('New event scheduled for {date}, repeating every {freq} days.'.format(date=date, freq=frequency))
 
 def clearEvents(robot, cmd, params, user, room):
-    reply = ReplyObject('', reply = True, pmreply = True)
+    reply = ReplyObject('', reply=True, pmreply=True)
     if not user.hasRank('#'): return reply.response("Permission denied, only Room Owners (#) and up can use this command.")
 
     try:
@@ -152,7 +152,6 @@ def clearEvents(robot, cmd, params, user, room):
     except FileNotFoundError:
         # This is fine
         pass
-
     room.scheduler.clearEvents()
 
     return reply.response('All events cleared')
