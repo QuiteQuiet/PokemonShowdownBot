@@ -57,7 +57,7 @@ class EventScheduler:
         firstJob = self.scheduler.empty()
 
         if job.startswith('http'):
-            job = PasteImporter.getPasteContent(job)
+            job = PasteImporter.getPasteContent(job).strip()
 
         # Schedule first run of this event
         periodicity = float(periodicity)

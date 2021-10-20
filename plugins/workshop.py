@@ -27,6 +27,8 @@ class Workshop(GenericGame):
         return 'team cleared'
 
     def logSession(self, room, user, message):
+        if not room.logToFile:
+            return
         with open('logs/{room}-workshop-{host}.txt'.format(room = room, host = self.host), 'a') as log:
             log.write('{name}: {text}\n'.format(name = user, text = message))
 

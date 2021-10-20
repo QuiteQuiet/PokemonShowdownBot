@@ -180,6 +180,9 @@ class Tournament:
         self.loggedParticipation = True
 
     def logParticipation(self):
+        if not self.room.logToFile:
+            return
+
         # All tours
         filePath = 'plugins/stats/{room}/{format}'.format(room=self.room.title, format=self.format)
         self._logParticipationInner(filePath, 'tournament-rankings.yaml')
@@ -207,6 +210,9 @@ class Tournament:
         with open(filePath, 'w') as yf:
             yaml.dump(data, yf, default_flow_style = False, explicit_start = True)
     def logWins(self, winner):
+        if not self.room.logToFile:
+            return
+
         # All tours
         filePath = 'plugins/stats/{room}/{format}'.format(room=self.room.title, format=self.format)
         self._logWinsInner(winner, filePath, 'tournament-rankings.yaml')

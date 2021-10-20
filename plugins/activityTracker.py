@@ -16,6 +16,8 @@ class ActivityTracker:
             self.currentDay = defaultdict(_initDict)
 
     def countActivity(self, room, user):
+        if not room.logToFile:
+            return
         # New day started, restart counting
         today = datetime.today().strftime('%Y-%m-%d')
         if self.date != today:

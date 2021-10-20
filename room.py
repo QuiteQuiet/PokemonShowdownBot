@@ -58,6 +58,7 @@ class Room:
         self.formatWatchlist = set()
         self.showrankings = False
         self.silent = False
+        self.logToFile = False
         self.chatlog = deque({'user': None, 'message': '', 'timestamp': ''}, 20)
         moderationDefaults = {
             'anything': False,
@@ -83,6 +84,7 @@ class Room:
             self.formatWatchlist = set(details['formatwatchlist'])
             self.showrankings = details['showrankings']
             self.silent = details['silentmode']
+            self.logToFile = details['usefilesystem']
             self.moderation = ModerationHandler(details['moderate'], self)
 
     def isHistory(self, timestamp, message):
