@@ -231,12 +231,14 @@ class PokemonShowdownBot:
             if not newAutojoin and r not in self.details['joinRooms']: continue
             room = self.getRoom(r)
             details['joinRooms'][r] = {'moderate': room.moderation.config,
-                                        'allow games':room.allowGames,
-                                        'tourwhitelist': room.tourwhitelist,
-                                        'showrankings': room.showrankings,
-                                        'silentmode': room.silent,
-                                        'formatwatchlist': list(room.formatWatchlist),
-                                        'officialformats': list(room.officialFormats),
+                                       'allow games':room.allowGames,
+                                       'joinTours': room.joinTours,
+                                       'tourwhitelist': room.tourwhitelist,
+                                       'showrankings': room.showrankings,
+                                       'silentmode': room.silent,
+                                       'usefilesystem': room.logToFile,
+                                       'formatwatchlist': list(room.formatWatchlist),
+                                       'officialformats': list(room.officialFormats),
                                     }
         with open('details.yaml', 'w') as yf:
             yaml.dump(details, yf, default_flow_style=False, explicit_start=True)

@@ -52,6 +52,7 @@ class Room:
         self.tour = None
         self.activity = None
         self.lastCommand = ''
+        self.joinTours = False
         self.pastTours = deque([], maxlen=10)
         self.tourwhitelist = []
         self.officialFormats = set()
@@ -80,6 +81,7 @@ class Room:
             details = joindata[self.title]
             self.allowGames = details['allow games']
             self.tourwhitelist = details['tourwhitelist']
+            self.joinTours = details['joinTours']
             self.officialFormats = set(details['officialformats'])
             self.formatWatchlist = set(details['formatwatchlist'])
             self.showrankings = details['showrankings']

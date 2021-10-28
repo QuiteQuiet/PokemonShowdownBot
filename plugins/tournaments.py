@@ -227,7 +227,7 @@ def tourHandler(robot, room, *params):
 
         if room.loading: return
         # Tour was created, join it if in supported formats
-        if robot.details['joinTours'] and room.tour.format in robot.bh.supportedFormats:
+        if room.joinTours and room.tour.format in robot.bh.supportedFormats:
             room.tour.joinTour()
 
         # Check if any other room we are in are watching for tournaments in the format
