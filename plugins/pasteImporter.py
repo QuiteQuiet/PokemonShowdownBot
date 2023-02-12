@@ -15,10 +15,14 @@ class PasteImporter:
     def getPasteContent(url):
         if not url: raise PasteImporterException('Not an URL')
 
+        if 'pastebin' in url or 'hastebin' in url:
+            *path, paste = url.split('/')
+            url = '/'.join(path + ['raw', paste])
+
         page = requests.get(url)
-        if 'hastebin.com/raw' in page.url:
+        if 'hastebin/' in page.url:
             return page.content.decode('utf-8')
-        elif 'pastebin.com/raw' in page.url:
+        elif 'pastebin.com' in page.url:
             return page.content.decode('utf-8')
         elif 'gist.githubusercontent.com/' in page.url:
             return page.content.decode('utf-8')
