@@ -126,7 +126,10 @@ class Tournament:
         elif 'join' in msg:
             self.players.append(Tournament.toId(msg[1]))
         elif 'leave' in msg:
-            self.players.remove(Tournament.toId(msg[1]))
+            try:
+                self.players.remove(Tournament.toId(msg[1]))
+            except ValueError:
+                pass # Joining a room mid-tournament can behave weirdly
         elif 'start' in msg:
             self.startTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.logParticipation()

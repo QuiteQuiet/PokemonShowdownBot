@@ -108,13 +108,12 @@ class PokemonShowdownBot:
             print('Error: Login details still at default; will not proceed with execution!')
             exit()
 
-        payload = { 'act':'login',
-                    'name': self.name,
+        payload = { 'name': self.name,
                     'pass': self.details['password'],
                     'challengekeyid': challengekeyid,
                     'challenge': challenge
                     }
-        r = requests.post('http://play.pokemonshowdown.com/~~showdown/action.php', data=payload)
+        r = requests.post('https://play.pokemonshowdown.com/api/login', data=payload)
         assertion = json.loads(r.text[1:])['assertion']
 
         if assertion:
