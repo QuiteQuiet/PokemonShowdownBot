@@ -7,6 +7,11 @@ def getBaseSpecies(species):
     species = species.split('-')[0]
     return species
 
+def extraSuperEffective(*_, multiplier):
+    if multiplier > 1: # is super effective
+        return int(multiplier * (5461 / 4096))
+    return multiplier
+
 def relativeWeightBasedBasePower(attacker, defender):
 	aWeight = attacker['weightkg']
 	dWeight = defender['weightkg']
@@ -37,6 +42,10 @@ def requiresOpponentItem(cur, _, defender):
 
 def targetStatusBoosted(cur, _, target):
     if target.condition or target.ability == "Comatose": return cur * 2
+    return cur
+
+def targetPoisonBoosted(cur, _, target):
+    if target.condition in {'psn', 'tox'}: return cur * 2
     return cur
 
 def variableBasedOnHpPercentageRemaining(cur, attacker, _):
@@ -76,3 +85,10 @@ def doublesIfMovingFirst(cur, attacker, defender):
     if atkSpeed > defSpeed:
         return cur * 2
     return cur
+
+def increaseIfPartyFainted(cur, pokemon, _):
+    sideFainted = 0
+    for poke in pokemon.side.team.values():
+        if poke.status == 'fnt':
+            sideFainted += 1
+    return cur + cur * sideFainted

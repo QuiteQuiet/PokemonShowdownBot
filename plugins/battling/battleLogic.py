@@ -259,11 +259,14 @@ def getMove(moves, active, opponent, battle):
             action += ' dynamax'
     else:
         action += move['id']
+    if active.side.canTera:
+        action += ' terastallize'
     if active.canMega:
         action += ' mega'
     if active.canUltraBurst:
         action += ' ultra'
     return action
+
 def getSwitch(mySide, myActiveSpecies, opponent):
     scores = {}
     myTeam = mySide.team
@@ -377,6 +380,8 @@ def getCC1v1Move(moves, pokemon, opponent):
             eff = Types[types[0]][move['type']] * Types[types[1]][move['type']]
         else:
             eff = Types[ Pokedex[oppSpecies]['types'][0] ][move['type']]
+        if 'modifyEffectiveness' in move:
+            eff = move['modifyEffectiveness'](pokemon, opponent, move, eff)
         values[moveid] *= eff
 
         # Abilities that give immunities
@@ -463,6 +468,8 @@ def calcScore(move, mon, opponents):
         print(move)
         raise e
     if mon.ability == 'strongjaw' and 'bite' in move['flags']:
+        score *= 1.5
+    if mon.ability == 'sharpness' and 'slicing' in move['flags']:
         score *= 1.5
     if mon.ability in ['hugepower','purepower', 'adaptability']:
         score *= 2

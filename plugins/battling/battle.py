@@ -1,5 +1,5 @@
 class Pokemon:
-    def __init__(self, ident, details, condition, active, stats, moves, baseAbility, item, canMegaEvo, slot, side):
+    def __init__(self, ident, details, condition, active, stats, moves, baseAbility, item, teraType, canMegaEvo, hasTera, slot, side):
         self.species = ident
         self.details = details
         self.condition = condition.split()[0]
@@ -9,11 +9,13 @@ class Pokemon:
         self.moves = moves
         self.ability = baseAbility
         self.item = item
-        self.canUltraBurst = False # Necrozma-Ultra only
         self.teamSlot = slot
         self.side = side
         self.canMega = canMegaEvo and self.side.canMegaPokemon
+        self.canUltraBurst = False # Necrozma-Ultra only
         self.dynamaxed = False
+        self.terastallized = bool(hasTera)
+        self.teraType = teraType
         self.volatiles = set()
         self.boosts = {'atk':0, 'def':0, 'spa':0, 'spd':0, 'spe':0, 'evasion':0, 'accuracy':0}
         self.lastMoveUsed = None
@@ -32,6 +34,11 @@ class Pokemon:
         self.condition = cond
         self.status = status
 
+    def setTera(self, teraType):
+        self.teraType = teraType
+        self.terastallized = True
+        self.side.usedTera()
+
     def isChoiceLocked(self):
         return self.lastMoveUsed and self.item.startswith('choice') and not self.dynamaxed
 
@@ -43,9 +50,10 @@ class Player:
         self.canMegaPokemon = True
         self.canUltraBurst = True
         self.canDynamax = True
+        self.canTera = True
         self.active = None
         self.team = {}
-        self.side = {}
+
     def setActive(self, poke):
         if self.active:
             self.active.clearBoosts()
@@ -75,6 +83,9 @@ class Player:
     def usedZmove(self):
         self.canZmove = False
 
+    def usedTera(self):
+        self.canTera = False
+
 class Battle:
     def __init__(self, name):
         self.rqid = 1
@@ -87,22 +98,33 @@ class Battle:
         self.spectating = False
         self.ladderGame = False
         self.allowDynamax = True # Default dynamax allowed
+        self.allowTera = True # Default tera is allowed
         self.hackmons = True # Assume hackmons until told otherwise
 
     def setMe(self, me, pId):
         self.me.name = me
         self.me.id = pId
+
     def setOther(self, other, pId):
         self.other.name = other
         self.other.id = pId
+
     def isLadderMatch(self):
         self.ladderGame = True
-    def isNotHackmons(self):
+
+    def notHackmons(self):
         self.hackmons = False
-    def dynamaxAllowed(self, isAllowed):
-        self.allowDynamax = isAllowed
-        self.me.canDynamax = isAllowed
-        self.other.canDynamax = isAllowed
+
+    def cantDynamax(self):
+        self.allowDynamax = False
+        self.me.canDynamax = False
+        self.other.canDynamax = False
+
+    def cantTera(self):
+        self.teraAllowed = False
+        self.me.canTera = False
+        self.other.canTera = False
+
     def setFieldCond(self, cond):
         # TODO: do this
         pass

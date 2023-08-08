@@ -39,7 +39,11 @@ class BattleHandler:
                                  'gen8challengecup1v1',
                                  'gen8challengecup',
                                  'gen8hackmonscup',
-                                 'gen8randombattle']
+                                 'gen8randombattle',
+                                 'gen9challengecup1v1',
+                                 'gen9challengecup',
+                                 'gen9hackmonscup',
+                                 'gen9randombattle',]
 
         try:
             with open('plugins/battling/teams.yaml', 'r') as file:
@@ -114,6 +118,14 @@ class BattleHandler:
         if pokemon in Pokedex: return pokemon
         pokemon = pokemon.split('-')[0]
         return pokemon
+    
+    def hasTerad(self, details):
+        # Chansey, L85, F, tera:Steel
+        for part in map(str.strip, details.split(',')):
+            if part.startswith('tera:'):
+                return part[5:]
+        return ''
+
 
 def init(robot, room, roomtype):
     if roomtype == 'battle': robot.bh.newBattle(room.title)
@@ -151,8 +163,19 @@ def request(robot, bh, battle, data):
     teamSlot = 1
     for poke in sidedata['pokemon']:
         battle.me.updateTeam(
-            Pokemon(bh.getSpecies(poke['details']),poke['details'],poke['condition'],poke['active'],
-                    poke['stats'],poke['moves'],poke['baseAbility'],poke['item'], False, teamSlot, battle.me))
+            Pokemon(bh.getSpecies(poke['details']),
+                    poke['details'],
+                    poke['condition'],
+                    poke['active'],
+                    poke['stats'],
+                    poke['moves'],
+                    poke['baseAbility'],
+                    poke['item'],
+                    poke['teraType'],
+                    False,
+                    poke['terastallized'],
+                    teamSlot,
+                    battle.me))
         teamSlot += 1
     if 'active' in request:
         battle.myActiveData = request['active']
@@ -175,15 +198,19 @@ def rated(robot, bh, battle, rating):
 @battleprotocol
 def rule(robot, bh, battle, rule):
     if rule.startswith('Species Clause') or rule.startswith('Endless Battle Clause'):
-        battle.isNotHackmons()
+        battle.notHackmons()
     if rule.startswith('Dynamax Clause'):
-        battle.dynamaxAllowed(False)
+        battle.cantDynamax()
+    if rule.startswith('Terastal Clause'):
+        battle.cantTera()
 
 @battleprotocol
 def generation(robot, bh, battle, gen):
     battle.generation = int(gen)
-    if battle.generation < 8:
-        battle.dynamaxAllowed(False)
+    if battle.generation != 8:
+        battle.cantDynamax()
+    if battle.generation != 9:
+        battle.cantTera()
 
 @battleprotocol
 def pokemon(robot, bh, battle, id, pokemon, item = ''):
@@ -194,9 +221,19 @@ def pokemon(robot, bh, battle, id, pokemon, item = ''):
         hasMega = True if 'hasMega' in Pokedex[species] else False
         battle.other.updateTeam(
             Pokemon(
-                species, pokemon, '100/100', False,
-                stats, moves, Pokedex[species]['abilities']['0'],
-                '', hasMega, len(battle.other.team) + 1, battle.other))
+                species,
+                pokemon,
+                '100/100',
+                False,
+                stats,
+                moves,
+                Pokedex[species]['abilities']['0'],
+                '',
+                '',
+                hasMega,
+                '',
+                len(battle.other.team) + 1,
+                battle.other))
 
 @battleprotocol
 def player(robot, bh, battle, pid, name, avatar = '', *rest):
@@ -237,10 +274,21 @@ def switch(robot, bh, battle, pid, details, hpstatus, cause = ''):
         if battle.other.active:
             battle.other.active.dynamax = False
         mon = bh.getSpecies(details)
+        teraType = bh.hasTerad(details)
         if mon not in battle.other.team:
-            battle.other.updateTeam(Pokemon(bh.getSpecies(details), details, '100/100', False,
-                        {'atk':1,'def':1,'spa':1,'spd':1,'spe':1}, ['','','',''], '', '',
-                        False, len(battle.other.team) + 1, battle.other))
+            battle.other.updateTeam(Pokemon(mon,
+                                            details,
+                                            '100/100',
+                                            False,
+                                            {'atk':1, 'def':1, 'spa':1, 'spd':1, 'spe':1},
+                                            ['', '', '', ''],
+                                            '',
+                                            '',
+                                            teraType,
+                                            False,
+                                            teraType,
+                                            len(battle.other.team) + 1,
+                                            battle.other))
         battle.other.setActive(battle.other.getPokemon(mon))
 
 @battleprotocol
@@ -313,6 +361,13 @@ def zmove(robot, bh, battle, pid):
     else:
         battle.other.usedZmove()
 
+@battleprotocol
+def terastallize(robot, bh, battle, pid, teraType):
+    if pid.startswith(battle.me.id):
+        battle.me.active.setTera(teraType)
+    else:
+        battle.other.active.setTera(teraType)
+    
 @battleprotocol
 def move(robot, bh, battle, pid, usedmove, target, modifier = '', animation = ''):
     moveid = robot.toId(usedmove)
@@ -442,6 +497,7 @@ handlers = {
     '-primal': primal,
     '-zmove': zmove,
     '-zpower': zmove,
+    '-terastallize': terastallize,
     # Dynamaxing goes by -start and -end events
     # Other volatile statuses (confusion, taunt, substitute, etc.) also use this
     '-start': start,
