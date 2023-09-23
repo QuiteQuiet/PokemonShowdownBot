@@ -7,7 +7,7 @@ def getBaseSpecies(species):
     species = species.split('-')[0]
     return species
 
-def extraSuperEffective(*_, multiplier):
+def extraSuperEffective(_pokemon, _opponent, _move, multiplier):
     if multiplier > 1: # is super effective
         return int(multiplier * (5461 / 4096))
     return multiplier
