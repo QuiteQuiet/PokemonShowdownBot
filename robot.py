@@ -114,7 +114,11 @@ class PokemonShowdownBot:
                     'challenge': challenge
                     }
         r = requests.post('https://play.pokemonshowdown.com/api/login', data=payload)
-        assertion = json.loads(r.text[1:])['assertion']
+        try:
+            assertion = json.loads(r.text[1:])['assertion']
+        except:
+            print(r.text)
+            assertion = False
 
         if assertion:
             self.send('|/trn {name},0,{assertion}'.format(name = self.name, assertion = str(assertion)).encode('utf-8'))

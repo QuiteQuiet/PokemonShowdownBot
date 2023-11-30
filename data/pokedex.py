@@ -15777,7 +15777,7 @@ Pokedex = {
 		"types": ["Ground", "Normal"],
 		"gender": "M",
 		"baseStats": {"hp": 113, "atk": 70, "def": 120, "spa": 135, "spd": 65, "spe": 52},
-		"abilities": {0: "Mind's Eye"},
+		"abilities": {"0": "Mind's Eye"},
 		"heightm": 2.7,
 		"weightkg": 333,
 		"color": "Brown",
