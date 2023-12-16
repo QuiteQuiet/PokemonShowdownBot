@@ -462,7 +462,7 @@ def calcScore(move, mon, opponents):
     score *= eff
     # Ability
     try:
-        if mon.ability == 'sheerforce' and move['secondary']:
+        if mon.ability == 'sheerforce' and (move['secondary'] or "hasSheerForce" in move):
             score *= 1.2
     except KeyError as e:
         print(move)

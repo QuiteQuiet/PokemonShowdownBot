@@ -62,6 +62,11 @@ def variableBasedOnHpRatioRemaining(cur, attacker, _):
     if ratio < 33: return 40
     return 20
 
+def variableBasedOnTargetHpRemaining(cur, _, defender):
+    hp, maxhp = map(int, defender.condition.split('/'))
+    bp = ((120 * (100 * (hp * 4096 // maxhp) + 2048 - 1)) // 4096) // 100
+    return bp if bp > 0 else 1
+
 def doublesAgainstDynamax(cur, _, defender):
     return cur * 2 if defender.dynamaxed else cur
 
