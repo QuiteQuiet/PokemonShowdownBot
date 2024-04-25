@@ -171,9 +171,9 @@ def request(robot, bh, battle, data):
                     poke['moves'],
                     poke['baseAbility'],
                     poke['item'],
-                    poke['teraType'],
+                    poke.get('teraType'),
                     False,
-                    poke['terastallized'],
+                    poke.get('terastallized'),
                     teamSlot,
                     battle.me))
         teamSlot += 1
@@ -356,7 +356,7 @@ def formechange(robot, bh, battle, pid, forme, *rest):
 @battleprotocol
 def detailschange(robot, bh, battle, pid, forme, *rest):
     side = battle.me if pid.startswith(battle.me.id) else battle.other
-    pokemon = ':'.join(pid.split(':')[1:])
+    pokemon = ':'.join(pid.split(':')[1:]).strip()
     newForme = forme.split(',')[0]
     side.changeForme(pokemon, newForme)
 
@@ -422,7 +422,7 @@ def faint(robot, bh, battle, pid):
 
 @battleprotocol
 def error(robot, bh, battle, cause, *information):
-    if '[Invalid choice]' == cause:
+    if cause in ('[Invalid choice]', '[Unavailable choice]'):
         battle.me.active.trapped = True
         # Only reason for an invalid choice should be because we're trapped...
         trappingAbilities = ['Shadow Tag', 'Arena Trap', 'Magnet Pull']

@@ -85,7 +85,8 @@ class Player:
             # Works for species clause metas only!
             for p in self.team:
                 if p.startswith(pokemon):
-                    old = old = self.team.pop(p)
+                    old = self.team.pop(p)
+                    break
         self.team[forme] = old
         self.team[forme].species = forme
 

@@ -13982,7 +13982,7 @@ Moves = {
 		"gmaxPower": 130,
 		"contestType": "Beautiful",
 	},
-	"shellsidearm": {
+	"shellslidearm": {
 		"num": 801,
 		"accuracy": 100,
 		"basePower": 90,
