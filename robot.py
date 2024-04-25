@@ -122,10 +122,9 @@ class PokemonShowdownBot:
 
         if assertion:
             self.send('|/trn {name},0,{assertion}'.format(name = self.name, assertion = str(assertion)).encode('utf-8'))
-            return True
         else:
             print('Assertion failed')
-            return False
+            self.closeConnection()
 
     def updateUser(self, name, result):
         name = self.removeAfkMessage(name)

@@ -118,7 +118,7 @@ class BattleHandler:
         if pokemon in Pokedex: return pokemon
         pokemon = pokemon.split('-')[0]
         return pokemon
-    
+
     def hasTerad(self, details):
         # Chansey, L85, F, tera:Steel
         for part in map(str.strip, details.split(',')):
@@ -306,7 +306,10 @@ def tie(robot, bh, battle):
 def start(robot, bh, battle, pid, effect, *rest):
     if effect == 'Dynamax':
         side = battle.me if pid.startswith(battle.me.id) else battle.other
-        side.active.dynamaxed = True
+        if rest and rest[0] == 'Gmax':
+            side.active.dynamaxed = 'gmax'
+        else:
+            side.active.dynamaxed = True
         side.canDynamax = False
 
 # |-end|POKEMON|EFFECT
@@ -323,7 +326,7 @@ def mega(robot, bh, battle, pid, pokemon, megastone):
     if pokemon in ['Charizard', 'Mewtwo']:
         megapoke += '-' + megastone.split()[1]
     side = battle.me if pid.startswith(battle.me.id) else battle.other
-    side.removeBaseForm(pokemon, megapoke)
+    side.changeForme(pokemon, megapoke)
     side.canMegaPokemon = False
     side.active.canMega = False
 
@@ -332,11 +335,7 @@ def mega(robot, bh, battle, pid, pokemon, megastone):
 def burst(robot, bh, battle, pid, pokemon, stone):
     ultraburst = 'Necrozma-Ultra'
     side = battle.me if pid.startswith(battle.me.id) else battle.other
-    # Find the necrozma (works for species clause metas only!)
-    for p in side.team:
-        if p.startswith(pokemon):
-            pokemon = p
-    side.removeBaseForm(pokemon, ultraburst)
+    side.changeForme(pokemon, ultraburst)
     side.canUltraBurst = False
     side.active.canUltraBurst = False
 
@@ -345,7 +344,7 @@ def burst(robot, bh, battle, pid, pokemon, stone):
 def primal(robot, bh, battle, pid, pokemon='', megastone=''):
     primalpoke = pokemon + '-Primal'
     side = battle.me if pid.startswith(battle.me.id) else battle.other
-    side.removeBaseForm(pokemon, primalpoke)
+    side.changeForme(pokemon, primalpoke)
 
 @battleprotocol
 def formechange(robot, bh, battle, pid, forme, *rest):
@@ -353,6 +352,13 @@ def formechange(robot, bh, battle, pid, forme, *rest):
         side = battle.me if pid.startswith(battle.me.id) else battle.other
         side.active.dynamaxed = 'gmax'
         side.canDynamax = False
+
+@battleprotocol
+def detailschange(robot, bh, battle, pid, forme, *rest):
+    side = battle.me if pid.startswith(battle.me.id) else battle.other
+    pokemon = ':'.join(pid.split(':')[1:])
+    newForme = forme.split(',')[0]
+    side.changeForme(pokemon, newForme)
 
 @battleprotocol
 def zmove(robot, bh, battle, pid):
@@ -367,7 +373,7 @@ def terastallize(robot, bh, battle, pid, teraType):
         battle.me.active.setTera(teraType)
     else:
         battle.other.active.setTera(teraType)
-    
+
 @battleprotocol
 def move(robot, bh, battle, pid, usedmove, target, modifier = '', animation = ''):
     moveid = robot.toId(usedmove)
@@ -504,6 +510,7 @@ handlers = {
     '-end': endEffect,
     # Gmaxing currently only thing handled here
     '-formechange': formechange,
+    'detailschange': detailschange,
     # This keeps track of what moves the opponent has revealed and the last used move from either side
     'move': move,
     '-boost': boost,

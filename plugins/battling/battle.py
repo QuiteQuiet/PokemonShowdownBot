@@ -76,9 +76,18 @@ class Player:
                 return self.team[poke]
         # Logically this shouldn't happen, but apparently it does sometimes?
         raise AttributeError('{mon} isn\'t in the team'.format(mon = species))
-    def removeBaseForm(self, pokemon, mega):
-        self.team[mega] = self.team.pop(pokemon, None)
-        self.team[mega].species = mega
+    def changeForme(self, pokemon, forme):
+        old = self.team.pop(pokemon, None)
+        if not old:
+            # For some types of change (Ogerpon-*, Terapagos, Mimikyu, Necrozma-*)
+            # the variant is stored in memory but PS reports the base form so
+            # it needs to be found manually.
+            # Works for species clause metas only!
+            for p in self.team:
+                if p.startswith(pokemon):
+                    old = old = self.team.pop(p)
+        self.team[forme] = old
+        self.team[forme].species = forme
 
     def usedZmove(self):
         self.canZmove = False
