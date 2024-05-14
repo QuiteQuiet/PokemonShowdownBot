@@ -65,8 +65,11 @@ dynamaxmoves = {
 }
 waterImmune = ['Dry Skin','Water Absorb','Storm Drain']
 grassImmune = ['Sap Sipper']
-fireImmune = ['Flash Fire']
-groundImmune = ['Levitate']
+fireImmune = ['Flash Fire', 'Well-Baked Body']
+groundImmune = ['Levitate', 'Earth Eater']
+
+def anyAbilitiyMatches(species, abilities):
+    return any(abil in abilities for abil in Pokedex[species]['abilities'].values())
 
 def getUsableZmove(pokemon):
     zcrystals = zmoves.keys()
@@ -379,19 +382,24 @@ def getCC1v1Move(moves, pokemon, opponent):
             types = Pokedex[oppSpecies]['types']
             eff = Types[types[0]][move['type']] * Types[types[1]][move['type']]
         else:
-            eff = Types[ Pokedex[oppSpecies]['types'][0] ][move['type']]
+            eff = Types[Pokedex[oppSpecies]['types'][0]][move['type']]
         if 'modifyEffectiveness' in move:
             eff = move['modifyEffectiveness'](pokemon, opponent, move, eff)
         values[moveid] *= eff
 
         # Abilities that give immunities
-        if move['type'] == 'Water' and Pokedex[oppSpecies]['abilities']['0'] in waterImmune:
+        if move['type'] == 'Water' and anyAbilitiyMatches(oppSpecies, waterImmune):
             values[moveid] = 0
-        if move['type'] == 'Fire' and Pokedex[oppSpecies]['abilities']['0'] in fireImmune:
+        if move['type'] == 'Fire' and anyAbilitiyMatches(oppSpecies, fireImmune):
             values[moveid] = 0
-        if move['type'] == 'Grass' and Pokedex[oppSpecies]['abilities']['0'] in grassImmune:
+        if move['type'] == 'Grass' and anyAbilitiyMatches(oppSpecies, grassImmune):
             values[moveid] = 0
-        if move['type'] == 'Ground' and Pokedex[oppSpecies]['abilities']['0'] in groundImmune or opponent.item == 'airballon':
+        if move['type'] == 'Ground' and anyAbilitiyMatches(oppSpecies, groundImmune) or opponent.item == 'airballon':
+            values[moveid] = 0
+
+        if 'sound' in move['flags'] and anyAbilitiyMatches(oppSpecies, ['Soundproof']):
+            values[moveid] = 0
+        if 'wind' in move['flags'] and anyAbilitiyMatches(oppSpecies, ['Wind Rider']):
             values[moveid] = 0
 
         # Ignore most items for now
@@ -473,6 +481,8 @@ def calcScore(move, mon, opponents):
         score *= 1.5
     if mon.ability in ['hugepower','purepower', 'adaptability']:
         score *= 2
+    if mon.ability == 'waterbubble' and 'Water' == move['type']:
+        score *= 1.5
 
     # Ignore most items for now
     if mon.item == 'choiceband' and move['category'] == 'Physical': score *= 1.5
