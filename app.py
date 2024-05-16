@@ -29,7 +29,7 @@ class PSBot(PokemonShowdownBot):
         """
         self.usernotes = MessageDatabase()
         PokemonShowdownBot.__init__(self,
-                                    'ws://sim.smogon.com:8000/showdown/websocket')
+                                    'wss://sim3.psim.us/showdown/websocket')
         self.addExtraHandlers()
         self.invoker = CommandInvoker()
 

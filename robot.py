@@ -13,6 +13,7 @@
 
 import websocket
 import requests
+import ssl
 import json
 import yaml
 from time import sleep
@@ -80,7 +81,8 @@ class PokemonShowdownBot:
         self.ws = None
 
     def listen(self):
-        self.ws.run_forever(ping_interval = 120)
+        self.ws.run_forever(ping_interval = 120,
+                            sslopt={"cert_reqs": ssl.CERT_NONE})
 
     def loadDefaults(self):
         import shutil
