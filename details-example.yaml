@@ -14,8 +14,8 @@ command: 'x'
 # The userauth level people need to broadcast commands back in chat. Can be changed during run-time.
 broadcastrank: ' '
 
-# OPTIONAL: The specific avatar the bot should use. Leave as 0 to pick the default one.
-avatar: 0
+# OPTIONAL: The specific avatar the bot should use. Leave as empty string to pick the default one.
+avatar: ''
 
 # The rooms that should be joined on login. Leave moderate as fale to not enforce punishments.
 # allow games: Specify if chatgames like hangman should be allowed in the room

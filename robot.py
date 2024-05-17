@@ -137,7 +137,7 @@ class PokemonShowdownBot:
             exit(1)
 
         self.startTime = datetime.datetime.now()
-        if int(self.details['avatar']) >= 0:
+        if self.details.get('avatar'):
             self.send('|/avatar {num}'.format(num=self.details['avatar']))
         print('{name}: Successfully logged in.'.format(name = self.name))
         for room in self.details['joinRooms'].keys():
