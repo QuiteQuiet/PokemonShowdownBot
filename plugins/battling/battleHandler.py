@@ -132,7 +132,11 @@ def init(robot, room, roomtype):
 
 def title(robot, room, title):
     if robot.name in title:
-        print('Battle: New battle between {}'.format(title))
+        try:
+            metagame = room.title.split('-')[1]
+        except IndexError as e:
+            metagame = e
+        print('Battle: New {} battle between {}'.format(metagame, title))
 
 def deinit(robot, room, *extra):
     handler = robot.bh
@@ -187,8 +191,15 @@ def request(robot, bh, battle, data):
         if 'canUltraBurst' in request['active'][0]:
             battle.me.active.canUltraBurst = battle.me.canUltraBurst
 
-    if 'forceSwitch' in request and request['forceSwitch'][0]:
+    if request.get('teamPreview', False):
+        poke = getLead(battle.me.team, battle.other.team)
+        bh.lead(battle.name, poke, battle.rqid)
+
+    elif request.get('forceSwitch', [False])[0]:
         bh.act(battle.name, 'switch', getSwitch(battle.me, battle.me.active, battle.other.active), battle.rqid)
+
+    else:
+        bh.makeMove(battle)
 
 @battleprotocol
 def rated(robot, bh, battle, rating):
@@ -247,19 +258,12 @@ def player(robot, bh, battle, pid, name, avatar = '', *rest):
 def teampreview(robot, bh, battle, *args):
     if not battle.me.id:
         battle.spectating = True
-    else:
-        poke = getLead(battle.me.team, battle.other.team)
-        bh.lead(battle.name, poke, battle.rqid)
 
 @battleprotocol
 def battlestart(robot, bh, battle, *args):
     # Reality check for non-teampreview gens
     if not battle.me.id:
         battle.spectating = True
-
-@battleprotocol
-def turn(robot, bh, battle, number):
-    bh.makeMove(battle)
 
 @battleprotocol
 def switch(robot, bh, battle, pid, details, hpstatus, cause = ''):
@@ -491,7 +495,6 @@ handlers = {
     'poke': pokemon,
     'player': player,
     'teampreview': teampreview,
-    'turn': turn,
     'switch': switch,
     'win': end,
     'tie': tie,
